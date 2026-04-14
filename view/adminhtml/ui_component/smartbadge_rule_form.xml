@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">smartbadge_rule_form.smartbadge_rule_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Badge Rule Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\BackButton"/>
+            <button name="delete" class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\DeleteButton"/>
+            <button name="save" class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\SaveButton"/>
+            <button name="save_and_continue" class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\SaveAndContinueButton"/>
+        </buttons>
+        <namespace>smartbadge_rule_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>smartbadge_rule_form.smartbadge_rule_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="smartbadge_rule_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="smartbadge/rule/save"/>
+            <validateUrl path="smartbadge/rule/validate"/>
+        </settings>
+        <dataProvider class="Panth\SmartBadge\Model\Rule\DataProvider" name="smartbadge_rule_form_data_source">
+            <settings>
+                <requestFieldName>rule_id</requestFieldName>
+                <primaryFieldName>rule_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ========================================== -->
+    <!-- Basic Information -->
+    <!-- ========================================== -->
+    <fieldset name="basic_information" sortOrder="10">
+        <settings>
+            <label translate="true">Basic Information</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+
+        <field name="rule_id" formElement="input" sortOrder="0">
+            <settings><dataType>text</dataType><visible>false</visible></settings>
+        </field>
+
+        <field name="name" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Rule Name</label>
+                <validation><rule name="required-entry" xsi:type="boolean">true</rule></validation>
+            </settings>
+        </field>
+
+        <field name="is_active" formElement="checkbox" sortOrder="20">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Rule</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="priority" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Priority</label>
+                <validation><rule name="validate-number" xsi:type="boolean">true</rule></validation>
+                <notice translate="true">Higher priority badges appear first (0-100)</notice>
+            </settings>
+        </field>
+
+        <field name="badge_type" formElement="select" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Type</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\BadgeType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Design -->
+    <!-- ========================================== -->
+    <fieldset name="design" sortOrder="20">
+        <settings>
+            <label translate="true">Design</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="badge_text" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Text</label>
+                <notice translate="true">Keep it short for best visibility (max 20 characters). Leave empty to use default for badge type.</notice>
+            </settings>
+        </field>
+
+        <field name="badge_color" formElement="colorPicker" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Color</label>
+                <notice translate="true">Choose a color for the badge background</notice>
+            </settings>
+            <formElements>
+                <colorPicker>
+                    <settings>
+                        <colorPickerMode>full</colorPickerMode>
+                        <colorFormat>hex</colorFormat>
+                    </settings>
+                </colorPicker>
+            </formElements>
+        </field>
+
+        <field name="badge_icon" formElement="select" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Icon</label>
+                <notice translate="true">Select a FontAwesome icon to display alongside the badge text</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\FontAwesomeIcons"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Badge Image -->
+    <!-- ========================================== -->
+    <fieldset name="image" sortOrder="30">
+        <settings>
+            <label translate="true">Badge Image</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="badge_image" formElement="imageUploader" sortOrder="10">
+            <settings>
+                <label translate="true">Upload Badge Image</label>
+                <componentType>imageUploader</componentType>
+                <notice translate="true">Upload a custom badge image (JPG, PNG, SVG, WebP - Max 2MB). Overrides text badge when set.</notice>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg png gif svg webp</allowedExtensions>
+                        <maxFileSize>2097152</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">smartbadge/rule/upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Animation -->
+    <!-- ========================================== -->
+    <fieldset name="animation" sortOrder="40">
+        <settings>
+            <label translate="true">Animation</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="animation" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Animation Type</label>
+                <notice translate="true">Choose an animation effect for the badge</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\Animation"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Display Conditions (with Browse popup) -->
+    <!-- ========================================== -->
+    <fieldset name="conditions" sortOrder="50">
+        <settings>
+            <label translate="true">Display Conditions</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="product_ids" formElement="input" sortOrder="5">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+
+        <field name="category_ids" formElement="input" sortOrder="6">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+
+        <htmlContent name="product_category_chooser" sortOrder="10">
+            <block class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\AssignProducts" name="smartbadge_assign_products"/>
+        </htmlContent>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Smart Conditions (Interactive UI) -->
+    <!-- ========================================== -->
+    <fieldset name="smart_conditions_fieldset" sortOrder="60">
+        <settings>
+            <label translate="true">Smart Conditions</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="smart_conditions" formElement="textarea" sortOrder="1">
+            <settings><dataType>text</dataType><visible>false</visible></settings>
+        </field>
+
+        <htmlContent name="smart_conditions_ui" sortOrder="10">
+            <block class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\SmartConditions" name="smartbadge_smart_conditions"/>
+        </htmlContent>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Schedule -->
+    <!-- ========================================== -->
+    <fieldset name="schedule" sortOrder="70">
+        <settings>
+            <label translate="true">Schedule</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="schedule_from" formElement="date" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Start Date</label>
+                <notice translate="true">Leave empty for no start date restriction</notice>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="dateFormat" xsi:type="string">yyyy-MM-dd</option>
+                            <option name="timeFormat" xsi:type="string">HH:mm:ss</option>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+
+        <field name="schedule_to" formElement="date" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">End Date</label>
+                <notice translate="true">Leave empty for no end date restriction</notice>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="dateFormat" xsi:type="string">yyyy-MM-dd</option>
+                            <option name="timeFormat" xsi:type="string">HH:mm:ss</option>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Advanced Styling (Interactive UI) -->
+    <!-- ========================================== -->
+    <fieldset name="advanced_styling" sortOrder="80">
+        <settings>
+            <label translate="true">Advanced Styling</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="badge_style" formElement="textarea" sortOrder="1">
+            <settings><dataType>text</dataType><visible>false</visible></settings>
+        </field>
+
+        <htmlContent name="advanced_styling_ui" sortOrder="10">
+            <block class="Panth\SmartBadge\Block\Adminhtml\Rule\Edit\AdvancedStyling" name="smartbadge_advanced_styling"/>
+        </htmlContent>
+    </fieldset>
+
+    <!-- ========================================== -->
+    <!-- Display Settings -->
+    <!-- ========================================== -->
+    <fieldset name="display_settings" sortOrder="90">
+        <settings>
+            <label translate="true">Display Settings</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="display_on" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Display On</label>
+                <notice translate="true">Choose where this badge should appear on your store</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\DisplayOn"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="use_same_position" formElement="checkbox" sortOrder="20">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Use Same Position for All Views</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="position_all" formElement="select" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Position</label>
+                <notice translate="true">Position of the badge on the product image</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\Position"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="position_category" formElement="select" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Category Page Position</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\Position"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="position_product" formElement="select" sortOrder="50">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Product Page Position</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\Position"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="position_slider" formElement="select" sortOrder="60">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Slider Position</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\SmartBadge\Model\Config\Source\Position"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

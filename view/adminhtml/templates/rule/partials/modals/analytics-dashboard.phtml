@@ -1,0 +1,79 @@
+    <!-- Analytics Dashboard Modal -->
+    <template x-if="showAnalytics">
+    <div class="modal-overlay"
+         @click.self="showAnalytics = false">
+        <div class="modal-content analytics-modal">
+            <div class="modal-header">
+                <h3>📊 Badge Analytics Dashboard</h3>
+                <button type="button" @click="showAnalytics = false" class="modal-close" aria-label="Close">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="analytics-info">
+                    <p class="modal-description">Badge performance metrics and statistics for this rule:</p>
+
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-label">Rule Status</div>
+                            <div class="analytics-value" x-text="rule.is_active ? '✅ Active' : '⛔ Inactive'"></div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Badge Type</div>
+                            <div class="analytics-value" x-text="rule.badge_type.toUpperCase()"></div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Priority Level</div>
+                            <div class="analytics-value" x-text="rule.priority"></div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Animation Effect</div>
+                            <div class="analytics-value" x-text="rule.animation || 'pulse'"></div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-section">
+                        <h4>Rule Scope</h4>
+                        <div class="scope-info">
+                            <p>
+                                <span class="label">Products:</span>
+                                <span x-text="rule.product_ids ? rule.product_ids.split(',').length + ' product(s)' : 'All products'"></span>
+                            </p>
+                            <p>
+                                <span class="label">Categories:</span>
+                                <span x-text="rule.category_ids ? rule.category_ids.split(',').length + ' categor(ies)' : 'All categories'"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="analytics-section">
+                        <h4>Badge Appearance</h4>
+                        <div class="appearance-preview">
+                            <div class="preview-label">Live Preview:</div>
+                            <div class="badge-preview" :style="{'background-color': rule.badge_color}">
+                                <span class="preview-icon" x-text="rule.badge_icon"></span>
+                                <span class="preview-text" x-text="rule.badge_text || rule.badge_type"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-tips">
+                        <h4>📈 Pro Tips for Better Performance:</h4>
+                        <ul>
+                            <li>Use high-contrast colors for better visibility and conversion</li>
+                            <li>Limit animations to 'pulse' or 'bounce' for best user experience</li>
+                            <li>Set higher priority for your most important badges</li>
+                            <li>Test different badge text lengths for mobile compatibility</li>
+                            <li>Combine with limited-time indicators for urgency effect</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @click="showAnalytics = false" class="btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    </template>

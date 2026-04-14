@@ -1,0 +1,189 @@
+    <!-- Category Chooser Modal -->
+    <template x-if="showCategoryChooser">
+    <div class="modal-overlay"
+         @click.self="showCategoryChooser = false">
+        <div class="modal-content chooser-modal">
+            <div class="modal-header">
+                <h3>📁 Choose Categories</h3>
+                <button type="button" @click="closeCategoryChooser()" class="modal-close" aria-label="Close">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="search-section">
+                    <input type="text"
+                           x-model="categorySearchTerm"
+                           placeholder="Search categories..."
+                           class="form-control search-input">
+                    <small class="hint">Filter categories by name</small>
+                </div>
+
+                <div class="category-tree-section">
+                    <!-- Loading State -->
+                    <div x-show="categoryTreeLoading" style="text-align: center; padding: 40px;">
+                        <span class="icon" style="font-size: 32px;">⏳</span>
+                        <p>Loading category tree...</p>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div x-show="!categoryTreeLoading && categoryTree.length === 0" style="text-align: center; padding: 40px;">
+                        <span class="icon" style="font-size: 32px;">📁</span>
+                        <p>No categories found.</p>
+                    </div>
+
+                    <!-- Tree Header and Content -->
+                    <div x-show="!categoryTreeLoading && categoryTree.length > 0">
+                        <div class="tree-header">
+                            <strong>Category Tree</strong>
+                            <button type="button" @click="expandAllCategories()" class="btn-link">Expand All</button>
+                            <button type="button" @click="collapseAllCategories()" class="btn-link">Collapse All</button>
+                        </div>
+                        <div class="category-tree-modal">
+                        <!-- Dynamic Category Tree (supports up to 5 levels) -->
+                        <template x-for="cat1 in categoryTree" :key="cat1.id">
+                            <div x-show="categorySearchTerm, categoryOrChildrenMatch(cat1)" class="tree-item">
+                                <!-- Level 1 -->
+                                <div class="tree-node" :class="{'selected': isCategorySelected(cat1.id)}">
+                                    <span x-show="cat1.children && cat1.children.length > 0"
+                                          @click="toggleCategoryExpand(cat1.id)"
+                                          class="tree-toggle"
+                                          x-text="categoryExpanded[cat1.id] ? '▼' : '▶'">
+                                    </span>
+                                    <span x-show="!cat1.children || cat1.children.length === 0" class="tree-spacer"></span>
+
+                                    <label class="tree-label" @click.stop>
+                                        <input type="checkbox"
+                                               @change="toggleCategorySelection(cat1.id, cat1.name, getCategoryPath(cat1, categoryTree))"
+                                               :checked="isCategorySelected(cat1.id)"
+                                               style="cursor: pointer;">
+                                        <span class="tree-icon">📁</span>
+                                        <span x-text="cat1.name"></span>
+                                    </label>
+                                </div>
+
+                                <!-- Level 2 Children -->
+                                <template x-if="cat1.children && cat1.children.length > 0">
+                                    <div x-show="categoryExpanded[cat1.id]" class="tree-children">
+                                        <template x-for="cat2 in cat1.children" :key="cat2.id">
+                                            <div x-show="categorySearchTerm, categoryOrChildrenMatch(cat2)" class="tree-item">
+                                                <div class="tree-node" style="padding-left: 20px;" :class="{'selected': isCategorySelected(cat2.id)}">
+                                                    <span x-show="cat2.children && cat2.children.length > 0"
+                                                          @click="toggleCategoryExpand(cat2.id)"
+                                                          class="tree-toggle"
+                                                          x-text="categoryExpanded[cat2.id] ? '▼' : '▶'">
+                                                    </span>
+                                                    <span x-show="!cat2.children || cat2.children.length === 0" class="tree-spacer"></span>
+
+                                                    <label class="tree-label" @click.stop>
+                                                        <input type="checkbox"
+                                                               @change="toggleCategorySelection(cat2.id, cat2.name, getCategoryPath(cat2, categoryTree))"
+                                                               :checked="isCategorySelected(cat2.id)"
+                                                               style="cursor: pointer;">
+                                                        <span class="tree-icon">📂</span>
+                                                        <span x-text="cat2.name"></span>
+                                                    </label>
+                                                </div>
+
+                                                <!-- Level 3 Children -->
+                                                <template x-if="cat2.children && cat2.children.length > 0">
+                                                    <div x-show="categoryExpanded[cat2.id]" class="tree-children">
+                                                        <template x-for="cat3 in cat2.children" :key="cat3.id">
+                                                            <div x-show="categorySearchTerm, categoryOrChildrenMatch(cat3)" class="tree-item">
+                                                                <div class="tree-node" style="padding-left: 40px;" :class="{'selected': isCategorySelected(cat3.id)}">
+                                                                    <span x-show="cat3.children && cat3.children.length > 0"
+                                                                          @click="toggleCategoryExpand(cat3.id)"
+                                                                          class="tree-toggle"
+                                                                          x-text="categoryExpanded[cat3.id] ? '▼' : '▶'">
+                                                                    </span>
+                                                                    <span x-show="!cat3.children || cat3.children.length === 0" class="tree-spacer"></span>
+
+                                                                    <label class="tree-label" @click.stop>
+                                                                        <input type="checkbox"
+                                                                               @change="toggleCategorySelection(cat3.id, cat3.name, getCategoryPath(cat3, categoryTree))"
+                                                                               :checked="isCategorySelected(cat3.id)"
+                                                                               style="cursor: pointer;">
+                                                                        <span class="tree-icon">📂</span>
+                                                                        <span x-text="cat3.name"></span>
+                                                                    </label>
+                                                                </div>
+
+                                                                <!-- Level 4 Children -->
+                                                                <template x-if="cat3.children && cat3.children.length > 0">
+                                                                    <div x-show="categoryExpanded[cat3.id]" class="tree-children">
+                                                                        <template x-for="cat4 in cat3.children" :key="cat4.id">
+                                                                            <div x-show="categorySearchTerm, categoryOrChildrenMatch(cat4)" class="tree-item">
+                                                                                <div class="tree-node" style="padding-left: 60px;" :class="{'selected': isCategorySelected(cat4.id)}">
+                                                                                    <span x-show="cat4.children && cat4.children.length > 0"
+                                                                                          @click="toggleCategoryExpand(cat4.id)"
+                                                                                          class="tree-toggle"
+                                                                                          x-text="categoryExpanded[cat4.id] ? '▼' : '▶'">
+                                                                                    </span>
+                                                                                    <span x-show="!cat4.children || cat4.children.length === 0" class="tree-spacer"></span>
+
+                                                                                    <label class="tree-label" @click.stop>
+                                                                                        <input type="checkbox"
+                                                                                               @change="toggleCategorySelection(cat4.id, cat4.name, getCategoryPath(cat4, categoryTree))"
+                                                                                               :checked="isCategorySelected(cat4.id)"
+                                                                                               style="cursor: pointer;">
+                                                                                        <span class="tree-icon">📂</span>
+                                                                                        <span x-text="cat4.name"></span>
+                                                                                    </label>
+                                                                                </div>
+
+                                                                                <!-- Level 5 Children -->
+                                                                                <template x-if="cat4.children && cat4.children.length > 0">
+                                                                                    <div x-show="categoryExpanded[cat4.id]" class="tree-children">
+                                                                                        <template x-for="cat5 in cat4.children" :key="cat5.id">
+                                                                                            <div x-show="categorySearchTerm, categoryOrChildrenMatch(cat5)" class="tree-item">
+                                                                                                <div class="tree-node" style="padding-left: 80px;" :class="{'selected': isCategorySelected(cat5.id)}">
+                                                                                                    <span class="tree-spacer"></span>
+
+                                                                                                    <label class="tree-label" @click.stop>
+                                                                                                        <input type="checkbox"
+                                                                                                               @change="toggleCategorySelection(cat5.id, cat5.name, getCategoryPath(cat5, categoryTree))"
+                                                                                                               :checked="isCategorySelected(cat5.id)"
+                                                                                                               style="cursor: pointer;">
+                                                                                                        <span class="tree-icon">📂</span>
+                                                                                                        <span x-text="cat5.name"></span>
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                    </div>
+                                                                                </template>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                    </div>
+                    <!-- End of tree wrapper -->
+                </div>
+
+                <div class="selected-summary" x-show="tempSelectedCategories.length > 0">
+                    <strong>Selected: <span x-text="tempSelectedCategories.length"></span> category(ies)</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @click="closeCategoryChooser()" class="btn-secondary">
+                    Cancel
+                </button>
+                <button type="button" @click="confirmCategories()" class="btn-primary">
+                    <span class="icon">✓</span> Done (<span x-text="tempSelectedCategories.length"></span>)
+                </button>
+            </div>
+        </div>
+    </div>
+    </template>
+
+    </div>

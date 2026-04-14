@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <smart_badge>
+            <general>
+                <enabled>1</enabled>
+                <show_multiple>1</show_multiple>
+                <max_badges>3</max_badges>
+            </general>
+            <auto_badges>
+                <new_enabled>1</new_enabled>
+                <new_days>30</new_days>
+                <sale_enabled>1</sale_enabled>
+                <low_stock_enabled>1</low_stock_enabled>
+                <low_stock_threshold>5</low_stock_threshold>
+                <bestseller_enabled>1</bestseller_enabled>
+                <hot_enabled>1</hot_enabled>
+            </auto_badges>
+        </smart_badge>
+    </default>
+</config>

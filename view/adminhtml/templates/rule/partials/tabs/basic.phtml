@@ -1,0 +1,117 @@
+                <div x-show="activeTab === 'basic'" class="tab-pane">
+                    <fieldset class="admin__fieldset">
+                        <div class="admin__field _required">
+                            <label class="admin__field-label" for="rule-name"><span>Rule Name</span></label>
+                            <div class="admin__field-control">
+                                <input type="text" id="rule-name" x-model="rule.name" placeholder="e.g., Summer Sale Badge" class="admin__control-text">
+                            </div>
+                        </div>
+
+                        <div class="admin__field">
+                            <label class="admin__field-label" for="rule-status"><span>Status</span></label>
+                            <div class="admin__field-control">
+                                <select id="rule-status" x-model="rule.is_active" class="admin__control-select">
+                                    <option :value="true">Enabled</option>
+                                    <option :value="false">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="admin__field">
+                            <label class="admin__field-label"><span>Priority</span></label>
+                            <div class="admin__field-control">
+                                <input type="number" x-model="rule.priority" min="0" max="100" class="admin__control-text" style="width:80px; display:inline-block;">
+                                <span class="admin__field-note" style="display:inline-block; margin-left:8px;">Higher values appear first (0-100)</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="admin__fieldset">
+                        <legend class="admin__legend"><span>Badge Design</span></legend>
+                        <br/>
+                        <div class="admin__field">
+                            <label class="admin__field-label"><span>Badge Type</span></label>
+                            <div class="admin__field-control">
+                                <div class="badge-type-grid">
+                                    <?php foreach ($badgeTypes as $type): ?>
+                                    <div class="badge-type-card"
+                                         @click="selectBadgeType('<?= $escaper->escapeHtmlAttr($type['value']) ?>', '<?= $escaper->escapeHtmlAttr($type['label']) ?>', '<?= $escaper->escapeHtmlAttr($type['color']) ?>', '<?= $escaper->escapeHtmlAttr($type['icon']) ?>')"
+                                         :class="{'selected': rule.badge_type === '<?= $escaper->escapeHtmlAttr($type['value']) ?>'}">
+                                        <?php // phpcs:ignore Magento2.Security.XssTemplate.FoundUnescaped -- emoji/icon display ?>
+                                        <span class="card-icon"><?= $type['icon'] ?></span>
+                                        <span class="card-label"><?= $escaper->escapeHtml($type['label']) ?></span>
+                                        <div class="card-color" style="background: <?= $escaper->escapeHtmlAttr($type['color']) ?>"></div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin__field">
+                            <label class="admin__field-label" for="badge-text"><span>Badge Text</span></label>
+                            <div class="admin__field-control">
+                                <input type="text" id="badge-text" x-model="rule.badge_text" placeholder="e.g., 50% OFF" class="admin__control-text">
+                                <div class="admin__field-note">Leave empty to use the default text for the selected badge type.</div>
+                            </div>
+                        </div>
+
+                        <div class="admin__field">
+                            <label class="admin__field-label"><span>Badge Color</span></label>
+                            <div class="admin__field-control">
+                                <div class="color-picker-group">
+                                    <input type="color" x-model="rule.badge_color" class="color-input">
+                                    <input type="text" x-model="rule.badge_color" placeholder="#FF0000" class="admin__control-text" style="width:120px; display:inline-block;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin__field">
+                            <label class="admin__field-label"><span>Badge Icon</span></label>
+                            <div class="admin__field-control">
+                                <div class="icon-type-selector" style="margin-bottom:8px;">
+                                    <button type="button" @click="iconType = 'emoji'" :class="{'active': iconType === 'emoji'}" class="icon-type-btn">
+                                        Emoji
+                                    </button>
+                                    <button type="button" @click="iconType = 'fontawesome'; showFontAwesomePicker = true" :class="{'active': iconType === 'fontawesome'}" class="icon-type-btn">
+                                        Icon Library
+                                    </button>
+                                </div>
+
+                                <div x-show="iconType === 'emoji'" class="icon-picker-grid emoji-grid">
+                                    <button type="button" @click="rule.badge_icon = '&#128293;'" class="icon-btn" title="Fire">&#128293;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#9889;'" class="icon-btn" title="Lightning">&#9889;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128165;'" class="icon-btn" title="Boom">&#128165;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#10024;'" class="icon-btn" title="Sparkles">&#10024;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#11088;'" class="icon-btn" title="Star">&#11088;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127775;'" class="icon-btn" title="Glowing Star">&#127775;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128142;'" class="icon-btn" title="Gem">&#128142;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128081;'" class="icon-btn" title="Crown">&#128081;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127942;'" class="icon-btn" title="Trophy">&#127942;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#10084;&#65039;'" class="icon-btn" title="Heart">&#10084;&#65039;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128722;'" class="icon-btn" title="Cart">&#128722;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127991;&#65039;'" class="icon-btn" title="Tag">&#127991;&#65039;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127873;'" class="icon-btn" title="Gift">&#127873;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127881;'" class="icon-btn" title="Party">&#127881;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127919;'" class="icon-btn" title="Target">&#127919;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128640;'" class="icon-btn" title="Rocket">&#128640;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128200;'" class="icon-btn" title="Chart">&#128200;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128175;'" class="icon-btn" title="100">&#128175;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127381;'" class="icon-btn" title="NEW">&#127381;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#127379;'" class="icon-btn" title="FREE">&#127379;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#9200;'" class="icon-btn" title="Clock">&#9200;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#8987;'" class="icon-btn" title="Hourglass">&#8987;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#128276;'" class="icon-btn" title="Bell">&#128276;</button>
+                                    <button type="button" @click="rule.badge_icon = '&#9989;'" class="icon-btn" title="Check">&#9989;</button>
+                                </div>
+
+                                <div x-show="iconType === 'fontawesome' && rule.badge_icon.startsWith('fa-')" class="selected-icon-preview">
+                                    <div class="admin__field-note" style="display:flex; align-items:center; gap:8px;">
+                                        <span>Selected:</span>
+                                        <i :class="rule.badge_icon" style="font-size: 24px;"></i>
+                                        <code x-text="rule.badge_icon" style="font-size:12px; color:#666;"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>

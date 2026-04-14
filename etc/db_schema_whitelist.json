@@ -1,0 +1,64 @@
+{
+    "panth_smart_badge": {
+        "column": {
+            "badge_id": true,
+            "name": true,
+            "type": true,
+            "label_text": true,
+            "background_color": true,
+            "text_color": true,
+            "position": true,
+            "priority": true,
+            "is_active": true,
+            "css_class": true,
+            "animation": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SMART_BADGE_TYPE": true,
+            "PANTH_SMART_BADGE_PRIORITY": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_smart_badge_rule": {
+        "column": {
+            "rule_id": true,
+            "badge_id": true,
+            "rule_type": true,
+            "conditions": true,
+            "product_ids": true,
+            "category_ids": true,
+            "is_active": true,
+            "priority": true,
+            "badge_image": true,
+            "smart_conditions": true,
+            "schedule_from": true,
+            "schedule_to": true,
+            "name": true,
+            "badge_type": true,
+            "badge_text": true,
+            "badge_color": true,
+            "badge_icon": true,
+            "animation": true,
+            "created_at": true,
+            "updated_at": true,
+            "badge_style": true,
+            "image_settings": true,
+            "display_on": true,
+            "position_category": true,
+            "position_product": true,
+            "position_slider": true,
+            "position_all": true,
+            "use_same_position": true
+        },
+        "index": {
+            "PANTH_SMART_BADGE_RULE_RULE_TYPE": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

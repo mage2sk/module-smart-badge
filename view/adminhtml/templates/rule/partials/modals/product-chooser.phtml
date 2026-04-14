@@ -1,0 +1,90 @@
+    <!-- Product Chooser Modal -->
+    <template x-if="showProductChooser">
+    <div class="modal-overlay"
+         @click.self="showProductChooser = false">
+        <div class="modal-content chooser-modal">
+            <div class="modal-header">
+                <h3>🔍 Choose Products</h3>
+                <button type="button" @click="closeProductChooser()" class="modal-close" aria-label="Close">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="search-section">
+                    <input type="text"
+                           x-model="productSearchTerm"
+                           @input="searchProducts()"
+                           placeholder="Search by Product Name, SKU, or ID..."
+                           class="form-control search-input"
+                           autofocus>
+                    <small class="hint">Type at least 2 characters to search</small>
+                </div>
+
+                <div class="search-results" x-show="searchedProducts.length > 0">
+                    <div class="results-header">
+                        <strong>
+                            Found <span x-text="productSearchTotal.toLocaleString()"></span> products -
+                            Showing <span x-text="searchedProducts.length"></span>
+                        </strong>
+                    </div>
+                    <div class="results-list">
+                        <template x-for="product in searchedProducts" :key="product.id">
+                            <div class="result-item"
+                                 @click="toggleProduct(product)"
+                                 :class="{'selected': isProductSelected(product.id)}">
+                                <div class="result-checkbox">
+                                    <input type="checkbox"
+                                           :checked="isProductSelected(product.id)"
+                                           @click.stop="toggleProduct(product)"
+                                           style="cursor: pointer;">
+                                </div>
+                                <div class="result-info">
+                                    <div class="result-name" x-text="product.name"></div>
+                                    <div class="result-meta">
+                                        <span>ID: <strong x-text="product.id"></strong></span>
+                                        <span>SKU: <strong x-text="product.sku"></strong></span>
+                                        <span class="result-price" x-text="'$' + product.price"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div class="load-more-section" x-show="productSearchHasMore">
+                        <button type="button"
+                                @click="loadMoreProducts()"
+                                class="btn-secondary load-more-btn"
+                                :disabled="productSearchLoading"
+                                style="margin: 15px auto; display: block; padding: 10px 24px;">
+                            <span x-show="!productSearchLoading">Load More</span>
+                            <span x-show="productSearchLoading">Loading...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-loading" x-show="productSearchLoading && searchedProducts.length === 0" style="text-align: center; padding: 40px;">
+                    <span class="icon" style="font-size: 32px;">⏳</span>
+                    <p>Searching products...</p>
+                </div>
+
+                <div class="empty-search" x-show="productSearchTerm.length >= 2 && searchedProducts.length === 0 && !productSearchLoading">
+                    <span class="icon">🔍</span>
+                    <p>No products found matching your search.</p>
+                </div>
+
+                <div class="selected-summary" x-show="tempSelectedProducts.length > 0">
+                    <strong>Selected: <span x-text="tempSelectedProducts.length"></span> product(s)</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @click="closeProductChooser()" class="btn-secondary">
+                    Cancel
+                </button>
+                <button type="button" @click="confirmProducts()" class="btn-primary">
+                    <span class="icon">✓</span> Done (<span x-text="tempSelectedProducts.length"></span>)
+                </button>
+            </div>
+        </div>
+    </div>
+    </template>

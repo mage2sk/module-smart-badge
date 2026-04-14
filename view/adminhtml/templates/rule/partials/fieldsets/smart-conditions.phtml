@@ -1,0 +1,288 @@
+<fieldset class="admin__fieldset fieldset-smart-conditions" data-fieldset="smart-conditions">
+    <legend class="admin__legend legend">
+        <span><?= $escaper->escapeHtml(__('Smart Conditions')) ?></span>
+    </legend>
+    <br>
+
+    <p class="note"><?= $escaper->escapeHtml(__('Automatically apply badges based on product attributes')) ?></p>
+
+    <!-- Hidden field for JSON data -->
+    <input type="hidden" name="smart_conditions" :value="JSON.stringify(smartConditions)" />
+
+    <div class="smart-conditions-wrapper">
+
+        <!-- Price Range Condition -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_price"
+                       x-model="smartConditions.price.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_price">
+                    <span><?= $escaper->escapeHtml(__('Price Range')) ?></span>
+                </label>
+                <div x-show="smartConditions.price.enabled" class="condition-fields">
+                    <input type="number"
+                           x-model="smartConditions.price.min"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Min Price')) ?>"
+                           step="0.01"
+                           class="admin__control-text" />
+                    <span><?= $escaper->escapeHtml(__('to')) ?></span>
+                    <input type="number"
+                           x-model="smartConditions.price.max"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Max Price')) ?>"
+                           step="0.01"
+                           class="admin__control-text" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Level Condition -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_stock"
+                       x-model="smartConditions.stock.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_stock">
+                    <span><?= $escaper->escapeHtml(__('Stock Level')) ?></span>
+                </label>
+                <div x-show="smartConditions.stock.enabled" class="condition-fields">
+                    <select x-model="smartConditions.stock.operator" class="admin__control-select">
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                        <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.stock.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Quantity')) ?>"
+                           class="admin__control-text" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Discount Percentage -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_discount"
+                       x-model="smartConditions.discount.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_discount">
+                    <span><?= $escaper->escapeHtml(__('Discount Percentage')) ?></span>
+                </label>
+                <div x-show="smartConditions.discount.enabled" class="condition-fields">
+                    <select x-model="smartConditions.discount.operator" class="admin__control-select">
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                        <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.discount.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Percentage')) ?>"
+                           max="100"
+                           class="admin__control-text" />
+                    <span>%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Age -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_age"
+                       x-model="smartConditions.age.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_age">
+                    <span><?= $escaper->escapeHtml(__('Product Age (Days)')) ?></span>
+                </label>
+                <div x-show="smartConditions.age.enabled" class="condition-fields">
+                    <select x-model="smartConditions.age.operator" class="admin__control-select">
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Newer than')) ?></option>
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Older than')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.age.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Days')) ?>"
+                           class="admin__control-text" />
+                    <span><?= $escaper->escapeHtml(__('days')) ?></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Status -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_stock_status"
+                       x-model="smartConditions.stockStatus.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_stock_status">
+                    <span><?= $escaper->escapeHtml(__('Stock Status')) ?></span>
+                </label>
+                <div x-show="smartConditions.stockStatus.enabled" class="condition-fields">
+                    <select x-model="smartConditions.stockStatus.value" class="admin__control-select">
+                        <option value="in_stock"><?= $escaper->escapeHtml(__('In Stock')) ?></option>
+                        <option value="out_of_stock"><?= $escaper->escapeHtml(__('Out of Stock')) ?></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Reviews -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_rating"
+                       x-model="smartConditions.rating.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_rating">
+                    <span><?= $escaper->escapeHtml(__('Customer Reviews')) ?></span>
+                </label>
+                <div x-show="smartConditions.rating.enabled" class="condition-fields">
+                    <select x-model="smartConditions.rating.operator" class="admin__control-select">
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                        <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.rating.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Rating (1-5)')) ?>"
+                           min="1"
+                           max="5"
+                           step="0.1"
+                           class="admin__control-text" />
+                    <span><?= $escaper->escapeHtml(__('stars')) ?></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Count -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_sales"
+                       x-model="smartConditions.salesCount.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_sales">
+                    <span><?= $escaper->escapeHtml(__('Sales Count')) ?></span>
+                </label>
+                <div x-show="smartConditions.salesCount.enabled" class="condition-fields">
+                    <select x-model="smartConditions.salesCount.operator" class="admin__control-select">
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                        <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.salesCount.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Number of sales')) ?>"
+                           min="0"
+                           class="admin__control-text" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Wishlist Count -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_wishlist"
+                       x-model="smartConditions.wishlistCount.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_wishlist">
+                    <span><?= $escaper->escapeHtml(__('Wishlist Count')) ?></span>
+                </label>
+                <div x-show="smartConditions.wishlistCount.enabled" class="condition-fields">
+                    <select x-model="smartConditions.wishlistCount.operator" class="admin__control-select">
+                        <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                        <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                        <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                    </select>
+                    <input type="number"
+                           x-model="smartConditions.wishlistCount.value"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('Number in wishlists')) ?>"
+                           min="0"
+                           class="admin__control-text" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Attribute -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_attribute"
+                       x-model="smartConditions.attribute.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_attribute">
+                    <span><?= $escaper->escapeHtml(__('Product Attribute')) ?></span>
+                </label>
+                <div x-show="smartConditions.attribute.enabled" class="condition-fields attribute-fields">
+                    <div class="admin__field">
+                        <label><?= $escaper->escapeHtml(__('Attribute Code')) ?></label>
+                        <select x-model="smartConditions.attribute.code" class="admin__control-select">
+                            <option value=""><?= $escaper->escapeHtml(__('-- Select Attribute --')) ?></option>
+                            <?php foreach ($block->getProductAttributes() as $attribute): ?>
+                                <option value="<?= $block->escapeHtmlAttr($attribute['code']) ?>">
+                                    <?= $block->escapeHtml($attribute['label']) ?> (<?= $block->escapeHtml($attribute['code']) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="admin__field">
+                        <label><?= $escaper->escapeHtml(__('Condition')) ?></label>
+                        <select x-model="smartConditions.attribute.operator" class="admin__control-select">
+                            <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                            <option value="not_equals"><?= $escaper->escapeHtml(__('Not Equals')) ?></option>
+                            <option value="contains"><?= $escaper->escapeHtml(__('Contains')) ?></option>
+                        </select>
+                    </div>
+                    <div class="admin__field">
+                        <label><?= $escaper->escapeHtml(__('Value')) ?></label>
+                        <input type="text"
+                               x-model="smartConditions.attribute.value"
+                               placeholder="<?= $escaper->escapeHtmlAttr(__('e.g., Nike')) ?>"
+                               class="admin__control-text" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Date Range -->
+        <div class="admin__field field-condition">
+            <div class="admin__field-control">
+                <input type="checkbox"
+                       id="condition_daterange"
+                       x-model="smartConditions.dateRange.enabled"
+                       class="admin__control-checkbox" />
+                <label class="admin__field-label" for="condition_daterange">
+                    <span><?= $escaper->escapeHtml(__('Special Date Range')) ?></span>
+                </label>
+                <div x-show="smartConditions.dateRange.enabled" class="condition-fields date-range-fields">
+                    <div class="admin__field">
+                        <label><?= $escaper->escapeHtml(__('From Date')) ?></label>
+                        <div class="admin__field-control">
+                            <input type="text"
+                                   id="smart_condition_date_from"
+                                   x-model="smartConditions.dateRange.from"
+                                   class="admin__control-text"
+                                   placeholder="<?= $escaper->escapeHtmlAttr(__('Select date')) ?>" />
+                        </div>
+                    </div>
+                    <div class="admin__field">
+                        <label><?= $escaper->escapeHtml(__('To Date')) ?></label>
+                        <div class="admin__field-control">
+                            <input type="text"
+                                   id="smart_condition_date_to"
+                                   x-model="smartConditions.dateRange.to"
+                                   class="admin__control-text"
+                                   placeholder="<?= $escaper->escapeHtmlAttr(__('Select date')) ?>" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</fieldset>

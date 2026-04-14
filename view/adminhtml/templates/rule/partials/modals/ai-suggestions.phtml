@@ -1,0 +1,75 @@
+    <!-- AI Suggestions Modal -->
+    <template x-if="showAiSuggestions">
+    <div class="modal-overlay"
+         @click.self="showAiSuggestions = false">
+        <div class="modal-content ai-suggestions-modal">
+            <div class="modal-header">
+                <h3>🤖 AI Badge Suggestions</h3>
+                <button type="button" @click="showAiSuggestions = false" class="modal-close" aria-label="Close">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Choose a pre-optimized badge template based on industry best practices:</p>
+                <div class="suggestions-list">
+                    <div class="suggestion-card" @click="applySuggestion('urgent')">
+                        <div class="suggestion-badge" style="background: linear-gradient(135deg, #6366f1, #4f46e5)">
+                            ⚡ URGENT
+                        </div>
+                        <div class="suggestion-info">
+                            <h5>High Urgency Badge</h5>
+                            <p>+25% conversion rate for limited-time offers</p>
+                        </div>
+                        <div class="suggestion-action">
+                            <span class="arrow">→</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-card" @click="applySuggestion('exclusive')">
+                        <div class="suggestion-badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)">
+                            💎 EXCLUSIVE
+                        </div>
+                        <div class="suggestion-info">
+                            <h5>Exclusivity Badge</h5>
+                            <p>+18% click-through for premium products</p>
+                        </div>
+                        <div class="suggestion-action">
+                            <span class="arrow">→</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-card" @click="applySuggestion('bestseller')">
+                        <div class="suggestion-badge" style="background: linear-gradient(135deg, #10b981, #059669)">
+                            ⭐ BESTSELLER
+                        </div>
+                        <div class="suggestion-info">
+                            <h5>Social Proof Badge</h5>
+                            <p>+30% trust factor for popular items</p>
+                        </div>
+                        <div class="suggestion-action">
+                            <span class="arrow">→</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-card" @click="applySuggestion('flash')">
+                        <div class="suggestion-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706)">
+                            🔥 FLASH SALE
+                        </div>
+                        <div class="suggestion-info">
+                            <h5>Flash Sale Badge</h5>
+                            <p>+35% urgency for time-sensitive deals</p>
+                        </div>
+                        <div class="suggestion-action">
+                            <span class="arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @click="showAiSuggestions = false" class="btn-secondary">
+                    Cancel
+                </button>
+                <button type="button" @click="showAiSuggestions = false" class="btn-primary">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+    </template>

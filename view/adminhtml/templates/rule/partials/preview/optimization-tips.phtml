@@ -1,0 +1,18 @@
+<!-- Tips & Best Practices -->
+<div class="tips-panel">
+    <h4>💡 Optimization Tips</h4>
+    <ul class="tips-list">
+        <li :class="{'complete': rule.badge_text && rule.badge_text.length < 15}">
+            Keep text short (under 15 characters)
+        </li>
+        <li :class="{'complete': rule.animation}">
+            Add subtle animation for attention
+        </li>
+        <li :class="{'complete': rule.badge_color}">
+            Use contrasting colors
+        </li>
+        <li :class="{'complete': rule.priority > 50}">
+            Set appropriate priority
+        </li>
+    </ul>
+</div>

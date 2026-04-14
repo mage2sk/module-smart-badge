@@ -1,0 +1,234 @@
+                <div x-show="activeTab === 'style'" class="tab-pane">
+                    <div class="style-customization" @input="styleVersion++">
+                        <h4>🎨 Advanced CSS Customization</h4>
+                        <p class="tab-description">Fine-tune every visual aspect of your badge</p>
+
+                        <!-- Dimensions Section -->
+                        <div class="style-section">
+                            <h5>📏 Dimensions</h5>
+
+                            <div class="form-group">
+                                <label>Badge Width</label>
+                                <div class="input-with-unit">
+                                    <input type="number" x-model="badgeStyle.width.value" placeholder="Auto" class="form-control" min="0">
+                                    <select x-model="badgeStyle.width.unit" class="unit-selector">
+                                        <option value="px">px</option>
+                                        <option value="%">%</option>
+                                        <option value="em">em</option>
+                                        <option value="auto">auto</option>
+                                    </select>
+                                </div>
+                                <small class="hint">Leave empty for automatic width</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Badge Height</label>
+                                <div class="input-with-unit">
+                                    <input type="number" x-model="badgeStyle.height.value" placeholder="Auto" class="form-control" min="0">
+                                    <select x-model="badgeStyle.height.unit" class="unit-selector">
+                                        <option value="px">px</option>
+                                        <option value="%">%</option>
+                                        <option value="em">em</option>
+                                        <option value="auto">auto</option>
+                                    </select>
+                                </div>
+                                <small class="hint">Leave empty for automatic height</small>
+                            </div>
+                        </div>
+
+                        <!-- Border & Shape Section -->
+                        <div class="style-section">
+                            <h5>⬜ Border & Shape</h5>
+
+                            <div class="form-group">
+                                <label>Border Radius: <span x-text="badgeStyle.borderRadius"></span>px</label>
+                                <div class="slider-container">
+                                    <input type="range" x-model="badgeStyle.borderRadius" min="0" max="50" class="slider style-slider">
+                                    <div class="slider-labels">
+                                        <span>0</span>
+                                        <span>25</span>
+                                        <span>50</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Border Width</label>
+                                <div class="input-with-unit">
+                                    <input type="number" x-model="badgeStyle.borderWidth" placeholder="0" class="form-control" min="0" max="20">
+                                    <span class="unit-label">px</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Border Style</label>
+                                <select x-model="badgeStyle.borderStyle" class="form-control">
+                                    <option value="none">None</option>
+                                    <option value="solid">Solid</option>
+                                    <option value="dashed">Dashed</option>
+                                    <option value="dotted">Dotted</option>
+                                    <option value="double">Double</option>
+                                    <option value="groove">Groove</option>
+                                    <option value="ridge">Ridge</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" x-show="badgeStyle.borderStyle !== 'none'">
+                                <label>Border Color</label>
+                                <div class="color-picker-group">
+                                    <input type="color" x-model="badgeStyle.borderColor" class="color-input">
+                                    <input type="text" x-model="badgeStyle.borderColor" placeholder="#000000" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Typography Section -->
+                        <div class="style-section">
+                            <h5>📝 Typography</h5>
+
+                            <div class="form-group">
+                                <label>Font Size</label>
+                                <div class="input-with-unit">
+                                    <input type="number" x-model="badgeStyle.fontSize.value" placeholder="14" class="form-control" min="8" max="72">
+                                    <select x-model="badgeStyle.fontSize.unit" class="unit-selector">
+                                        <option value="px">px</option>
+                                        <option value="em">em</option>
+                                        <option value="rem">rem</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Font Weight</label>
+                                <select x-model="badgeStyle.fontWeight" class="form-control">
+                                    <option value="100">100 - Thin</option>
+                                    <option value="200">200 - Extra Light</option>
+                                    <option value="300">300 - Light</option>
+                                    <option value="400">400 - Normal</option>
+                                    <option value="500">500 - Medium</option>
+                                    <option value="600">600 - Semi Bold</option>
+                                    <option value="700">700 - Bold</option>
+                                    <option value="800">800 - Extra Bold</option>
+                                    <option value="900">900 - Black</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Spacing Section -->
+                        <div class="style-section">
+                            <h5>📐 Padding</h5>
+
+                            <div class="padding-grid">
+                                <div class="padding-visual">
+                                    <div class="padding-box">
+                                        <input type="number" x-model="badgeStyle.padding.top" placeholder="6" min="0" max="100" class="padding-input padding-top" title="Top">
+                                        <input type="number" x-model="badgeStyle.padding.right" placeholder="12" min="0" max="100" class="padding-input padding-right" title="Right">
+                                        <input type="number" x-model="badgeStyle.padding.bottom" placeholder="6" min="0" max="100" class="padding-input padding-bottom" title="Bottom">
+                                        <input type="number" x-model="badgeStyle.padding.left" placeholder="12" min="0" max="100" class="padding-input padding-left" title="Left">
+                                        <div class="padding-center">BADGE</div>
+                                    </div>
+                                </div>
+                                <div class="padding-controls">
+                                    <div class="form-group">
+                                        <label>Top (px)</label>
+                                        <input type="number" x-model="badgeStyle.padding.top" placeholder="6" class="form-control" min="0" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Right (px)</label>
+                                        <input type="number" x-model="badgeStyle.padding.right" placeholder="12" class="form-control" min="0" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bottom (px)</label>
+                                        <input type="number" x-model="badgeStyle.padding.bottom" placeholder="6" class="form-control" min="0" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Left (px)</label>
+                                        <input type="number" x-model="badgeStyle.padding.left" placeholder="12" class="form-control" min="0" max="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Effects Section -->
+                        <div class="style-section">
+                            <h5>✨ Effects</h5>
+
+                            <div class="form-group">
+                                <label>Opacity: <span x-text="badgeStyle.opacity"></span>%</label>
+                                <div class="slider-container">
+                                    <input type="range" x-model="badgeStyle.opacity" min="0" max="100" class="slider style-slider">
+                                    <div class="slider-labels">
+                                        <span>0%</span>
+                                        <span>50%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Box Shadow</label>
+                                <select x-model="badgeStyle.boxShadow" class="form-control">
+                                    <option value="none">None</option>
+                                    <option value="default">Default (0 2px 4px rgba(0,0,0,0.1))</option>
+                                    <option value="sm">Small (0 1px 2px rgba(0,0,0,0.05))</option>
+                                    <option value="md">Medium (0 4px 6px rgba(0,0,0,0.1))</option>
+                                    <option value="lg">Large (0 10px 15px rgba(0,0,0,0.1))</option>
+                                    <option value="xl">Extra Large (0 20px 25px rgba(0,0,0,0.1))</option>
+                                    <option value="inner">Inner (inset 0 2px 4px rgba(0,0,0,0.06))</option>
+                                    <option value="glow">Glow (0 0 20px rgba(255,255,255,0.5))</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" x-show="badgeStyle.boxShadow === 'custom'">
+                                <label>Custom Box Shadow</label>
+                                <input type="text" x-model="badgeStyle.customBoxShadow" placeholder="e.g., 0 4px 6px rgba(0,0,0,0.1)" class="form-control">
+                                <small class="hint">CSS box-shadow syntax</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Z-Index (Layer Order)</label>
+                                <input type="number" x-model="badgeStyle.zIndex" placeholder="10" class="form-control" min="0" max="9999">
+                                <small class="hint">Higher values appear on top</small>
+                            </div>
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <div class="style-section">
+                            <h5>⚡ Quick Style Presets</h5>
+                            <div class="style-presets-grid">
+                                <button type="button" @click="applyStylePreset('minimal')" class="style-preset-btn">
+                                    <span class="preset-preview minimal-preview">SALE</span>
+                                    <span>Minimal</span>
+                                </button>
+                                <button type="button" @click="applyStylePreset('bold')" class="style-preset-btn">
+                                    <span class="preset-preview bold-preview">SALE</span>
+                                    <span>Bold</span>
+                                </button>
+                                <button type="button" @click="applyStylePreset('rounded')" class="style-preset-btn">
+                                    <span class="preset-preview rounded-preview">SALE</span>
+                                    <span>Rounded</span>
+                                </button>
+                                <button type="button" @click="applyStylePreset('pill')" class="style-preset-btn">
+                                    <span class="preset-preview pill-preview">SALE</span>
+                                    <span>Pill</span>
+                                </button>
+                                <button type="button" @click="applyStylePreset('outlined')" class="style-preset-btn">
+                                    <span class="preset-preview outlined-preview">SALE</span>
+                                    <span>Outlined</span>
+                                </button>
+                                <button type="button" @click="applyStylePreset('shadow')" class="style-preset-btn">
+                                    <span class="preset-preview shadow-preview">SALE</span>
+                                    <span>Shadow</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reset Button -->
+                        <div class="style-section">
+                            <button type="button" @click="resetStyles()" class="btn-reset-styles">
+                                <span class="icon">🔄</span> Reset to Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>

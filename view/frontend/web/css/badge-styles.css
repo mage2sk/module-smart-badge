@@ -1,0 +1,51 @@
+/**
+ * Smart Badge Styles
+ *
+ * Colors are driven by CSS variables from theme-config.json via generate-theme-css.js.
+ * The :root block below provides fallbacks so these work even when Tailwind v4
+ * tree-shakes @theme vars that aren't referenced by utility classes.
+ */
+
+:root {
+    /* Badge type colors - reference @theme vars with hardcoded fallbacks */
+    --badge-sale: var(--badge-sale, #DC2626);
+    --badge-new: var(--badge-new, #16A34A);
+    --badge-hot: var(--badge-hot, #F97316);
+    --badge-limited: var(--badge-limited, #7C3AED);
+    --badge-exclusive: var(--badge-exclusive, #6D28D9);
+    --badge-bestseller: var(--badge-bestseller, #7C3AED);
+    --badge-trending: var(--badge-trending, #0891B2);
+    --badge-featured: var(--badge-featured, #0D9488);
+}
+
+.smart-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+}
+
+.smart-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: var(--badge-color, var(--color-primary, #0D9488));
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    width: fit-content;
+    animation: badgeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-delay: calc(var(--i, 0) * 0.1s);
+    animation-fill-mode: both;
+}

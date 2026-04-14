@@ -1,0 +1,554 @@
+<?php
+/**
+ * SmartBadge Rule Builder - Magento Admin Edit Page
+ * Proper Magento structure with Alpine.js enhancements
+ */
+$badgeTypes = $block->getBadgeTypes();
+$animations = $block->getAnimations();
+$existingRuleJson = $block->getRuleDataJson();
+$ruleId = $block->getRuleId();
+?>
+
+<?php include __DIR__ . '/partials/javascript/badge-builder-component.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+<!-- Magento Button Bar -->
+<div class="page-main-actions">
+    <div class="page-actions">
+        <button class="action-back" type="button" onclick="window.location.href='<?= $escaper->escapeUrl($block->getBackUrl()) ?>'">
+            <span><?= $escaper->escapeHtml(__('Back')) ?></span>
+        </button>
+        <?php if ($ruleId): ?>
+        <button class="action-delete" type="button"
+                onclick="deleteConfirm('<?= $escaper->escapeHtml(__('Are you sure you want to delete this badge rule?')) ?>', '<?= $escaper->escapeUrl($block->getDeleteUrl()) ?>')">
+            <span><?= $escaper->escapeHtml(__('Delete')) ?></span>
+        </button>
+        <?php endif; ?>
+        <button class="action-save primary" type="button" onclick="document.getElementById('badge-rule-form').submit()">
+            <span><?= $escaper->escapeHtml(__('Save')) ?></span>
+        </button>
+        <button class="action-save" type="button" onclick="saveContinue()">
+            <span><?= $escaper->escapeHtml(__('Save and Continue Edit')) ?></span>
+        </button>
+    </div>
+</div>
+
+<!-- Magento Form Container with Alpine.js -->
+<div class="content" id="badge-builder-content">
+    <div class="admin__scope-old"
+         x-data="badgeBuilder(existingRuleData)"
+         x-cloak
+         x-effect="document.body.classList.toggle('preview-open', showPreview)">
+
+        <!-- Preview Overlay (blocks interaction with page behind) -->
+        <div class="preview-overlay"
+             x-show="showPreview"
+             x-transition
+             @click="showPreview = false"></div>
+
+        <!-- Preview Toggle Button (Sticky Right Center) -->
+        <button type="button"
+                class="preview-toggle-btn"
+                @click="showPreview = !showPreview"
+                style="position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 1000; padding: 15px 10px; background: #1979c3; color: white; border: none; border-radius: 8px 0 0 8px; cursor: pointer; box-shadow: -2px 0 12px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; writing-mode: vertical-rl; text-orientation: mixed; min-height: 150px; display: flex; align-items: center; justify-content: center;">
+            <template x-if="!showPreview">
+                <span>Show Preview</span>
+            </template>
+            <template x-if="showPreview">
+                <span>Close</span>
+            </template>
+        </button>
+
+        <!-- Magento Form -->
+        <form id="badge-rule-form"
+              method="post"
+              action="<?= $escaper->escapeUrl($block->getSaveUrl()) ?>"
+              enctype="multipart/form-data"
+              class="form form-edit-smartbadge"
+              x-init="
+                  if (_pendingProductIds) {
+                      loadExistingProducts(_pendingProductIds);
+                      delete _pendingProductIds;
+                  }
+                  if (_pendingCategoryIds) {
+                      loadExistingCategories(_pendingCategoryIds);
+                      delete _pendingCategoryIds;
+                  }
+              ">
+
+            <!-- CSRF Protection -->
+            <input type="hidden" name="form_key" value="<?= $escaper->escapeHtml($block->getFormKey()) ?>" />
+            <input type="hidden" name="rule_id" x-model="rule.rule_id" />
+
+            <!-- Main Layout: Full width fieldsets, preview as modal -->
+            <div class="badge-builder-layout" :class="{'preview-hidden': !showPreview}">
+
+                <!-- Fieldsets Container (Full Width) -->
+                <div class="fieldsets-container">
+
+                    <!-- Basic Information Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-basic-information" data-fieldset="basic">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Basic Information')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-name required">
+                            <label class="admin__field-label" for="rule_name">
+                                <span><?= $escaper->escapeHtml(__('Rule Name')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="text"
+                                       id="rule_name"
+                                       name="name"
+                                       x-model="rule.name"
+                                       class="admin__control-text required-entry"
+                                       required />
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-is-active">
+                            <label class="admin__field-label" for="is_active">
+                                <span><?= $escaper->escapeHtml(__('Status')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <select id="is_active" name="is_active" x-model="rule.is_active" class="admin__control-select">
+                                    <option value="1"><?= $escaper->escapeHtml(__('Enabled')) ?></option>
+                                    <option value="0"><?= $escaper->escapeHtml(__('Disabled')) ?></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-priority">
+                            <label class="admin__field-label" for="priority">
+                                <span><?= $escaper->escapeHtml(__('Priority')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="number"
+                                       id="priority"
+                                       name="priority"
+                                       x-model="rule.priority"
+                                       class="admin__control-text"
+                                       min="0"
+                                       max="100" />
+                                <p class="note"><span><?= $escaper->escapeHtml(__('Higher priority badges appear first (0-100)')) ?></span></p>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Badge Design Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-badge-design" data-fieldset="design">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Badge Design')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-badge-type">
+                            <label class="admin__field-label" for="badge_type">
+                                <span><?= $escaper->escapeHtml(__('Badge Type')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <div class="badge-type-grid">
+                                    <?php foreach ($badgeTypes as $type): ?>
+                                    <div class="badge-type-option"
+                                         data-type="<?= $escaper->escapeHtmlAttr($type['value']) ?>"
+                                         data-label="<?= $escaper->escapeHtmlAttr($type['label']) ?>"
+                                         data-color="<?= $escaper->escapeHtmlAttr($type['color']) ?>"
+                                         data-icon="<?= $escaper->escapeHtmlAttr($type['icon']) ?>"
+                                         @click="selectBadgeType($el.dataset.type, $el.dataset.label, $el.dataset.color, $el.dataset.icon)"
+                                         :class="{'selected': rule.badge_type === '<?= $escaper->escapeHtmlAttr($type['value']) ?>'}">
+                                        <?php // phpcs:ignore Magento2.Security.XssTemplate.FoundUnescaped -- emoji/icon display ?>
+                                        <span class="badge-type-icon"><?= $type['icon'] ?></span>
+                                        <span class="badge-type-label"><?= $escaper->escapeHtml($type['label']) ?></span>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <input type="hidden" name="badge_type" x-model="rule.badge_type" />
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-badge-text required">
+                            <label class="admin__field-label" for="badge_text">
+                                <span><?= $escaper->escapeHtml(__('Badge Text')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="text"
+                                       id="badge_text"
+                                       name="badge_text"
+                                       x-model="rule.badge_text"
+                                       class="admin__control-text"
+                                       maxlength="20" />
+                                <p class="note"><span><?= $escaper->escapeHtml(__('Keep it short for best visibility (max 20 characters)')) ?></span></p>
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-badge-color">
+                            <label class="admin__field-label" for="badge_color">
+                                <span><?= $escaper->escapeHtml(__('Badge Color')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="color"
+                                       id="badge_color"
+                                       name="badge_color"
+                                       x-model="rule.badge_color"
+                                       class="admin__control-text" />
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-badge-icon">
+                            <label class="admin__field-label" for="badge_icon">
+                                <span><?= $escaper->escapeHtml(__('Badge Icon')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <div class="icon-picker-wrapper">
+                                    <input type="text"
+                                           id="badge_icon"
+                                           name="badge_icon"
+                                           x-model="rule.badge_icon"
+                                           class="admin__control-text"
+                                           readonly />
+                                    <button type="button"
+                                            class="action-default"
+                                            @click="showFontAwesomePicker = true">
+                                        <span><?= $escaper->escapeHtml(__('Choose Icon')) ?></span>
+                                    </button>
+                                    <div class="icon-preview" x-show="rule.badge_icon">
+                                        <template x-if="iconType === 'fontawesome' && rule.badge_icon.startsWith('fa-')">
+                                            <i :class="rule.badge_icon" style="font-size: 24px;"></i>
+                                        </template>
+                                        <template x-if="iconType === 'emoji' || !rule.badge_icon.startsWith('fa-')">
+                                            <span x-text="rule.badge_icon" style="font-size: 24px;"></span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Badge Image Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-badge-image" data-fieldset="image">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Badge Image')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-badge-image">
+                            <label class="admin__field-label" for="badge_image">
+                                <span><?= $escaper->escapeHtml(__('Upload Image')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="file"
+                                       id="badge_image"
+                                       name="badge_image"
+                                       @change="handleImageUpload($event)"
+                                       accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                                       class="admin__control-file" />
+                                <p class="note"><span><?= $escaper->escapeHtml(__('Max 2MB. Formats: JPG, PNG, SVG, WebP')) ?></span></p>
+
+                                <div x-show="imagePreview" class="image-preview-wrapper">
+                                    <img :src="imagePreview" alt="Badge Preview" class="image-preview" />
+                                    <button type="button" class="action-default" @click="removeImage()">
+                                        <span><?= $escaper->escapeHtml(__('Remove Image')) ?></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-image-only">
+                            <div class="admin__field-control">
+                                <input type="checkbox"
+                                       id="image_only"
+                                       name="image_settings[imageOnly]"
+                                       x-model="imageSettings.imageOnly"
+                                       class="admin__control-checkbox"
+                                       value="1" />
+                                <label class="admin__field-label" for="image_only">
+                                    <span><?= $escaper->escapeHtml(__('Image Only (Hide Text)')) ?></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-image-width">
+                            <label class="admin__field-label" for="image_width">
+                                <span><?= $escaper->escapeHtml(__('Image Width (px)')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="number"
+                                       id="image_width"
+                                       name="image_settings[width]"
+                                       x-model="imageSettings.width"
+                                       class="admin__control-text"
+                                       min="10"
+                                       max="500" />
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-image-height">
+                            <label class="admin__field-label" for="image_height">
+                                <span><?= $escaper->escapeHtml(__('Image Height (px)')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="number"
+                                       id="image_height"
+                                       name="image_settings[height]"
+                                       x-model="imageSettings.height"
+                                       class="admin__control-text"
+                                       min="10"
+                                       max="500" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Animation Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-animation" data-fieldset="animation">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Animation')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-animation">
+                            <label class="admin__field-label" for="animation">
+                                <span><?= $escaper->escapeHtml(__('Animation Type')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <select id="animation" name="animation" x-model="rule.animation" class="admin__control-select">
+                                    <option value=""><?= $escaper->escapeHtml(__('No Animation')) ?></option>
+                                    <?php foreach ($animations as $anim): ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr($anim['value']) ?>">
+                                        <?= $escaper->escapeHtml($anim['label']) ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Display Conditions Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-display-conditions" data-fieldset="conditions">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Display Conditions')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-product-ids">
+                            <label class="admin__field-label">
+                                <span><?= $escaper->escapeHtml(__('Products')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <button type="button"
+                                        class="action-default"
+                                        @click="openProductChooser()">
+                                    <span><?= $escaper->escapeHtml(__('Choose Products')) ?></span>
+                                </button>
+                                <input type="hidden" name="product_ids" x-model="rule.product_ids" />
+
+                                <div x-show="chosenProducts.length > 0" class="selected-items-list">
+                                    <h4><?= $escaper->escapeHtml(__('Selected Products:')) ?> (<span x-text="chosenProducts.length"></span>)</h4>
+                                    <template x-for="product in chosenProducts" :key="product.id">
+                                        <div class="selected-item">
+                                            <span x-text="product.name + ' (SKU: ' + product.sku + ')'"></span>
+                                            <button type="button" @click="removeProduct(product.id)" class="action-delete">&times;</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-category-ids">
+                            <label class="admin__field-label">
+                                <span><?= $escaper->escapeHtml(__('Categories')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <button type="button"
+                                        class="action-default"
+                                        @click="openCategoryChooser()">
+                                    <span><?= $escaper->escapeHtml(__('Choose Categories')) ?></span>
+                                </button>
+                                <input type="hidden" name="category_ids" x-model="rule.category_ids" />
+
+                                <div x-show="chosenCategories.length > 0" class="selected-items-list">
+                                    <h4><?= $escaper->escapeHtml(__('Selected Categories:')) ?> (<span x-text="chosenCategories.length"></span>)</h4>
+                                    <template x-for="category in chosenCategories" :key="category.id">
+                                        <div class="selected-item">
+                                            <span x-text="category.name"></span>
+                                            <button type="button" @click="removeCategory(category.id)" class="action-delete">&times;</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Smart Conditions Fieldset -->
+                    <?php include __DIR__ . '/partials/fieldsets/smart-conditions.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+                    <!-- Schedule Fieldset -->
+                    <fieldset class="admin__fieldset fieldset-schedule" data-fieldset="schedule">
+                        <legend class="admin__legend legend">
+                            <span><?= $escaper->escapeHtml(__('Schedule')) ?></span>
+                        </legend>
+                        <br>
+
+                        <div class="admin__field field-schedule-from">
+                            <label class="admin__field-label" for="schedule_from">
+                                <span><?= $escaper->escapeHtml(__('Active From')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="text"
+                                       id="schedule_from"
+                                       name="schedule_from"
+                                       x-model="rule.schedule_from"
+                                       class="admin__control-text"
+                                       placeholder="<?= $escaper->escapeHtmlAttr(__('Select date and time')) ?>" />
+                            </div>
+                        </div>
+
+                        <div class="admin__field field-schedule-to">
+                            <label class="admin__field-label" for="schedule_to">
+                                <span><?= $escaper->escapeHtml(__('Active To')) ?></span>
+                            </label>
+                            <div class="admin__field-control">
+                                <input type="text"
+                                       id="schedule_to"
+                                       name="schedule_to"
+                                       x-model="rule.schedule_to"
+                                       class="admin__control-text"
+                                       placeholder="<?= $escaper->escapeHtmlAttr(__('Select date and time')) ?>" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Advanced Styling Fieldset -->
+                    <?php include __DIR__ . '/partials/fieldsets/advanced-styling.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+                    <!-- Display Settings Fieldset -->
+                    <?php include __DIR__ . '/partials/fieldsets/display-settings.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+                </div>
+
+                <!-- Preview Panel (Fixed Sidebar) -->
+                <div class="preview-panel-container" x-show="showPreview" x-transition>
+                    <div class="preview-panel-fixed">
+                        <div class="preview-header">
+                            <h3><?= $escaper->escapeHtml(__('Live Preview')) ?></h3>
+                            <div class="preview-controls">
+                                <button type="button" @click="previewMode = 'product'" :class="{'active': previewMode === 'product'}">
+                                    <?= $escaper->escapeHtml(__('Product')) ?>
+                                </button>
+                                <button type="button" @click="previewMode = 'category'" :class="{'active': previewMode === 'category'}">
+                                    <?= $escaper->escapeHtml(__('Category')) ?>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="preview-content">
+                            <?php include __DIR__ . '/partials/preview/product-view.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+                            <?php include __DIR__ . '/partials/preview/category-view.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+                            <?php include __DIR__ . '/partials/preview/performance-metrics.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+                            <?php include __DIR__ . '/partials/preview/optimization-tips.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+
+        <!-- Modals (Alpine.js) -->
+        <?php include __DIR__ . '/partials/modals/fontawesome-picker.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+        <?php include __DIR__ . '/partials/modals/product-chooser.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+        <?php include __DIR__ . '/partials/modals/category-chooser.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+    </div>
+</div>
+
+<?php include __DIR__ . '/partials/styles/main.phtml'; // phpcs:ignore Magento2.Security.IncludeFile ?>
+
+<script>
+// Magento delete confirmation
+function deleteConfirm(message, url) {
+    if (confirm(message)) {
+        window.location.href = url;
+    }
+}
+
+// Save and Continue Edit
+function saveContinue() {
+    var form = document.getElementById('badge-rule-form');
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'back';
+    input.value = 'edit';
+    form.appendChild(input);
+    form.submit();
+}
+
+// Initialize Magento Date Pickers
+require([
+    'jquery',
+    'mage/calendar'
+], function($) {
+    'use strict';
+
+    $(document).ready(function() {
+        // Common calendar options for proper positioning
+        var commonOptions = {
+            showButtonPanel: true,
+            beforeShow: function(input, inst) {
+                // Ensure proper positioning relative to input field
+                setTimeout(function() {
+                    var $input = $(input);
+                    var offset = $input.offset();
+                    var height = $input.outerHeight();
+
+                    $('#ui-datepicker-div').css({
+                        'top': (offset.top + height + 5) + 'px',
+                        'left': offset.left + 'px',
+                        'position': 'absolute',
+                        'z-index': 10000
+                    });
+                }, 0);
+            }
+        };
+
+        // Schedule date pickers (with time)
+        $('#schedule_from').calendar($.extend({}, commonOptions, {
+            dateFormat: 'yy-mm-dd',
+            showsTime: true,
+            timeFormat: 'HH:mm:ss',
+            buttonText: 'Select Date and Time'
+        }));
+
+        $('#schedule_to').calendar($.extend({}, commonOptions, {
+            dateFormat: 'yy-mm-dd',
+            showsTime: true,
+            timeFormat: 'HH:mm:ss',
+            buttonText: 'Select Date and Time'
+        }));
+
+        // Smart condition date pickers (date only)
+        $('#smart_condition_date_from').calendar($.extend({}, commonOptions, {
+            dateFormat: 'yy-mm-dd',
+            buttonText: 'Select Date',
+            onSelect: function(dateText) {
+                // Update Alpine.js data when calendar changes
+                const alpineComponent = document.querySelector('[x-data]').__x;
+                if (alpineComponent && alpineComponent.$data.smartConditions) {
+                    alpineComponent.$data.smartConditions.dateRange.from = dateText;
+                }
+            }
+        }));
+
+        $('#smart_condition_date_to').calendar($.extend({}, commonOptions, {
+            dateFormat: 'yy-mm-dd',
+            buttonText: 'Select Date',
+            onSelect: function(dateText) {
+                // Update Alpine.js data when calendar changes
+                const alpineComponent = document.querySelector('[x-data]').__x;
+                if (alpineComponent && alpineComponent.$data.smartConditions) {
+                    alpineComponent.$data.smartConditions.dateRange.to = dateText;
+                }
+            }
+        }));
+    });
+});
+</script>

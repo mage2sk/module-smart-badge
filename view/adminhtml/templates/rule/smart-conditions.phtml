@@ -1,0 +1,168 @@
+<?php /** Smart Conditions — interactive UI that generates JSON */ ?>
+<div id="sb-smart-conditions">
+    <p class="note" style="margin-bottom:15px;"><?= $escaper->escapeHtml(__('Enable conditions below to automatically apply this badge based on product attributes. The JSON is generated automatically.')) ?></p>
+    <input type="hidden" name="smart_conditions" id="sb-sc-json" data-form-part="smartbadge_rule_form"/>
+
+    <!-- Price Range -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-price" class="admin__control-checkbox sb-sc-toggle" data-key="price"/>
+            <label class="admin__field-label" for="sc-price"><span><?= $escaper->escapeHtml(__('Price Range')) ?></span></label>
+            <div class="sb-sc-fields" data-for="price" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <label style="font-size:12px; font-weight:600;"><?= $escaper->escapeHtml(__('Min')) ?></label>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="price" data-prop="min" step="0.01" style="width:120px; display:inline-block;" placeholder="0.00"/>
+                <label style="font-size:12px; font-weight:600; margin-left:10px;"><?= $escaper->escapeHtml(__('Max')) ?></label>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="price" data-prop="max" step="0.01" style="width:120px; display:inline-block;" placeholder="999.99"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Level -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-stock" class="admin__control-checkbox sb-sc-toggle" data-key="stock"/>
+            <label class="admin__field-label" for="sc-stock"><span><?= $escaper->escapeHtml(__('Stock Level')) ?></span></label>
+            <div class="sb-sc-fields" data-for="stock" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="stock" data-prop="operator" style="width:150px; display:inline-block;">
+                    <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                    <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                    <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                </select>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="stock" data-prop="value" style="width:100px; display:inline-block; margin-left:8px;" placeholder="10"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discount % -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-discount" class="admin__control-checkbox sb-sc-toggle" data-key="discount"/>
+            <label class="admin__field-label" for="sc-discount"><span><?= $escaper->escapeHtml(__('Discount Percentage')) ?></span></label>
+            <div class="sb-sc-fields" data-for="discount" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="discount" data-prop="operator" style="width:150px; display:inline-block;">
+                    <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                    <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                    <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                </select>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="discount" data-prop="value" max="100" style="width:80px; display:inline-block; margin-left:8px;" placeholder="20"/>
+                <span style="margin-left:4px;">%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Age -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-age" class="admin__control-checkbox sb-sc-toggle" data-key="age"/>
+            <label class="admin__field-label" for="sc-age"><span><?= $escaper->escapeHtml(__('Product Age (Days)')) ?></span></label>
+            <div class="sb-sc-fields" data-for="age" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="age" data-prop="operator" style="width:150px; display:inline-block;">
+                    <option value="less_than"><?= $escaper->escapeHtml(__('Newer than')) ?></option>
+                    <option value="greater_than"><?= $escaper->escapeHtml(__('Older than')) ?></option>
+                </select>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="age" data-prop="value" style="width:80px; display:inline-block; margin-left:8px;" placeholder="30"/>
+                <span style="margin-left:4px;"><?= $escaper->escapeHtml(__('days')) ?></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Status -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-stockstatus" class="admin__control-checkbox sb-sc-toggle" data-key="stockStatus"/>
+            <label class="admin__field-label" for="sc-stockstatus"><span><?= $escaper->escapeHtml(__('Stock Status')) ?></span></label>
+            <div class="sb-sc-fields" data-for="stockStatus" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="stockStatus" data-prop="value" style="width:180px;">
+                    <option value="in_stock"><?= $escaper->escapeHtml(__('In Stock')) ?></option>
+                    <option value="out_of_stock"><?= $escaper->escapeHtml(__('Out of Stock')) ?></option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Rating -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px; margin-bottom:-1px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-rating" class="admin__control-checkbox sb-sc-toggle" data-key="rating"/>
+            <label class="admin__field-label" for="sc-rating"><span><?= $escaper->escapeHtml(__('Customer Rating')) ?></span></label>
+            <div class="sb-sc-fields" data-for="rating" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="rating" data-prop="operator" style="width:150px; display:inline-block;">
+                    <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                    <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                    <option value="equals"><?= $escaper->escapeHtml(__('Equals')) ?></option>
+                </select>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="rating" data-prop="value" min="1" max="5" step="0.1" style="width:80px; display:inline-block; margin-left:8px;" placeholder="4.0"/>
+                <span style="margin-left:4px;"><?= $escaper->escapeHtml(__('stars')) ?></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Count -->
+    <div class="admin__field" style="border:1px solid #e8e8e8; padding:10px 15px;">
+        <div class="admin__field-control">
+            <input type="checkbox" id="sc-sales" class="admin__control-checkbox sb-sc-toggle" data-key="salesCount"/>
+            <label class="admin__field-label" for="sc-sales"><span><?= $escaper->escapeHtml(__('Sales Count')) ?></span></label>
+            <div class="sb-sc-fields" data-for="salesCount" style="display:none; margin-top:8px; padding:8px 12px; background:#f9f9f9; border:1px solid #e8e8e8; border-radius:3px;">
+                <select class="admin__control-select sb-sc-val" data-key="salesCount" data-prop="operator" style="width:150px; display:inline-block;">
+                    <option value="greater_than"><?= $escaper->escapeHtml(__('Greater than')) ?></option>
+                    <option value="less_than"><?= $escaper->escapeHtml(__('Less than')) ?></option>
+                </select>
+                <input type="number" class="admin__control-text sb-sc-val" data-key="salesCount" data-prop="value" min="0" style="width:100px; display:inline-block; margin-left:8px;" placeholder="50"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+require(['jquery', 'domReady!'], function($) {
+    var scData = {};
+
+    // Load existing data from hidden field
+    function loadExisting() {
+        var existing = $('[name="smart_conditions"]').not('#sb-sc-json').val();
+        if (existing && typeof existing === 'string') {
+            try { scData = JSON.parse(existing); } catch(e) { scData = {}; }
+        }
+        // Populate UI from data
+        Object.keys(scData).forEach(function(key) {
+            var cond = scData[key];
+            if (cond && cond.enabled) {
+                var cb = $('.sb-sc-toggle[data-key="' + key + '"]');
+                cb.prop('checked', true);
+                $('.sb-sc-fields[data-for="' + key + '"]').show();
+                Object.keys(cond).forEach(function(prop) {
+                    if (prop !== 'enabled') {
+                        $('.sb-sc-val[data-key="' + key + '"][data-prop="' + prop + '"]').val(cond[prop]);
+                    }
+                });
+            }
+        });
+        updateJson();
+    }
+
+    function updateJson() {
+        var result = {};
+        $('.sb-sc-toggle').each(function() {
+            var key = $(this).data('key');
+            var enabled = $(this).is(':checked');
+            result[key] = { enabled: enabled };
+            $('.sb-sc-val[data-key="' + key + '"]').each(function() {
+                result[key][$(this).data('prop')] = $(this).val();
+            });
+        });
+        $('#sb-sc-json').val(JSON.stringify(result));
+    }
+
+    // Toggle visibility
+    $(document).on('change', '.sb-sc-toggle', function() {
+        var key = $(this).data('key');
+        $('.sb-sc-fields[data-for="' + key + '"]').toggle($(this).is(':checked'));
+        updateJson();
+    });
+
+    // Update JSON on value change
+    $(document).on('change input', '.sb-sc-val', function() { updateJson(); });
+
+    setTimeout(loadExisting, 500);
+});
+</script>

@@ -1,0 +1,17 @@
+                <div x-show="activeTab === 'animation'" class="tab-pane">
+                    <div class="form-group">
+                        <label>Choose Animation</label>
+                        <div class="animation-grid">
+                            <?php foreach ($animations as $anim): ?>
+                            <div class="animation-card"
+                                 @click="rule.animation = '<?= $escaper->escapeHtmlAttr($anim['value']) ?>'"
+                                 :class="{'selected': rule.animation === '<?= $escaper->escapeHtmlAttr($anim['value']) ?>'}">
+                                <div class="animation-preview <?= $escaper->escapeHtmlAttr($anim['preview']) ?>">
+                                    <div class="preview-badge">SALE</div>
+                                </div>
+                                <span><?= $escaper->escapeHtml($anim['label']) ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>

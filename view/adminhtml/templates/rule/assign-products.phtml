@@ -1,0 +1,386 @@
+<?php
+/**
+ * Product & Category Chooser with improved popups
+ * @var \Panth\SmartBadge\Block\Adminhtml\Rule\Edit\AssignProducts $block
+ */
+?>
+<style>
+    .sb-chooser-modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:10000; background:rgba(0,0,0,0.5); }
+    .sb-chooser-box { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:85%; max-width:950px; max-height:85vh; background:#fff; border-radius:4px; box-shadow:0 4px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; }
+    .sb-chooser-header { padding:12px 16px; border-bottom:1px solid #e8e8e8; display:flex; justify-content:space-between; align-items:center; background:#f5f5f5; flex-shrink:0; }
+    .sb-chooser-header strong { font-size:14px; }
+    .sb-chooser-close { background:none; border:none; font-size:22px; cursor:pointer; color:#999; padding:0 4px; line-height:1; }
+    .sb-chooser-close:hover { color:#333; }
+    .sb-chooser-toolbar { padding:10px 16px; border-bottom:1px solid #e8e8e8; display:flex; gap:10px; align-items:center; flex-shrink:0; }
+    .sb-chooser-toolbar input { flex:1; }
+    .sb-chooser-body { flex:1; overflow-y:auto; }
+    .sb-chooser-footer { padding:10px 16px; border-top:1px solid #e8e8e8; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .sb-selected-bar { padding:8px 16px; background:#fff7ed; border-bottom:1px solid #fed7aa; flex-shrink:0; }
+    .sb-selected-bar .sb-pills { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+    .sb-selected-bar .sb-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; background:#fff; border:1px solid #d6d6d6; border-radius:3px; font-size:11px; }
+    .sb-selected-bar .sb-pill-remove { background:none; border:none; color:#e22626; cursor:pointer; font-size:14px; padding:0; line-height:1; }
+    .sb-count { background:#eb5202; color:#fff; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+    .sb-row-selected { background:#fff7ed !important; }
+</style>
+
+<div id="smartbadge-choosers">
+    <!-- Product Chooser Field -->
+    <div class="admin__field">
+        <label class="admin__field-label"><span><?= $block->escapeHtml(__('Specific Products')) ?></span></label>
+        <div class="admin__field-control">
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="smartbadge_product_ids" name="product_ids" class="admin__control-text" data-form-part="smartbadge_rule_form" placeholder="<?= $block->escapeHtmlAttr(__('e.g., 1,8,45')) ?>" style="flex:1;"/>
+                <button type="button" class="action-default scalable" onclick="SBC.openProducts()"><span><?= $block->escapeHtml(__('Browse Products...')) ?></span></button>
+            </div>
+            <div id="sb-selected-products" style="margin-top:8px;"></div>
+            <p class="note"><span><?= $block->escapeHtml(__('Leave empty to apply to all products.')) ?></span></p>
+        </div>
+    </div>
+
+    <!-- Category Chooser Field -->
+    <div class="admin__field" style="margin-top:12px;">
+        <label class="admin__field-label"><span><?= $block->escapeHtml(__('Categories')) ?></span></label>
+        <div class="admin__field-control">
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="smartbadge_category_ids" name="category_ids" class="admin__control-text" data-form-part="smartbadge_rule_form" placeholder="<?= $block->escapeHtmlAttr(__('e.g., 4,14,21')) ?>" style="flex:1;"/>
+                <button type="button" class="action-default scalable" onclick="SBC.openCategories()"><span><?= $block->escapeHtml(__('Browse Categories...')) ?></span></button>
+            </div>
+            <div id="sb-selected-categories" style="margin-top:8px;"></div>
+            <p class="note"><span><?= $block->escapeHtml(__('Leave empty to apply to all categories.')) ?></span></p>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="sb-product-modal" class="sb-chooser-modal">
+        <div class="sb-chooser-box">
+            <div class="sb-chooser-header">
+                <strong><?= $block->escapeHtml(__('Select Products')) ?></strong>
+                <button type="button" class="sb-chooser-close" onclick="SBC.closeProducts()">&times;</button>
+            </div>
+            <div id="sb-product-selected-bar" class="sb-selected-bar" style="display:none;">
+                <strong style="font-size:12px;"><?= $block->escapeHtml(__('Selected')) ?> (<span id="sb-product-count">0</span>):</strong>
+                <div id="sb-product-pills" class="sb-pills"></div>
+            </div>
+            <div class="sb-chooser-toolbar">
+                <input type="text" id="sb-product-search" class="admin__control-text" placeholder="<?= $block->escapeHtmlAttr(__('Search by name, SKU, or ID...')) ?>" oninput="SBC.filterProducts(this.value)"/>
+                <button type="button" class="action-default" onclick="SBC.selectAllProducts()" style="white-space:nowrap;"><span><?= $block->escapeHtml(__('Select All')) ?></span></button>
+                <button type="button" class="action-default" onclick="SBC.deselectAllProducts()" style="white-space:nowrap;"><span><?= $block->escapeHtml(__('Clear All')) ?></span></button>
+            </div>
+            <div id="sb-product-grid" class="sb-chooser-body"><p style="text-align:center; padding:40px; color:#999;"><?= $block->escapeHtml(__('Loading...')) ?></p></div>
+            <div class="sb-chooser-footer">
+                <span style="font-size:12px; color:#999;" id="sb-product-total"><?= $block->escapeHtml(__('Loading products...')) ?></span>
+                <div>
+                    <button type="button" class="action-default" onclick="SBC.closeProducts()"><span><?= $block->escapeHtml(__('Cancel')) ?></span></button>
+                    <button type="button" class="action-primary" onclick="SBC.applyProducts()" style="margin-left:8px;"><span><?= $block->escapeHtml(__('Apply Selection')) ?></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="sb-category-modal" class="sb-chooser-modal">
+        <div class="sb-chooser-box" style="max-width:650px;">
+            <div class="sb-chooser-header">
+                <strong><?= $block->escapeHtml(__('Select Categories')) ?></strong>
+                <button type="button" class="sb-chooser-close" onclick="SBC.closeCategories()">&times;</button>
+            </div>
+            <div id="sb-category-selected-bar" class="sb-selected-bar" style="display:none;">
+                <strong style="font-size:12px;"><?= $block->escapeHtml(__('Selected')) ?> (<span id="sb-category-count">0</span>):</strong>
+                <div id="sb-category-pills" class="sb-pills"></div>
+            </div>
+            <div id="sb-category-grid" class="sb-chooser-body" style="padding:12px 16px;"><p style="text-align:center; padding:40px; color:#999;"><?= $block->escapeHtml(__('Loading...')) ?></p></div>
+            <div class="sb-chooser-footer">
+                <span style="font-size:12px; color:#999;" id="sb-category-total"></span>
+                <div>
+                    <button type="button" class="action-default" onclick="SBC.closeCategories()"><span><?= $block->escapeHtml(__('Cancel')) ?></span></button>
+                    <button type="button" class="action-primary" onclick="SBC.applyCategories()" style="margin-left:8px;"><span><?= $block->escapeHtml(__('Apply Selection')) ?></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+require(['jquery'], function($) {
+    'use strict';
+    var products = [], categories = [];
+
+    window.SBC = {
+        // ---- Products ----
+        openProducts: function() {
+            $('#sb-product-modal').show();
+            if (!products.length) this._loadProducts();
+            else this._renderProducts();
+        },
+        closeProducts: function() { $('#sb-product-modal').hide(); },
+
+        _loadProducts: function() {
+            $.getJSON('<?= $block->escapeUrl($block->getProductGridUrl()) ?>', function(data) {
+                products = data.products || [];
+                SBC._renderProducts();
+            });
+        },
+
+        filterProducts: function(q) { this._renderProducts(q); },
+
+        selectAllProducts: function() { $('.sb-pcb').prop('checked', true); this._updateProductPills(); },
+        deselectAllProducts: function() { $('.sb-pcb').prop('checked', false); this._updateProductPills(); },
+
+        _renderProducts: function(query) {
+            var selIds = this._getIds('#smartbadge_product_ids');
+            var list = products;
+            if (query) {
+                var q = query.toLowerCase();
+                list = products.filter(function(p) {
+                    return p.name.toLowerCase().indexOf(q) !== -1 || p.sku.toLowerCase().indexOf(q) !== -1 || String(p.id) === q;
+                });
+            }
+            // Sort: selected first
+            list.sort(function(a, b) {
+                var aS = selIds.indexOf(String(a.id)) !== -1 ? 0 : 1;
+                var bS = selIds.indexOf(String(b.id)) !== -1 ? 0 : 1;
+                return aS - bS || b.id - a.id;
+            });
+            var h = '<table class="data-grid" style="width:100%;"><thead><tr>';
+            h += '<th class="data-grid-th" style="width:36px; padding:6px 8px;"></th>';
+            h += '<th class="data-grid-th" style="padding:6px 8px; width:60px;">ID</th>';
+            h += '<th class="data-grid-th" style="padding:6px 8px;">Name</th>';
+            h += '<th class="data-grid-th" style="padding:6px 8px;">SKU</th>';
+            h += '<th class="data-grid-th" style="padding:6px 8px; width:90px;">Type</th>';
+            h += '<th class="data-grid-th" style="padding:6px 8px; width:70px;">Price</th></tr></thead><tbody>';
+            list.forEach(function(p) {
+                var sel = selIds.indexOf(String(p.id)) !== -1;
+                h += '<tr class="data-row' + (sel ? ' sb-row-selected' : '') + '">';
+                h += '<td style="padding:5px 8px;"><input type="checkbox" class="sb-pcb" value="' + p.id + '" data-name="' + p.name.replace(/"/g,'&quot;') + '"' + (sel ? ' checked' : '') + ' onchange="SBC._updateProductPills()"/></td>';
+                h += '<td style="padding:5px 8px; font-size:12px; color:#999;">' + p.id + '</td>';
+                h += '<td style="padding:5px 8px; font-size:12px;">' + p.name + '</td>';
+                h += '<td style="padding:5px 8px; font-size:12px; color:#888;">' + p.sku + '</td>';
+                h += '<td style="padding:5px 8px; font-size:11px;">' + p.type + '</td>';
+                h += '<td style="padding:5px 8px; font-size:12px;">$' + parseFloat(p.price).toFixed(2) + '</td></tr>';
+            });
+            h += '</tbody></table>';
+            if (!list.length) h = '<p style="text-align:center; padding:30px; color:#999;">No products found</p>';
+            $('#sb-product-grid').html(h);
+            $('#sb-product-total').text(list.length + ' products');
+            this._updateProductPills();
+        },
+
+        _updateProductPills: function() {
+            var pills = [];
+            $('.sb-pcb:checked').each(function() {
+                var id = $(this).val(), name = $(this).data('name');
+                pills.push('<span class="sb-pill">' + name + ' (#' + id + ') <button class="sb-pill-remove" onclick="SBC._removeProduct(' + id + ')">&times;</button></span>');
+            });
+            if (pills.length) {
+                $('#sb-product-selected-bar').show();
+                $('#sb-product-count').text(pills.length);
+                $('#sb-product-pills').html(pills.join(''));
+            } else {
+                $('#sb-product-selected-bar').hide();
+            }
+        },
+
+        _removeProduct: function(id) {
+            $('.sb-pcb[value="' + id + '"]').prop('checked', false).closest('tr').removeClass('sb-row-selected');
+            this._updateProductPills();
+        },
+
+        applyProducts: function() {
+            var ids = [];
+            $('.sb-pcb:checked').each(function() { ids.push($(this).val()); });
+            $('#smartbadge_product_ids').val(ids.join(',')).trigger('change');
+            this.closeProducts();
+        },
+
+        // ---- Categories ----
+        openCategories: function() {
+            $('#sb-category-modal').show();
+            if (!categories.length) this._loadCategories();
+            else this._renderCategories();
+        },
+        closeCategories: function() { $('#sb-category-modal').hide(); },
+
+        _loadCategories: function() {
+            $.getJSON('<?= $block->escapeUrl($block->getCategoryTreeUrl()) ?>', function(data) {
+                categories = data.categories || [];
+                SBC._renderCategories();
+            });
+        },
+
+        _renderCategories: function() {
+            var selIds = this._getIds('#smartbadge_category_ids');
+            var html = this._buildCatTree(categories, selIds, 0);
+            $('#sb-category-grid').html(html || '<p style="text-align:center; padding:30px; color:#999;">No categories</p>');
+            var total = 0; this._countCats(categories, function() { total++; });
+            $('#sb-category-total').text(total + ' categories');
+            this._updateCategoryPills();
+        },
+
+        _buildCatTree: function(cats, selIds, level) {
+            var h = '', self = this;
+            cats.forEach(function(c) {
+                var sel = selIds.indexOf(String(c.id)) !== -1;
+                var pad = level * 20;
+                h += '<div style="padding:5px 0 5px ' + pad + 'px; border-bottom:1px solid #f5f5f5;' + (sel ? ' background:#fff7ed;' : '') + '">';
+                h += '<label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">';
+                h += '<input type="checkbox" class="sb-ccb" value="' + c.id + '" data-name="' + c.name.replace(/"/g,'&quot;') + '"' + (sel ? ' checked' : '') + ' onchange="SBC._updateCategoryPills()"/>';
+                h += '<span>' + c.name + ' <small style="color:#aaa;">(ID: ' + c.id + ')</small></span></label>';
+                if (c.children && c.children.length) h += self._buildCatTree(c.children, selIds, level + 1);
+                h += '</div>';
+            });
+            return h;
+        },
+
+        _countCats: function(cats, fn) { cats.forEach(function(c) { fn(); if (c.children) SBC._countCats(c.children, fn); }); },
+
+        _updateCategoryPills: function() {
+            var pills = [];
+            $('.sb-ccb:checked').each(function() {
+                var id = $(this).val(), name = $(this).data('name');
+                pills.push('<span class="sb-pill">' + name + ' <button class="sb-pill-remove" onclick="SBC._removeCategory(' + id + ')">&times;</button></span>');
+            });
+            if (pills.length) {
+                $('#sb-category-selected-bar').show();
+                $('#sb-category-count').text(pills.length);
+                $('#sb-category-pills').html(pills.join(''));
+            } else {
+                $('#sb-category-selected-bar').hide();
+            }
+        },
+
+        _removeCategory: function(id) {
+            $('.sb-ccb[value="' + id + '"]').prop('checked', false).closest('div').css('background', '');
+            this._updateCategoryPills();
+        },
+
+        applyCategories: function() {
+            var ids = [];
+            $('.sb-ccb:checked').each(function() { ids.push($(this).val()); });
+            $('#smartbadge_category_ids').val(ids.join(',')).trigger('change');
+            this.closeCategories();
+        },
+
+        // ---- Helpers ----
+        _getIds: function(sel) { return $(sel).val().split(',').map(function(id) { return id.trim(); }).filter(Boolean); }
+    };
+
+    // Show selected items with details below the input fields
+    SBC.showSelectedProducts = function() {
+        var ids = this._getIds('#smartbadge_product_ids');
+        if (!ids.length) { $('#sb-selected-products').html(''); return; }
+        if (!products.length) {
+            // Load products first, then render
+            $.getJSON('<?= $block->escapeUrl($block->getProductGridUrl()) ?>', function(data) {
+                products = data.products || [];
+                SBC._renderSelectedProducts(ids);
+            });
+        } else {
+            this._renderSelectedProducts(ids);
+        }
+    };
+
+    SBC._renderSelectedProducts = function(ids) {
+        var matched = products.filter(function(p) { return ids.indexOf(String(p.id)) !== -1; });
+        if (!matched.length) { $('#sb-selected-products').html('<span style="font-size:12px; color:#999;">No matching products found for IDs: ' + ids.join(', ') + '</span>'); return; }
+        var h = '<table class="admin__table-secondary" style="width:100%; margin-top:4px;">';
+        h += '<thead><tr><th style="font-size:11px;">ID</th><th style="font-size:11px;">Name</th><th style="font-size:11px;">SKU</th><th style="font-size:11px;">Type</th><th style="font-size:11px;">Price</th><th style="font-size:11px; width:120px;">Actions</th></tr></thead><tbody>';
+        matched.forEach(function(p) {
+            h += '<tr><td style="font-size:12px;">#' + p.id + '</td>';
+            h += '<td style="font-size:12px; font-weight:600;">' + p.name + '</td>';
+            h += '<td style="font-size:12px; color:#888;">' + p.sku + '</td>';
+            h += '<td style="font-size:11px;">' + p.type + '</td>';
+            h += '<td style="font-size:12px;">$' + parseFloat(p.price).toFixed(2) + '</td>';
+            h += '<td style="white-space:nowrap;">';
+            h += '<a href="<?= $block->escapeUrl($block->getUrl("catalog/product/edit")) ?>id/' + p.id + '/" target="_blank" style="font-size:11px; color:#006bb4; margin-right:8px;" title="Edit in Admin">Edit</a>';
+            h += (p.url ? '<a href="' + p.url + '" target="_blank" style="font-size:11px; color:#eb5202; margin-right:8px;" title="View on Frontend">View</a>' : '');
+            h += '<button type="button" onclick="SBC._removeSelectedProduct(' + p.id + ')" style="background:none; border:none; color:#e22626; cursor:pointer; font-size:14px; padding:0;" title="Remove">&times;</button>';
+            h += '</td></tr>';
+        });
+        h += '</tbody></table>';
+        $('#sb-selected-products').html(h);
+    };
+
+    SBC._removeSelectedProduct = function(id) {
+        var ids = this._getIds('#smartbadge_product_ids').filter(function(i) { return i !== String(id); });
+        $('#smartbadge_product_ids').val(ids.join(','));
+        this.showSelectedProducts();
+    };
+
+    SBC.showSelectedCategories = function() {
+        var ids = this._getIds('#smartbadge_category_ids');
+        if (!ids.length) { $('#sb-selected-categories').html(''); return; }
+        if (!categories.length) {
+            $.getJSON('<?= $block->escapeUrl($block->getCategoryTreeUrl()) ?>', function(data) {
+                categories = data.categories || [];
+                SBC._renderSelectedCategories(ids);
+            });
+        } else {
+            this._renderSelectedCategories(ids);
+        }
+    };
+
+    SBC._flattenCats = function(cats, result) {
+        var self = this;
+        cats.forEach(function(c) { result.push(c); if (c.children) self._flattenCats(c.children, result); });
+        return result;
+    };
+
+    SBC._renderSelectedCategories = function(ids) {
+        var flat = this._flattenCats(categories, []);
+        var matched = flat.filter(function(c) { return ids.indexOf(String(c.id)) !== -1; });
+        if (!matched.length) { $('#sb-selected-categories').html('<span style="font-size:12px; color:#999;">No matching categories for IDs: ' + ids.join(', ') + '</span>'); return; }
+        var h = '<table class="admin__table-secondary" style="width:100%; margin-top:4px;">';
+        h += '<thead><tr><th style="font-size:11px;">ID</th><th style="font-size:11px;">Name</th><th style="font-size:11px;">Level</th><th style="font-size:11px; width:120px;">Actions</th></tr></thead><tbody>';
+        matched.forEach(function(c) {
+            h += '<tr><td style="font-size:12px;">#' + c.id + '</td>';
+            h += '<td style="font-size:12px; font-weight:600;">' + c.name + '</td>';
+            h += '<td style="font-size:11px;">Level ' + c.level + '</td>';
+            h += '<td style="white-space:nowrap;">';
+            h += '<a href="<?= $block->escapeUrl($block->getUrl("catalog/category/edit")) ?>id/' + c.id + '/" target="_blank" style="font-size:11px; color:#006bb4; margin-right:8px;" title="Edit in Admin">Edit</a>';
+            h += (c.url ? '<a href="' + c.url + '" target="_blank" style="font-size:11px; color:#eb5202; margin-right:8px;" title="View on Frontend">View</a>' : '');
+            h += '<button type="button" onclick="SBC._removeSelectedCategory(' + c.id + ')" style="background:none; border:none; color:#e22626; cursor:pointer; font-size:14px; padding:0;" title="Remove">&times;</button>';
+            h += '</td></tr>';
+        });
+        h += '</tbody></table>';
+        $('#sb-selected-categories').html(h);
+    };
+
+    SBC._removeSelectedCategory = function(id) {
+        var ids = this._getIds('#smartbadge_category_ids').filter(function(i) { return i !== String(id); });
+        $('#smartbadge_category_ids').val(ids.join(','));
+        this.showSelectedCategories();
+    };
+
+    // Override apply to also refresh the selected display
+    var origApplyP = SBC.applyProducts;
+    SBC.applyProducts = function() {
+        var ids = [];
+        $('.sb-pcb:checked').each(function() { ids.push($(this).val()); });
+        $('#smartbadge_product_ids').val(ids.join(',')).trigger('change');
+        this.closeProducts();
+        this.showSelectedProducts();
+    };
+
+    var origApplyC = SBC.applyCategories;
+    SBC.applyCategories = function() {
+        var ids = [];
+        $('.sb-ccb:checked').each(function() { ids.push($(this).val()); });
+        $('#smartbadge_category_ids').val(ids.join(',')).trigger('change');
+        this.closeCategories();
+        this.showSelectedCategories();
+    };
+
+    // Load selected items on page load
+    $(function() {
+        setTimeout(function() {
+            // Sync from UI Component hidden fields
+            var uiP = $('input[name="product_ids"]').not('#smartbadge_product_ids');
+            var uiC = $('input[name="category_ids"]').not('#smartbadge_category_ids');
+            if (uiP.length && uiP.val()) $('#smartbadge_product_ids').val(uiP.val());
+            if (uiC.length && uiC.val()) $('#smartbadge_category_ids').val(uiC.val());
+            SBC.showSelectedProducts();
+            SBC.showSelectedCategories();
+        }, 800);
+    });
+});
+</script>

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="panth_smart_badge" resource="default" engine="innodb" comment="Smart Product Badges">
+        <column xsi:type="int" name="badge_id" unsigned="true" nullable="false" identity="true" comment="Badge ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Badge Name"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="50" comment="Badge Type (new, sale, hot, custom, etc.)"/>
+        <column xsi:type="text" name="label_text" nullable="true" comment="Badge Label Text"/>
+        <column xsi:type="varchar" name="background_color" nullable="true" length="7" comment="Background Color (Hex)"/>
+        <column xsi:type="varchar" name="text_color" nullable="true" length="7" comment="Text Color (Hex)"/>
+        <column xsi:type="varchar" name="position" nullable="false" length="20" default="top-left" comment="Badge Position"/>
+        <column xsi:type="smallint" name="priority" unsigned="true" nullable="false" default="0" comment="Display Priority"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="Is Active"/>
+        <column xsi:type="varchar" name="css_class" nullable="true" length="100" comment="Custom CSS Class"/>
+        <column xsi:type="varchar" name="animation" nullable="true" length="50" comment="Animation Type"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="badge_id"/>
+        </constraint>
+
+        <index referenceId="PANTH_SMART_BADGE_TYPE" indexType="btree">
+            <column name="type"/>
+        </index>
+
+        <index referenceId="PANTH_SMART_BADGE_PRIORITY" indexType="btree">
+            <column name="priority"/>
+        </index>
+    </table>
+
+    <table name="panth_smart_badge_rule" resource="default" engine="innodb" comment="Smart Badge Assignment Rules">
+        <column xsi:type="int" name="rule_id" unsigned="true" nullable="false" identity="true" comment="Rule ID"/>
+        <column xsi:type="int" name="badge_id" unsigned="true" nullable="true" comment="Badge ID (Optional Reference)"/>
+        <column xsi:type="varchar" name="rule_type" nullable="false" length="50" comment="Rule Type (product_age, discount, stock, sales, etc.)"/>
+        <column xsi:type="text" name="conditions" nullable="true" comment="Rule Conditions (JSON)"/>
+        <column xsi:type="text" name="product_ids" nullable="true" comment="Comma-separated Product IDs"/>
+        <column xsi:type="text" name="category_ids" nullable="true" comment="Comma-separated Category IDs"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="Is Active"/>
+        <column xsi:type="int" name="priority" unsigned="true" nullable="false" default="0" comment="Rule Priority"/>
+        <column xsi:type="varchar" name="badge_image" nullable="true" length="255" comment="Badge Image Path"/>
+        <column xsi:type="text" name="smart_conditions" nullable="true" comment="Smart Conditions (JSON) - Price, Stock, Attributes"/>
+        <column xsi:type="datetime" name="schedule_from" nullable="true" comment="Schedule Start Date/Time"/>
+        <column xsi:type="datetime" name="schedule_to" nullable="true" comment="Schedule End Date/Time"/>
+        <column xsi:type="varchar" name="name" nullable="true" length="255" comment="Rule Name"/>
+        <column xsi:type="varchar" name="badge_type" nullable="true" length="50" comment="Badge Type"/>
+        <column xsi:type="varchar" name="badge_text" nullable="true" length="255" comment="Badge Text"/>
+        <column xsi:type="varchar" name="badge_color" nullable="true" length="7" comment="Badge Color"/>
+        <column xsi:type="varchar" name="badge_icon" nullable="true" length="255" comment="Badge Icon (emoji or FontAwesome class)"/>
+        <column xsi:type="varchar" name="animation" nullable="true" length="50" comment="Badge Animation"/>
+        <column xsi:type="text" name="badge_style" nullable="true" comment="Advanced Badge Style Settings (JSON)"/>
+        <column xsi:type="text" name="image_settings" nullable="true" comment="Badge Image Settings (JSON)"/>
+        <column xsi:type="varchar" name="display_on" nullable="true" length="255" default="all" comment="Display Location: all, category, product, sliders, specific"/>
+        <column xsi:type="varchar" name="position_category" nullable="true" length="50" default="top-left" comment="Badge Position on Category Pages"/>
+        <column xsi:type="varchar" name="position_product" nullable="true" length="50" default="top-left" comment="Badge Position on Product Pages"/>
+        <column xsi:type="varchar" name="position_slider" nullable="true" length="50" default="top-left" comment="Badge Position on Sliders"/>
+        <column xsi:type="varchar" name="position_all" nullable="true" length="50" comment="Badge Position for All Pages (if same everywhere)"/>
+        <column xsi:type="smallint" name="use_same_position" unsigned="true" nullable="false" default="1" comment="Use Same Position Everywhere"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="rule_id"/>
+        </constraint>
+
+        <index referenceId="PANTH_SMART_BADGE_RULE_TYPE" indexType="btree">
+            <column name="rule_type"/>
+        </index>
+    </table>
+</schema>

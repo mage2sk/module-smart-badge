@@ -1,0 +1,35 @@
+<!-- Icon Picker Field Template -->
+<div class="admin__field" data-bind="css: additionalClasses, attr: {name: inputName}">
+    <label class="admin__field-label" data-bind="attr: {for: uid}">
+        <span data-bind="i18n: label"></span>
+    </label>
+    <div class="admin__field-control">
+        <div class="icon-picker-field">
+            <input type="text"
+                   class="admin__control-text"
+                   data-bind="
+                       attr: {
+                           name: inputName,
+                           placeholder: placeholder,
+                           'aria-describedby': noticeId,
+                           id: uid,
+                           disabled: disabled
+                       },
+                       value: value,
+                       hasFocus: focused,
+                       valueUpdate: 'input'"
+            />
+            <button type="button"
+                    class="action-secondary"
+                    data-bind="click: openIconPicker"
+                    title="Choose Icon">
+                <span>Choose Icon</span>
+            </button>
+        </div>
+        <!-- ko if: notice -->
+        <div class="admin__field-note" data-bind="attr: {id: noticeId}">
+            <span data-bind="text: notice"></span>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

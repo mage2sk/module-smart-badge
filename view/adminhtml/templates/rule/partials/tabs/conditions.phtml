@@ -1,0 +1,235 @@
+                <div x-show="activeTab === 'conditions'" class="tab-pane">
+                    <div class="form-group">
+                        <label>Apply to Products</label>
+                        <div class="chooser-section">
+                            <button type="button" @click="openProductChooser()" class="btn-chooser">
+                                <span class="icon">🔍</span> Choose Products
+                            </button>
+                            <div class="chosen-items" x-show="chosenProducts.length > 0">
+                                <div class="chosen-items-header">
+                                    <strong>Selected Products (<span x-text="chosenProducts.length"></span>):</strong>
+                                    <button type="button" @click="chosenProducts = []" class="btn-clear-selection">Clear All</button>
+                                </div>
+                                <div class="chosen-items-list">
+                                    <template x-for="product in chosenProducts" :key="product.id">
+                                        <div class="chosen-item">
+                                            <span x-text="product.name + ' (ID: ' + product.id + ', SKU: ' + product.sku + ')'"></span>
+                                            <button type="button" @click="removeProduct(product.id)" class="btn-remove-item">×</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="empty-state" x-show="chosenProducts.length === 0">
+                                <span class="icon">📦</span>
+                                <p>No products selected. Click "Choose Products" to select products.</p>
+                            </div>
+                            <small class="hint">Leave empty to apply badge to all products</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Apply to Categories</label>
+                        <div class="chooser-section">
+                            <button type="button" @click="openCategoryChooser()" class="btn-chooser">
+                                <span class="icon">📁</span> Choose Categories
+                            </button>
+                            <div class="chosen-items" x-show="chosenCategories.length > 0">
+                                <div class="chosen-items-header">
+                                    <strong>Selected Categories (<span x-text="chosenCategories.length"></span>):</strong>
+                                    <button type="button" @click="chosenCategories = []; rule.category_ids = ''" class="btn-clear-selection">Clear All</button>
+                                </div>
+                                <div class="chosen-items-list">
+                                    <template x-for="category in chosenCategories" :key="category.id">
+                                        <div class="chosen-item">
+                                            <span x-text="category.name + ' (ID: ' + category.id + ')'"></span>
+                                            <button type="button" @click="removeCategory(category.id)" class="btn-remove-item">×</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="empty-state" x-show="chosenCategories.length === 0">
+                                <span class="icon">📂</span>
+                                <p>No categories selected. Click "Choose Categories" to select categories.</p>
+                            </div>
+                            <small class="hint">Leave empty to apply badge to all categories</small>
+                        </div>
+                    </div>
+
+                    <div class="smart-conditions">
+                        <h4>🤖 Smart Conditions</h4>
+                        <p>Automatically apply badges based on product attributes:</p>
+
+                        <!-- Price Range Condition -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.price.enabled">
+                                💰 Price Range
+                            </label>
+                            <div x-show="smartConditions.price.enabled" class="condition-fields">
+                                <div class="field-row">
+                                    <input type="number" x-model="smartConditions.price.min" placeholder="Min Price" step="0.01">
+                                    <span>to</span>
+                                    <input type="number" x-model="smartConditions.price.max" placeholder="Max Price" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stock Level Condition -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.stock.enabled">
+                                📦 Stock Level
+                            </label>
+                            <div x-show="smartConditions.stock.enabled" class="condition-fields">
+                                <select x-model="smartConditions.stock.operator">
+                                    <option value="less_than">Less than</option>
+                                    <option value="greater_than">Greater than</option>
+                                    <option value="equals">Equals</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.stock.value" placeholder="Quantity">
+                            </div>
+                        </div>
+
+                        <!-- Discount Percentage -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.discount.enabled">
+                                🔥 Discount Percentage
+                            </label>
+                            <div x-show="smartConditions.discount.enabled" class="condition-fields">
+                                <select x-model="smartConditions.discount.operator">
+                                    <option value="greater_than">Greater than</option>
+                                    <option value="less_than">Less than</option>
+                                    <option value="equals">Equals</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.discount.value" placeholder="Percentage" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Age -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.age.enabled">
+                                ✨ Product Age (Days)
+                            </label>
+                            <div x-show="smartConditions.age.enabled" class="condition-fields">
+                                <select x-model="smartConditions.age.operator">
+                                    <option value="less_than">Newer than</option>
+                                    <option value="greater_than">Older than</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.age.value" placeholder="Days">
+                                <span>days</span>
+                            </div>
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.stockStatus.enabled">
+                                🎯 Stock Status
+                            </label>
+                            <div x-show="smartConditions.stockStatus.enabled" class="condition-fields">
+                                <select x-model="smartConditions.stockStatus.value">
+                                    <option value="in_stock">In Stock</option>
+                                    <option value="out_of_stock">Out of Stock</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Customer Reviews -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.rating.enabled">
+                                ⭐ Customer Reviews
+                            </label>
+                            <div x-show="smartConditions.rating.enabled" class="condition-fields">
+                                <select x-model="smartConditions.rating.operator">
+                                    <option value="greater_than">Greater than</option>
+                                    <option value="less_than">Less than</option>
+                                    <option value="equals">Equals</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.rating.value" placeholder="Rating (1-5)" min="1" max="5" step="0.1">
+                                <span>stars</span>
+                            </div>
+                        </div>
+
+                        <!-- Sales Count -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.salesCount.enabled">
+                                🛒 Sales Count
+                            </label>
+                            <div x-show="smartConditions.salesCount.enabled" class="condition-fields">
+                                <select x-model="smartConditions.salesCount.operator">
+                                    <option value="greater_than">Greater than</option>
+                                    <option value="less_than">Less than</option>
+                                    <option value="equals">Equals</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.salesCount.value" placeholder="Number of sales" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Count -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.wishlistCount.enabled">
+                                👥 Wishlist Count
+                            </label>
+                            <div x-show="smartConditions.wishlistCount.enabled" class="condition-fields">
+                                <select x-model="smartConditions.wishlistCount.operator">
+                                    <option value="greater_than">Greater than</option>
+                                    <option value="less_than">Less than</option>
+                                    <option value="equals">Equals</option>
+                                </select>
+                                <input type="number" x-model="smartConditions.wishlistCount.value" placeholder="Number in wishlists" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Product Attribute -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.attribute.enabled">
+                                🏷️ Product Attribute
+                            </label>
+                            <div x-show="smartConditions.attribute.enabled" class="condition-fields" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe;">
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-size: 12px; color: #1e40af; font-weight: 600; display: block; margin-bottom: 5px;">Attribute Code</label>
+                                    <input type="text" x-model="smartConditions.attribute.code" placeholder="Attribute code (e.g., brand)" class="form-control" style="width: 100%; background-color: #dbeafe; border-color: #93c5fd;">
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-size: 12px; color: #1e40af; font-weight: 600; display: block; margin-bottom: 5px;">Condition</label>
+                                    <select x-model="smartConditions.attribute.operator" style="background-color: #dbeafe; border-color: #93c5fd;">
+                                        <option value="equals">Equals</option>
+                                        <option value="not_equals">Not Equals</option>
+                                        <option value="contains">Contains</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: #1e40af; font-weight: 600; display: block; margin-bottom: 5px;">Value</label>
+                                    <input type="text" x-model="smartConditions.attribute.value" placeholder="Value (e.g., Nike)" class="form-control" style="width: 100%; background-color: #dbeafe; border-color: #93c5fd;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Date Range -->
+                        <div class="condition-group">
+                            <label>
+                                <input type="checkbox" x-model="smartConditions.dateRange.enabled">
+                                📅 Special Date Range
+                            </label>
+                            <div x-show="smartConditions.dateRange.enabled" class="condition-fields" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); padding: 15px; border-radius: 8px; border: 1px solid #e9d5ff;">
+                                <div class="date-range-fields">
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="font-size: 12px; color: #7c3aed; font-weight: 600; display: block; margin-bottom: 5px;">From Date</label>
+                                        <input type="date" x-model="smartConditions.dateRange.from" class="form-control" style="width: 100%; background-color: #f3e8ff; border-color: #c4b5fd;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; color: #7c3aed; font-weight: 600; display: block; margin-bottom: 5px;">To Date</label>
+                                        <input type="date" x-model="smartConditions.dateRange.to" class="form-control" style="width: 100%; background-color: #f3e8ff; border-color: #c4b5fd;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

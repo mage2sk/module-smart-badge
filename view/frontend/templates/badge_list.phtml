@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ * Category/List Page Badge Template (works with product listing loop)
+ *
+ * @var $block \Panth\SmartBadge\Block\Badge
+ */
+
+// This template is included in product listing loop
+// Product is available via $block->getProduct() when called from list
+?>
+<!-- Badges are rendered per product in category listing via JavaScript enhancement -->
+<script>
+// Enhance product items with badges
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.smartBadgesInitialized !== 'undefined') {
+        return; // Already initialized
+    }
+    window.smartBadgesInitialized = true;
+
+    // This would be enhanced with AJAX to fetch badges for products in listing
+    // For now, badges are added via layout on product page
+    console.log('Smart Badges: Category view initialized');
+});
+</script>

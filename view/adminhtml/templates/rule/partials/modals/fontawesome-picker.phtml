@@ -1,0 +1,36 @@
+    <template x-if="showFontAwesomePicker">
+    <div class="modal-overlay"
+         @click.self="showFontAwesomePicker = false">
+        <div class="modal-content fontawesome-picker-modal">
+            <div class="modal-header">
+                <h3>Icon Library</h3>
+                <button type="button" @click="showFontAwesomePicker = false" class="modal-close" aria-label="Close">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="icon-search-container">
+                    <input type="text" x-model="iconSearch" placeholder="Search icons..." class="icon-search-input">
+                    <div class="icon-category-tabs">
+                        <button @click="iconCategory = 'all'" :class="{'active': iconCategory === 'all'}">All</button>
+                        <button @click="iconCategory = 'popular'" :class="{'active': iconCategory === 'popular'}">Popular</button>
+                        <button @click="iconCategory = 'business'" :class="{'active': iconCategory === 'business'}">Business</button>
+                        <button @click="iconCategory = 'shopping'" :class="{'active': iconCategory === 'shopping'}">Shopping</button>
+                    </div>
+                </div>
+                <div class="fontawesome-icon-grid">
+                    <template x-for="icon in getFilteredIcons()" :key="icon.class">
+                        <button type="button" @click="selectFontAwesomeIcon(icon.class)" class="fa-icon-btn" :title="icon.name">
+                            <i :class="icon.class"></i>
+                        </button>
+                    </template>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @click="showFontAwesomePicker = false" class="btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    </template>

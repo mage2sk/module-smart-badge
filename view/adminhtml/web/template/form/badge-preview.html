@@ -1,0 +1,135 @@
+<!-- Badge Live Preview Container -->
+<div class="badge-preview-container" data-bind="fadeVisible: true">
+
+    <!-- Preview Header -->
+    <div class="badge-preview-header">
+        <span>Live Preview</span>
+        <div class="preview-mode-switcher">
+            <button type="button"
+                    data-bind="click: setPreviewMode.bind($data, 'product'), css: {active: previewMode() === 'product'}">
+                Product
+            </button>
+            <button type="button"
+                    data-bind="click: setPreviewMode.bind($data, 'category'), css: {active: previewMode() === 'category'}">
+                Category
+            </button>
+        </div>
+    </div>
+
+    <!-- Preview Content -->
+    <div class="badge-preview-content">
+
+        <!-- Product View Preview -->
+        <!-- ko if: previewMode() === 'product' -->
+        <div class="product-preview-mockup">
+            <div class="mock-product-image">
+                <!-- Badge Live Preview -->
+                <div class="badge-live-preview"
+                     data-bind="attr: {style: getBadgeStyle()},
+                                css: getBadgePositionClass() + ' ' + getAnimationClass()">
+                    <!-- Icon -->
+                    <!-- ko if: !isFontAwesome() -->
+                    <span data-bind="text: getBadgeIcon()"></span>
+                    <!-- /ko -->
+                    <!-- ko if: isFontAwesome() -->
+                    <i data-bind="attr: {class: getBadgeIcon()}"></i>
+                    <!-- /ko -->
+                    <!-- Text -->
+                    <span data-bind="text: getBadgeText()"></span>
+                </div>
+
+                <!-- Mock Product Image -->
+                <div class="mock-image-placeholder">
+                    <svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="productGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.8" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="400" fill="url(#productGradient)"/>
+                        <circle cx="200" cy="180" r="60" fill="white" opacity="0.2"/>
+                        <rect x="140" y="200" width="120" height="100" rx="10" fill="white" opacity="0.2"/>
+                        <text x="200" y="330" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.7">
+                            Premium Product
+                        </text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+
+        <!-- Category View Preview -->
+        <!-- ko if: previewMode() === 'category' -->
+        <div class="category-preview-mockup">
+            <h4 class="category-title">Category: Sample Products</h4>
+            <div class="category-grid">
+                <!-- ko foreach: [1, 2, 3, 4, 5, 6] -->
+                <div class="category-product-card">
+                    <div class="category-product-image">
+                        <!-- Badge -->
+                        <div class="badge-live-preview"
+                             data-bind="attr: {style: $parent.getBadgeStyle()},
+                                        css: $parent.getBadgePositionClass() + ' ' + $parent.getAnimationClass()">
+                            <!-- ko if: !$parent.isFontAwesome() -->
+                            <span data-bind="text: $parent.getBadgeIcon()"></span>
+                            <!-- /ko -->
+                            <!-- ko if: $parent.isFontAwesome() -->
+                            <i data-bind="attr: {class: $parent.getBadgeIcon()}"></i>
+                            <!-- /ko -->
+                            <span data-bind="text: $parent.getBadgeText()"></span>
+                        </div>
+                        <div class="category-image-placeholder">
+                            <span>🖼️</span>
+                        </div>
+                    </div>
+                    <div class="category-product-info">
+                        <h5 data-bind="text: 'Product ' + $data"></h5>
+                        <div class="category-price">$<span data-bind="text: (29 + ($data * 5)) + '.99'"></span></div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+        <!-- /ko -->
+
+        <!-- Performance Metrics -->
+        <div class="performance-metrics">
+            <h4>📈 Estimated Performance</h4>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-icon">👁️</span>
+                    <div class="metric-value">High</div>
+                    <div class="metric-label">Visibility</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🎯</span>
+                    <div class="metric-value">Medium</div>
+                    <div class="metric-label">Urgency</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">💰</span>
+                    <div class="metric-value">+15%</div>
+                    <div class="metric-label">Est. Conversion</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Panel -->
+        <div class="tips-panel">
+            <h4>💡 Optimization Tips</h4>
+            <ul class="tips-list">
+                <li data-bind="css: {complete: badgeData().badge_text && badgeData().badge_text.length < 15}">
+                    Keep text short (under 15 characters)
+                </li>
+                <li data-bind="css: {complete: badgeData().animation}">
+                    Add subtle animation for attention
+                </li>
+                <li data-bind="css: {complete: badgeData().badge_color}">
+                    Use contrasting colors
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>

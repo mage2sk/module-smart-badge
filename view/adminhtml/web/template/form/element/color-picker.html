@@ -1,0 +1,37 @@
+<!-- Color Picker Field Template -->
+<div class="admin__field" data-bind="css: additionalClasses, attr: {name: inputName}">
+    <label class="admin__field-label" data-bind="attr: {for: uid}">
+        <span data-bind="i18n: label"></span>
+    </label>
+    <div class="admin__field-control">
+        <div class="color-picker-wrapper">
+            <input type="color"
+                   class="admin__control-text"
+                   data-bind="
+                       attr: {
+                           name: inputName,
+                           id: uid,
+                           disabled: disabled
+                       },
+                       value: value,
+                       hasFocus: focused"
+            />
+            <input type="text"
+                   class="admin__control-text"
+                   data-bind="
+                       attr: {
+                           placeholder: '#000000',
+                           disabled: disabled
+                       },
+                       value: value,
+                       valueUpdate: 'input'"
+                   style="margin-left: 10px;"
+            />
+        </div>
+        <!-- ko if: notice -->
+        <div class="admin__field-note" data-bind="attr: {id: noticeId}">
+            <span data-bind="text: notice"></span>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

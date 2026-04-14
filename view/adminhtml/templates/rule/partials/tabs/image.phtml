@@ -1,0 +1,108 @@
+                <div x-show="activeTab === 'image'" class="tab-pane">
+                    <div class="form-group">
+                        <label>Upload Badge Image</label>
+                        <div class="image-upload-container">
+                            <input type="file"
+                                   id="badge_image_upload"
+                                   name="badge_image"
+                                   accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
+                                   @change="handleImageUpload($event)"
+                                   class="file-input">
+                            <label for="badge_image_upload" class="file-label">
+                                <span class="icon">📁</span>
+                                <span>Choose Image</span>
+                            </label>
+                            <small>Allowed: JPG, PNG, GIF, SVG, WebP (Max 2MB)</small>
+                        </div>
+
+                        <div x-show="imagePreview" class="image-preview-container">
+                            <label>Preview:</label>
+                            <div class="image-preview">
+                                <img :src="imagePreview" alt="Badge Image Preview">
+                                <button type="button" @click="removeImage()" class="btn-remove-image">
+                                    <span>✕</span> Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Image Only Mode -->
+                        <div x-show="imagePreview" class="form-group" style="margin-top: 20px;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" x-model="imageSettings.imageOnly">
+                                <span>🖼️ Show Image Only (Hide Text)</span>
+                            </label>
+                            <small class="hint">When enabled, only the badge image will be displayed without any text label</small>
+                        </div>
+
+                        <!-- Image Size Controls -->
+                        <div x-show="imagePreview" class="image-size-controls" @input="styleVersion++">
+                            <h4>📏 Image Size Settings</h4>
+                            <p class="section-description">Control the size of the badge image in the preview</p>
+
+                            <div class="size-control-grid">
+                                <div class="size-control-item">
+                                    <label>Image Width</label>
+                                    <div class="input-with-unit">
+                                        <input type="number"
+                                               x-model="imageSettings.width.value"
+                                               placeholder="Auto"
+                                               min="10"
+                                               max="500"
+                                               class="form-control">
+                                        <select x-model="imageSettings.width.unit" class="unit-select">
+                                            <option value="px">px</option>
+                                            <option value="%">%</option>
+                                            <option value="em">em</option>
+                                            <option value="auto">auto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="size-control-item">
+                                    <label>Image Height</label>
+                                    <div class="input-with-unit">
+                                        <input type="number"
+                                               x-model="imageSettings.height.value"
+                                               placeholder="Auto"
+                                               min="10"
+                                               max="500"
+                                               class="form-control">
+                                        <select x-model="imageSettings.height.unit" class="unit-select">
+                                            <option value="px">px</option>
+                                            <option value="%">%</option>
+                                            <option value="em">em</option>
+                                            <option value="auto">auto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="quick-sizes">
+                                <label>Quick Sizes:</label>
+                                <div class="quick-size-buttons">
+                                    <button type="button" @click="setImageSize(20, 20)" class="btn-quick-size">Tiny (20px)</button>
+                                    <button type="button" @click="setImageSize(40, 40)" class="btn-quick-size">Small (40px)</button>
+                                    <button type="button" @click="setImageSize(60, 60)" class="btn-quick-size">Medium (60px)</button>
+                                    <button type="button" @click="setImageSize(80, 80)" class="btn-quick-size">Large (80px)</button>
+                                    <button type="button" @click="setImageSize(100, 100)" class="btn-quick-size">XL (100px)</button>
+                                    <button type="button" @click="setImageSize('auto', 'auto')" class="btn-quick-size">Auto</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>Image Guidelines:</h4>
+                            <ul>
+                                <li>Transparent PNG works best for badges</li>
+                                <li>Recommended size: 100x100 to 200x200 pixels</li>
+                                <li>Keep file size under 2MB for optimal performance</li>
+                                <li>Use high contrast colors for better visibility</li>
+                            </ul>
+                        </div>
+
+                        <div class="toggle-info">
+                            <span class="icon">ℹ️</span>
+                            <p>Note: Image will be prioritized over emoji/icon when uploaded.</p>
+                        </div>
+                    </div>
+                </div>

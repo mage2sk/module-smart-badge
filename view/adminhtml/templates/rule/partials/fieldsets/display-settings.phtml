@@ -1,0 +1,123 @@
+<fieldset class="admin__fieldset fieldset-display-settings" data-fieldset="display">
+    <legend class="admin__legend legend">
+        <span><?= $escaper->escapeHtml(__('Display Settings')) ?></span>
+    </legend>
+    <br>
+
+    <!-- Hidden fields for positions -->
+    <input type="hidden" name="use_same_position" :value="rule.use_same_position ? '1' : '0'" />
+    <input type="hidden" name="position_all" x-model="rule.position_all" />
+    <input type="hidden" name="position_category" x-model="rule.position_category" />
+    <input type="hidden" name="position_product" x-model="rule.position_product" />
+    <input type="hidden" name="position_slider" x-model="rule.position_slider" />
+
+    <div class="admin__field field-display-on">
+        <label class="admin__field-label" for="display_on">
+            <span><?= $escaper->escapeHtml(__('Where to Display Badge')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <select id="display_on" name="display_on" x-model="rule.display_on" class="admin__control-select">
+                <option value="all"><?= $escaper->escapeHtml(__('All Pages (Category, Product, Sliders)')) ?></option>
+                <option value="category"><?= $escaper->escapeHtml(__('Category Pages Only')) ?></option>
+                <option value="product"><?= $escaper->escapeHtml(__('Product Detail Pages Only')) ?></option>
+                <option value="sliders"><?= $escaper->escapeHtml(__('Product Sliders Only')) ?></option>
+                <option value="category_product"><?= $escaper->escapeHtml(__('Category & Product Pages')) ?></option>
+                <option value="category_sliders"><?= $escaper->escapeHtml(__('Category & Sliders')) ?></option>
+                <option value="product_sliders"><?= $escaper->escapeHtml(__('Product & Sliders')) ?></option>
+            </select>
+            <p class="note"><span><?= $escaper->escapeHtml(__('Choose where this badge should appear on your store')) ?></span></p>
+        </div>
+    </div>
+
+    <div class="admin__field field-use-same-position">
+        <div class="admin__field-control">
+            <input type="checkbox"
+                   id="use_same_position"
+                   x-model="rule.use_same_position"
+                   @change="if (rule.use_same_position) { rule.position_category = rule.position_all; rule.position_product = rule.position_all; rule.position_slider = rule.position_all; }"
+                   class="admin__control-checkbox" />
+            <label class="admin__field-label" for="use_same_position">
+                <span><?= $escaper->escapeHtml(__('Use Same Position Everywhere')) ?></span>
+            </label>
+            <p class="note"><span><?= $escaper->escapeHtml(__('Check this to use the same badge position on all page types')) ?></span></p>
+        </div>
+    </div>
+
+    <!-- Single Position Selector -->
+    <div x-show="rule.use_same_position" class="admin__field field-position-all">
+        <label class="admin__field-label">
+            <span><?= $escaper->escapeHtml(__('Badge Position')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <div class="position-grid">
+                <button type="button" class="position-btn" :class="{'active': rule.position_all === 'top-left'}"
+                        @click="rule.position_all = 'top-left'; rule.position_category = 'top-left'; rule.position_product = 'top-left'; rule.position_slider = 'top-left'">
+                    <?= $escaper->escapeHtml(__('Top Left')) ?>
+                </button>
+                <button type="button" class="position-btn" :class="{'active': rule.position_all === 'top-right'}"
+                        @click="rule.position_all = 'top-right'; rule.position_category = 'top-right'; rule.position_product = 'top-right'; rule.position_slider = 'top-right'">
+                    <?= $escaper->escapeHtml(__('Top Right')) ?>
+                </button>
+                <button type="button" class="position-btn" :class="{'active': rule.position_all === 'bottom-left'}"
+                        @click="rule.position_all = 'bottom-left'; rule.position_category = 'bottom-left'; rule.position_product = 'bottom-left'; rule.position_slider = 'bottom-left'">
+                    <?= $escaper->escapeHtml(__('Bottom Left')) ?>
+                </button>
+                <button type="button" class="position-btn" :class="{'active': rule.position_all === 'bottom-right'}"
+                        @click="rule.position_all = 'bottom-right'; rule.position_category = 'bottom-right'; rule.position_product = 'bottom-right'; rule.position_slider = 'bottom-right'">
+                    <?= $escaper->escapeHtml(__('Bottom Right')) ?>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual Position Selectors -->
+    <div x-show="!rule.use_same_position">
+        <div class="admin__field field-position-category" x-show="rule.display_on.includes('category') || rule.display_on === 'all'">
+            <label class="admin__field-label">
+                <span><?= $escaper->escapeHtml(__('Position on Category Pages')) ?></span>
+            </label>
+            <div class="admin__field-control">
+                <div class="position-grid-small">
+                    <button type="button" class="position-btn" :class="{'active': rule.position_category === 'top-left'}" @click="rule.position_category = 'top-left'"><?= $escaper->escapeHtml(__('Top Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_category === 'top-right'}" @click="rule.position_category = 'top-right'"><?= $escaper->escapeHtml(__('Top Right')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_category === 'bottom-left'}" @click="rule.position_category = 'bottom-left'"><?= $escaper->escapeHtml(__('Bottom Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_category === 'bottom-right'}" @click="rule.position_category = 'bottom-right'"><?= $escaper->escapeHtml(__('Bottom Right')) ?></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin__field field-position-product" x-show="rule.display_on.includes('product') || rule.display_on === 'all'">
+            <label class="admin__field-label">
+                <span><?= $escaper->escapeHtml(__('Position on Product Pages')) ?></span>
+            </label>
+            <div class="admin__field-control">
+                <div class="position-grid-small">
+                    <button type="button" class="position-btn" :class="{'active': rule.position_product === 'top-left'}" @click="rule.position_product = 'top-left'"><?= $escaper->escapeHtml(__('Top Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_product === 'top-right'}" @click="rule.position_product = 'top-right'"><?= $escaper->escapeHtml(__('Top Right')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_product === 'bottom-left'}" @click="rule.position_product = 'bottom-left'"><?= $escaper->escapeHtml(__('Bottom Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_product === 'bottom-right'}" @click="rule.position_product = 'bottom-right'"><?= $escaper->escapeHtml(__('Bottom Right')) ?></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin__field field-position-slider" x-show="rule.display_on.includes('sliders') || rule.display_on === 'all'">
+            <label class="admin__field-label">
+                <span><?= $escaper->escapeHtml(__('Position on Product Sliders')) ?></span>
+            </label>
+            <div class="admin__field-control">
+                <div class="position-grid-small">
+                    <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'top-left'}" @click="rule.position_slider = 'top-left'"><?= $escaper->escapeHtml(__('Top Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'top-right'}" @click="rule.position_slider = 'top-right'"><?= $escaper->escapeHtml(__('Top Right')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'bottom-left'}" @click="rule.position_slider = 'bottom-left'"><?= $escaper->escapeHtml(__('Bottom Left')) ?></button>
+                    <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'bottom-right'}" @click="rule.position_slider = 'bottom-right'"><?= $escaper->escapeHtml(__('Bottom Right')) ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin__field">
+        <div class="message message-notice">
+            <span><?= $escaper->escapeHtml(__('Check the live preview on the right to see how your badge position looks on different page types.')) ?></span>
+        </div>
+    </div>
+</fieldset>

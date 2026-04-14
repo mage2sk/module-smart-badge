@@ -1,0 +1,107 @@
+                <div x-show="activeTab === 'display'" class="tab-pane">
+                    <h4 style="margin-bottom: 20px; color: #1f2937; font-size: 16px;">Display Location & Position Settings</h4>
+
+                    <!-- Display Location -->
+                    <div class="form-group">
+                        <label>Where to Display Badge</label>
+                        <select x-model="rule.display_on" class="form-control">
+                            <option value="all">All Pages (Category, Product, Sliders)</option>
+                            <option value="category">Category Pages Only</option>
+                            <option value="product">Product Detail Pages Only</option>
+                            <option value="sliders">Product Sliders Only</option>
+                            <option value="category_product">Category & Product Pages</option>
+                            <option value="category_sliders">Category & Sliders</option>
+                            <option value="product_sliders">Product & Sliders</option>
+                        </select>
+                        <small>Choose where this badge should appear on your store</small>
+                    </div>
+
+                    <!-- Position Settings -->
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" x-model="rule.use_same_position" @change="if (rule.use_same_position) { rule.position_category = rule.position_all; rule.position_product = rule.position_all; rule.position_slider = rule.position_all; }">
+                            Use Same Position Everywhere
+                        </label>
+                        <small>Check this to use the same badge position on all page types</small>
+                    </div>
+
+                    <!-- Single Position Selector (when use_same_position is true) -->
+                    <div x-show="rule.use_same_position" class="form-group">
+                        <label>Badge Position</label>
+                        <div class="position-grid">
+                            <div class="position-selector">
+                                <div class="position-preview-box">
+                                    <div class="position-option"
+                                         :class="{'selected': rule.position_all === 'top-left'}"
+                                         @click="rule.position_all = 'top-left'; rule.position_category = 'top-left'; rule.position_product = 'top-left'; rule.position_slider = 'top-left'">
+                                        <span class="position-icon">↖</span>
+                                        <span>Top Left</span>
+                                    </div>
+                                    <div class="position-option"
+                                         :class="{'selected': rule.position_all === 'top-right'}"
+                                         @click="rule.position_all = 'top-right'; rule.position_category = 'top-right'; rule.position_product = 'top-right'; rule.position_slider = 'top-right'">
+                                        <span class="position-icon">↗</span>
+                                        <span>Top Right</span>
+                                    </div>
+                                    <div class="position-option"
+                                         :class="{'selected': rule.position_all === 'bottom-left'}"
+                                         @click="rule.position_all = 'bottom-left'; rule.position_category = 'bottom-left'; rule.position_product = 'bottom-left'; rule.position_slider = 'bottom-left'">
+                                        <span class="position-icon">↙</span>
+                                        <span>Bottom Left</span>
+                                    </div>
+                                    <div class="position-option"
+                                         :class="{'selected': rule.position_all === 'bottom-right'}"
+                                         @click="rule.position_all = 'bottom-right'; rule.position_category = 'bottom-right'; rule.position_product = 'bottom-right'; rule.position_slider = 'bottom-right'">
+                                        <span class="position-icon">↘</span>
+                                        <span>Bottom Right</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Position Selectors (when use_same_position is false) -->
+                    <div x-show="!rule.use_same_position">
+                        <!-- Category Position -->
+                        <div class="form-group" x-show="rule.display_on.includes('category') || rule.display_on === 'all'">
+                            <label>Badge Position on Category Pages</label>
+                            <div class="position-grid-small">
+                                <button type="button" class="position-btn" :class="{'active': rule.position_category === 'top-left'}" @click="rule.position_category = 'top-left'">↖ Top Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_category === 'top-right'}" @click="rule.position_category = 'top-right'">↗ Top Right</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_category === 'bottom-left'}" @click="rule.position_category = 'bottom-left'">↙ Bottom Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_category === 'bottom-right'}" @click="rule.position_category = 'bottom-right'">↘ Bottom Right</button>
+                            </div>
+                        </div>
+
+                        <!-- Product Position -->
+                        <div class="form-group" x-show="rule.display_on.includes('product') || rule.display_on === 'all'">
+                            <label>Badge Position on Product Detail Pages</label>
+                            <div class="position-grid-small">
+                                <button type="button" class="position-btn" :class="{'active': rule.position_product === 'top-left'}" @click="rule.position_product = 'top-left'">↖ Top Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_product === 'top-right'}" @click="rule.position_product = 'top-right'">↗ Top Right</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_product === 'bottom-left'}" @click="rule.position_product = 'bottom-left'">↙ Bottom Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_product === 'bottom-right'}" @click="rule.position_product = 'bottom-right'">↘ Bottom Right</button>
+                            </div>
+                        </div>
+
+                        <!-- Slider Position -->
+                        <div class="form-group" x-show="rule.display_on.includes('sliders') || rule.display_on === 'all'">
+                            <label>Badge Position on Product Sliders</label>
+                            <div class="position-grid-small">
+                                <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'top-left'}" @click="rule.position_slider = 'top-left'">↖ Top Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'top-right'}" @click="rule.position_slider = 'top-right'">↗ Top Right</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'bottom-left'}" @click="rule.position_slider = 'bottom-left'">↙ Bottom Left</button>
+                                <button type="button" class="position-btn" :class="{'active': rule.position_slider === 'bottom-right'}" @click="rule.position_slider = 'bottom-right'">↘ Bottom Right</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info about preview -->
+                    <div class="info-box" style="margin-top: 30px;">
+                        <h4>💡 Live Preview</h4>
+                        <p style="margin: 0; font-size: 13px; color: #6b7280;">
+                            Check the live preview on the right sidebar to see how your badge position looks on different page types.
+                            The preview updates automatically as you change settings.
+                        </p>
+                    </div>
+                </div>

@@ -1,0 +1,497 @@
+/**
+ * SmartBadge Builder — Custom component styles only.
+ * Form layout uses Magento's admin__* classes (no overrides).
+ * This file ONLY styles the custom interactive elements:
+ * badge-type picker, color picker, icon picker, preview panel, modals.
+ */
+
+[x-cloak] { display: none !important; }
+
+/* ============================================================
+   Badge Type Selector Grid
+   ============================================================ */
+.badge-type-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.badge-type-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    border: 2px solid #d6d6d6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    min-width: 70px;
+    text-align: center;
+}
+
+.badge-type-option:hover {
+    border-color: #006bb4;
+    background: #f5f9fc;
+}
+
+.badge-type-option.selected {
+    border-color: #eb5202;
+    background: #fff7f2;
+    box-shadow: 0 0 0 1px #eb5202;
+}
+
+.badge-type-icon { font-size: 20px; }
+.badge-type-label { font-size: 11px; font-weight: 600; color: #303030; }
+
+/* Also support old class name from basic.phtml */
+.badge-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    border: 2px solid #d6d6d6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    min-width: 70px;
+    text-align: center;
+}
+
+.badge-type-card:hover { border-color: #006bb4; }
+.badge-type-card.selected { border-color: #eb5202; background: #fff7f2; }
+.badge-type-card .card-icon { font-size: 20px; }
+.badge-type-card .card-label { font-size: 11px; font-weight: 600; color: #303030; }
+.badge-type-card .card-color { width: 100%; height: 3px; border-radius: 2px; margin-top: 4px; }
+
+/* ============================================================
+   Color Picker
+   ============================================================ */
+.color-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+input[type="color"].admin__control-text,
+.color-input {
+    width: 40px;
+    height: 36px;
+    padding: 2px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* ============================================================
+   Icon Picker (Emoji Grid)
+   ============================================================ */
+.icon-type-selector {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.icon-type-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #d6d6d6;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.icon-type-btn:hover { border-color: #006bb4; }
+.icon-type-btn.active { background: #006bb4; color: #fff; border-color: #006bb4; }
+
+.icon-picker-grid,
+.emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.icon-btn:hover {
+    border-color: #006bb4;
+    background: #f5f9fc;
+    transform: scale(1.1);
+}
+
+.icon-preview { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+
+/* ============================================================
+   Smart Conditions
+   ============================================================ */
+.smart-conditions-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.field-condition {
+    border: 1px solid #e8e8e8;
+    border-radius: 0;
+    margin-bottom: -1px;
+    padding: 10px 15px;
+    background: #fff;
+}
+
+.field-condition:first-child { border-radius: 4px 4px 0 0; }
+.field-condition:last-child { border-radius: 0 0 4px 4px; }
+
+.condition-fields {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
+    border-radius: 3px;
+    flex-wrap: wrap;
+}
+
+.condition-fields .admin__control-text { max-width: 150px; }
+.condition-fields .admin__control-select { max-width: 180px; }
+
+.attribute-fields,
+.date-range-fields {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.attribute-fields .admin__field,
+.date-range-fields .admin__field {
+    margin-bottom: 8px;
+}
+
+/* ============================================================
+   Selected Items Lists (Products/Categories)
+   ============================================================ */
+.selected-items-list {
+    margin-top: 10px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.selected-items-list h4 {
+    padding: 8px 12px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f5f5f5;
+    border-bottom: 1px solid #d6d6d6;
+}
+
+.selected-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.selected-item:last-child { border-bottom: none; }
+
+.selected-item .action-delete {
+    background: none;
+    border: none;
+    color: #e22626;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+/* ============================================================
+   Image Preview
+   ============================================================ */
+.image-preview-wrapper {
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.image-preview {
+    max-width: 120px;
+    max-height: 80px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+}
+
+/* ============================================================
+   Preview Panel (Fixed Sidebar)
+   ============================================================ */
+.badge-builder-layout {
+    position: relative;
+}
+
+.preview-panel-container {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 400px;
+    background: #fff;
+    border-left: 1px solid #d6d6d6;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.preview-panel-fixed { padding: 20px; }
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.preview-header h3 { margin: 0; font-size: 16px; font-weight: 600; color: #303030; }
+
+.preview-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.preview-controls button {
+    padding: 4px 12px;
+    font-size: 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.preview-controls button.active { background: #006bb4; color: #fff; border-color: #006bb4; }
+
+.preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 400px;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 998;
+}
+
+/* Mock product card in preview */
+.preview-product-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.preview-product-image {
+    position: relative;
+    padding-top: 100%;
+    background: #f5f5f5;
+}
+
+.preview-product-info {
+    padding: 12px;
+}
+
+.preview-product-name { font-size: 14px; font-weight: 600; color: #303030; margin: 0 0 4px; }
+.preview-product-price { font-size: 16px; font-weight: 700; color: #303030; margin: 0; }
+
+/* ============================================================
+   Modals (Product/Category Chooser, FontAwesome Picker)
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 4px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e8e8e8;
+    background: #f5f5f5;
+}
+
+.modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; padding: 0; }
+.modal-close:hover { color: #333; }
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #e8e8e8;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Search in modals */
+.modal-search {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 3px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+/* ============================================================
+   Advanced Styling Fieldset custom components
+   ============================================================ */
+.style-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.style-preset-btn {
+    padding: 8px 16px;
+    border: 1px solid #d6d6d6;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+
+.style-preset-btn:hover { border-color: #006bb4; }
+.style-preset-btn.active { border-color: #eb5202; background: #fff7f2; }
+
+/* Range sliders */
+.range-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.range-field input[type="range"] {
+    flex: 1;
+    accent-color: #eb5202;
+}
+
+.range-field .range-value {
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* Input with unit (e.g., px, %) */
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.input-with-unit select { max-width: 70px; }
+
+/* ============================================================
+   Display Settings — Position Grid
+   ============================================================ */
+.position-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    max-width: 300px;
+}
+
+.position-option,
+.position-btn {
+    padding: 8px 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    background: #fff;
+    transition: all 0.15s;
+    color: #303030;
+    line-height: 1.4;
+}
+
+.position-option:hover,
+.position-btn:hover { border-color: #006bb4; background: #f5f9fc; }
+.position-option.selected,
+.position-option.active,
+.position-btn.selected,
+.position-btn.active { background: #006bb4; color: #fff; border-color: #006bb4; }
+
+.position-grid-small {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    max-width: 300px;
+}
+
+/* ============================================================
+   Utility
+   ============================================================ */
+p.note, .admin__field .note { color: #999; font-size: 12px; margin-top: 4px; }
+.hint { color: #999; font-size: 11px; display: block; margin-top: 4px; }
+
+/* Hide the overlapping icon on admin messages */
+.page-content .message::before {
+    display: none !important;
+}

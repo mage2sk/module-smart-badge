@@ -1,0 +1,129 @@
+                <div x-show="activeTab === 'design'" class="tab-pane">
+                    <div class="form-group">
+                        <label>Custom Color</label>
+                        <div class="color-picker-group">
+                            <input type="color" x-model="rule.badge_color" class="color-input">
+                            <input type="text" x-model="rule.badge_color" placeholder="#FF0000" class="form-control">
+                            <button type="button" @click="generateAiColors()" class="btn-ai-color">
+                                <span class="icon">🎨</span> AI Generate
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Suggested Color Palettes</label>
+                        <div class="color-palette-grid">
+                            <div class="palette-card" @click="rule.badge_color = '#6366f1'">
+                                <div class="palette-preview" style="background: linear-gradient(135deg, #6366f1, #4f46e5)"></div>
+                                <span>Red Hot</span>
+                            </div>
+                            <div class="palette-card" @click="rule.badge_color = '#10b981'">
+                                <div class="palette-preview" style="background: linear-gradient(135deg, #10b981, #059669)"></div>
+                                <span>Fresh Green</span>
+                            </div>
+                            <div class="palette-card" @click="rule.badge_color = '#8b5cf6'">
+                                <div class="palette-preview" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"></div>
+                                <span>Royal Purple</span>
+                            </div>
+                            <div class="palette-card" @click="rule.badge_color = '#f59e0b'">
+                                <div class="palette-preview" style="background: linear-gradient(135deg, #f59e0b, #d97706)"></div>
+                                <span>Golden Hour</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Badge Icon</label>
+                        <div class="icon-type-selector">
+                            <button type="button" @click="iconType = 'emoji'" :class="{'active': iconType === 'emoji'}" class="icon-type-btn">
+                                Emoji
+                            </button>
+                            <button type="button" @click="iconType = 'fontawesome'; showFontAwesomePicker = true" :class="{'active': iconType === 'fontawesome'}" class="icon-type-btn">
+                                Icon Library
+                            </button>
+                        </div>
+
+                        <div x-show="iconType === 'emoji'" class="icon-picker-grid emoji-grid">
+                            <!-- Fire & Energy -->
+                            <button type="button" @click="rule.badge_icon = '🔥'" class="icon-btn" title="Fire">🔥</button>
+                            <button type="button" @click="rule.badge_icon = '⚡'" class="icon-btn" title="Lightning">⚡</button>
+                            <button type="button" @click="rule.badge_icon = '💥'" class="icon-btn" title="Boom">💥</button>
+                            <button type="button" @click="rule.badge_icon = '✨'" class="icon-btn" title="Sparkles">✨</button>
+                            <button type="button" @click="rule.badge_icon = '⭐'" class="icon-btn" title="Star">⭐</button>
+                            <button type="button" @click="rule.badge_icon = '🌟'" class="icon-btn" title="Glowing Star">🌟</button>
+                            <button type="button" @click="rule.badge_icon = '💫'" class="icon-btn" title="Dizzy">💫</button>
+                            <button type="button" @click="rule.badge_icon = '🔆'" class="icon-btn" title="Bright">🔆</button>
+                            <!-- Gems & Luxury -->
+                            <button type="button" @click="rule.badge_icon = '💎'" class="icon-btn" title="Gem">💎</button>
+                            <button type="button" @click="rule.badge_icon = '👑'" class="icon-btn" title="Crown">👑</button>
+                            <button type="button" @click="rule.badge_icon = '🏆'" class="icon-btn" title="Trophy">🏆</button>
+                            <button type="button" @click="rule.badge_icon = '🥇'" class="icon-btn" title="Gold Medal">🥇</button>
+                            <button type="button" @click="rule.badge_icon = '🥈'" class="icon-btn" title="Silver Medal">🥈</button>
+                            <button type="button" @click="rule.badge_icon = '🥉'" class="icon-btn" title="Bronze Medal">🥉</button>
+                            <button type="button" @click="rule.badge_icon = '🎖️'" class="icon-btn" title="Military Medal">🎖️</button>
+                            <button type="button" @click="rule.badge_icon = '🏅'" class="icon-btn" title="Medal">🏅</button>
+                            <!-- Hearts & Love -->
+                            <button type="button" @click="rule.badge_icon = '❤️'" class="icon-btn" title="Red Heart">❤️</button>
+                            <button type="button" @click="rule.badge_icon = '💖'" class="icon-btn" title="Sparkling Heart">💖</button>
+                            <button type="button" @click="rule.badge_icon = '💗'" class="icon-btn" title="Growing Heart">💗</button>
+                            <button type="button" @click="rule.badge_icon = '💝'" class="icon-btn" title="Heart with Ribbon">💝</button>
+                            <!-- Shopping & Money -->
+                            <button type="button" @click="rule.badge_icon = '🛒'" class="icon-btn" title="Shopping Cart">🛒</button>
+                            <button type="button" @click="rule.badge_icon = '🛍️'" class="icon-btn" title="Shopping Bags">🛍️</button>
+                            <button type="button" @click="rule.badge_icon = '💰'" class="icon-btn" title="Money Bag">💰</button>
+                            <button type="button" @click="rule.badge_icon = '💵'" class="icon-btn" title="Dollar">💵</button>
+                            <button type="button" @click="rule.badge_icon = '💸'" class="icon-btn" title="Money with Wings">💸</button>
+                            <button type="button" @click="rule.badge_icon = '💳'" class="icon-btn" title="Credit Card">💳</button>
+                            <button type="button" @click="rule.badge_icon = '🏷️'" class="icon-btn" title="Label">🏷️</button>
+                            <button type="button" @click="rule.badge_icon = '🎫'" class="icon-btn" title="Ticket">🎫</button>
+                            <!-- Gifts & Celebration -->
+                            <button type="button" @click="rule.badge_icon = '🎁'" class="icon-btn" title="Gift">🎁</button>
+                            <button type="button" @click="rule.badge_icon = '🎉'" class="icon-btn" title="Party Popper">🎉</button>
+                            <button type="button" @click="rule.badge_icon = '🎊'" class="icon-btn" title="Confetti">🎊</button>
+                            <button type="button" @click="rule.badge_icon = '🎈'" class="icon-btn" title="Balloon">🎈</button>
+                            <button type="button" @click="rule.badge_icon = '🎀'" class="icon-btn" title="Ribbon">🎀</button>
+                            <!-- Symbols & Icons -->
+                            <button type="button" @click="rule.badge_icon = '🎯'" class="icon-btn" title="Target">🎯</button>
+                            <button type="button" @click="rule.badge_icon = '📢'" class="icon-btn" title="Loudspeaker">📢</button>
+                            <button type="button" @click="rule.badge_icon = '📣'" class="icon-btn" title="Megaphone">📣</button>
+                            <button type="button" @click="rule.badge_icon = '🔔'" class="icon-btn" title="Bell">🔔</button>
+                            <button type="button" @click="rule.badge_icon = '🚀'" class="icon-btn" title="Rocket">🚀</button>
+                            <button type="button" @click="rule.badge_icon = '📈'" class="icon-btn" title="Chart Increasing">📈</button>
+                            <button type="button" @click="rule.badge_icon = '💯'" class="icon-btn" title="Hundred Points">💯</button>
+                            <button type="button" @click="rule.badge_icon = '✅'" class="icon-btn" title="Check Mark">✅</button>
+                            <button type="button" @click="rule.badge_icon = '✓'" class="icon-btn" title="Check">✓</button>
+                            <button type="button" @click="rule.badge_icon = '🆕'" class="icon-btn" title="NEW">🆕</button>
+                            <button type="button" @click="rule.badge_icon = '🆓'" class="icon-btn" title="FREE">🆓</button>
+                            <button type="button" @click="rule.badge_icon = '🆙'" class="icon-btn" title="UP">🆙</button>
+                            <button type="button" @click="rule.badge_icon = '🔝'" class="icon-btn" title="TOP">🔝</button>
+                            <!-- Time & Urgency -->
+                            <button type="button" @click="rule.badge_icon = '⏰'" class="icon-btn" title="Alarm Clock">⏰</button>
+                            <button type="button" @click="rule.badge_icon = '⏱️'" class="icon-btn" title="Stopwatch">⏱️</button>
+                            <button type="button" @click="rule.badge_icon = '⌛'" class="icon-btn" title="Hourglass">⌛</button>
+                            <button type="button" @click="rule.badge_icon = '⏳'" class="icon-btn" title="Hourglass Flowing">⏳</button>
+                            <!-- Hands & Gestures -->
+                            <button type="button" @click="rule.badge_icon = '👍'" class="icon-btn" title="Thumbs Up">👍</button>
+                            <button type="button" @click="rule.badge_icon = '👏'" class="icon-btn" title="Clapping">👏</button>
+                            <button type="button" @click="rule.badge_icon = '🤝'" class="icon-btn" title="Handshake">🤝</button>
+                            <button type="button" @click="rule.badge_icon = '👌'" class="icon-btn" title="OK Hand">👌</button>
+                            <button type="button" @click="rule.badge_icon = '✊'" class="icon-btn" title="Raised Fist">✊</button>
+                            <!-- Special Characters -->
+                            <button type="button" @click="rule.badge_icon = '►'" class="icon-btn" title="Play">►</button>
+                            <button type="button" @click="rule.badge_icon = '➤'" class="icon-btn" title="Arrow">➤</button>
+                            <button type="button" @click="rule.badge_icon = '★'" class="icon-btn" title="Star">★</button>
+                            <button type="button" @click="rule.badge_icon = '☆'" class="icon-btn" title="Star Outline">☆</button>
+                            <button type="button" @click="rule.badge_icon = '●'" class="icon-btn" title="Circle">●</button>
+                            <button type="button" @click="rule.badge_icon = '◆'" class="icon-btn" title="Diamond">◆</button>
+                            <button type="button" @click="rule.badge_icon = '◈'" class="icon-btn" title="Diamond">◈</button>
+                            <button type="button" @click="rule.badge_icon = '♦'" class="icon-btn" title="Diamond Suit">♦</button>
+                        </div>
+
+                        <div x-show="iconType === 'fontawesome' && rule.badge_icon.startsWith('fa-')" class="selected-icon-preview">
+                            <label>Selected Icon:</label>
+                            <div class="icon-preview-box">
+                                <i :class="rule.badge_icon" style="font-size: 32px;"></i>
+                                <span x-text="rule.badge_icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>

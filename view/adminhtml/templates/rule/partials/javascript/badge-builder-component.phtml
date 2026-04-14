@@ -1,0 +1,1478 @@
+<script>
+// Store rule data in a JavaScript variable first to avoid syntax errors
+const existingRuleData = <?= /* @noEscape */ $existingRuleJson ?>;
+console.log('🔍 Raw JSON passed to badgeBuilder:', existingRuleData);
+
+// Ensure function is in global scope before Alpine.js initializes
+window.badgeBuilder = function(existingRule = null) {
+    try {
+        console.log('✅ badgeBuilder called with:', existingRule);
+
+        // Default rule data
+        const defaultRule = {
+        rule_id: null,
+        name: '',
+        is_active: true,
+        priority: 50,
+        badge_type: 'sale',
+        badge_text: 'SALE',
+        badge_color: '#6366f1',
+        badge_icon: '🔥',
+        animation: 'pulse',
+        product_ids: '',
+        category_ids: '',
+        badge_image: '',
+        display_on: 'all',
+        position_category: 'top-left',
+        position_product: 'top-left',
+        position_slider: 'top-left',
+        position_all: 'top-left',
+        use_same_position: true
+    };
+
+    // Merge existing rule data with defaults
+    const ruleData = existingRule ? { ...defaultRule, ...existingRule } : defaultRule;
+
+    const componentData = {
+        activeTab: 'basic',
+        previewMode: 'product',
+        showPreview: false,
+        showAiSuggestions: false,
+        showAnalytics: false,
+        showFontAwesomePicker: false,
+        iconType: (ruleData.badge_icon && ruleData.badge_icon.startsWith('fa-')) ? 'fontawesome' : 'emoji',
+        iconSearch: '',
+        iconCategory: 'popular',
+        imagePreview: ruleData.badge_image_url || null,
+        imageFile: null,
+        rule: ruleData,
+
+        // Smart Conditions
+        smartConditions: {
+            price: { enabled: false, min: '', max: '' },
+            stock: { enabled: false, operator: 'less_than', value: '' },
+            discount: { enabled: false, operator: 'greater_than', value: '' },
+            age: { enabled: false, operator: 'less_than', value: '' },
+            stockStatus: { enabled: false, value: 'in_stock' },
+            rating: { enabled: false, operator: 'greater_than', value: '' },
+            salesCount: { enabled: false, operator: 'greater_than', value: '' },
+            wishlistCount: { enabled: false, operator: 'greater_than', value: '' },
+            attribute: { enabled: false, code: '', operator: 'equals', value: '' },
+            dateRange: { enabled: false, from: '', to: '' }
+        },
+
+        // Schedule
+        schedule: {
+            enabled: false,
+            from: '',
+            to: ''
+        },
+
+        // Badge Style
+        badgeStyle: {
+            width: { value: '', unit: 'auto' },
+            height: { value: '', unit: 'auto' },
+            borderRadius: '8',
+            opacity: '100',
+            fontSize: { value: '14', unit: 'px' },
+            fontWeight: '700',
+            padding: { top: '6', right: '12', bottom: '6', left: '12' },
+            borderWidth: '0',
+            borderStyle: 'none',
+            borderColor: '#000000',
+            boxShadow: 'default',
+            customBoxShadow: '',
+            zIndex: '10'
+        },
+
+        // Image Settings
+        imageSettings: {
+            imageOnly: false,
+            width: { value: '', unit: 'auto' },
+            height: { value: '', unit: 'auto' }
+        },
+
+        // Style version for forcing preview updates
+        styleVersion: 0,
+
+        // Product Selector
+        productSelectorMode: 'ids',
+        productSearchTerm: '',
+        searchedProducts: [],
+        selectedProducts: [],
+        selectedCategories: [],
+        showCategoryTree: false,
+
+        // Product/Category Choosers
+        showProductChooser: false,
+        showCategoryChooser: false,
+        chosenProducts: [],
+        chosenCategories: [],
+        tempSelectedProducts: [],
+        tempSelectedCategories: [],
+        categoryExpanded: {},
+        categorySearchTerm: '',
+        categoryTree: [],
+        categoryTreeLoading: false,
+
+        // Product Search Pagination
+        productSearchPage: 1,
+        productSearchLimit: 5,
+        productSearchTotal: 0,
+        productSearchHasMore: false,
+        productSearchLoading: false,
+
+        fontAwesomeIcons: [
+            // Popular icons (50+)
+            {name: 'Fire', class: 'fa-solid fa-fire', category: 'popular'},
+            {name: 'Star', class: 'fa-solid fa-star', category: 'popular'},
+            {name: 'Heart', class: 'fa-solid fa-heart', category: 'popular'},
+            {name: 'Bolt', class: 'fa-solid fa-bolt', category: 'popular'},
+            {name: 'Trophy', class: 'fa-solid fa-trophy', category: 'popular'},
+            {name: 'Gift', class: 'fa-solid fa-gift', category: 'popular'},
+            {name: 'Sparkles', class: 'fa-solid fa-sparkles', category: 'popular'},
+            {name: 'Crown', class: 'fa-solid fa-crown', category: 'popular'},
+            {name: 'Gem', class: 'fa-solid fa-gem', category: 'popular'},
+            {name: 'Medal', class: 'fa-solid fa-medal', category: 'popular'},
+            {name: 'Rocket', class: 'fa-solid fa-rocket', category: 'popular'},
+            {name: 'Zap', class: 'fa-solid fa-bolt-lightning', category: 'popular'},
+            {name: 'Hot', class: 'fa-solid fa-fire-flame-curved', category: 'popular'},
+            {name: 'Lightning', class: 'fa-solid fa-cloud-bolt', category: 'popular'},
+            {name: 'Explosion', class: 'fa-solid fa-burst', category: 'popular'},
+            {name: 'Wand Magic', class: 'fa-solid fa-wand-magic-sparkles', category: 'popular'},
+            {name: 'Hands Sparkles', class: 'fa-solid fa-hands-sparkles', category: 'popular'},
+            {name: 'Facepalm', class: 'fa-solid fa-face-grin-stars', category: 'popular'},
+            {name: 'Celebrate', class: 'fa-solid fa-champagne-glasses', category: 'popular'},
+            {name: 'Party Horn', class: 'fa-solid fa-party-horn', category: 'popular'},
+            {name: 'Confetti', class: 'fa-solid fa-confetti', category: 'popular'},
+            {name: 'Music', class: 'fa-solid fa-music', category: 'popular'},
+            {name: 'Megaphone', class: 'fa-solid fa-megaphone', category: 'popular'},
+            {name: 'Bullhorn', class: 'fa-solid fa-bullhorn', category: 'popular'},
+            {name: 'Volume High', class: 'fa-solid fa-volume-high', category: 'popular'},
+            {name: 'Comments', class: 'fa-solid fa-comments', category: 'popular'},
+            {name: 'Comment', class: 'fa-solid fa-comment', category: 'popular'},
+            {name: 'Message', class: 'fa-solid fa-message', category: 'popular'},
+            {name: 'Envelope', class: 'fa-solid fa-envelope', category: 'popular'},
+            {name: 'Paper Plane', class: 'fa-solid fa-paper-plane', category: 'popular'},
+            {name: 'Share', class: 'fa-solid fa-share-nodes', category: 'popular'},
+            {name: 'Link', class: 'fa-solid fa-link', category: 'popular'},
+            {name: 'Bookmark', class: 'fa-solid fa-bookmark', category: 'popular'},
+            {name: 'Flag', class: 'fa-solid fa-flag', category: 'popular'},
+            {name: 'Map Pin', class: 'fa-solid fa-map-pin', category: 'popular'},
+            {name: 'Location', class: 'fa-solid fa-location-dot', category: 'popular'},
+            {name: 'Calendar', class: 'fa-solid fa-calendar', category: 'popular'},
+            {name: 'Calendar Check', class: 'fa-solid fa-calendar-check', category: 'popular'},
+            {name: 'Camera', class: 'fa-solid fa-camera', category: 'popular'},
+            {name: 'Image', class: 'fa-solid fa-image', category: 'popular'},
+            {name: 'Video', class: 'fa-solid fa-video', category: 'popular'},
+            {name: 'Play', class: 'fa-solid fa-play', category: 'popular'},
+            {name: 'Circle Play', class: 'fa-solid fa-circle-play', category: 'popular'},
+            {name: 'Download', class: 'fa-solid fa-download', category: 'popular'},
+            {name: 'Upload', class: 'fa-solid fa-upload', category: 'popular'},
+            {name: 'Cloud Arrow Down', class: 'fa-solid fa-cloud-arrow-down', category: 'popular'},
+            {name: 'Cloud Arrow Up', class: 'fa-solid fa-cloud-arrow-up', category: 'popular'},
+            {name: 'Magnifying Glass', class: 'fa-solid fa-magnifying-glass', category: 'popular'},
+            {name: 'Search Plus', class: 'fa-solid fa-magnifying-glass-plus', category: 'popular'},
+            {name: 'Eye', class: 'fa-solid fa-eye', category: 'popular'},
+            // Business icons (50+)
+            {name: 'Tag', class: 'fa-solid fa-tag', category: 'business'},
+            {name: 'Tags', class: 'fa-solid fa-tags', category: 'business'},
+            {name: 'Percent', class: 'fa-solid fa-percent', category: 'business'},
+            {name: 'Dollar', class: 'fa-solid fa-dollar-sign', category: 'business'},
+            {name: 'Chart Up', class: 'fa-solid fa-chart-line', category: 'business'},
+            {name: 'Certificate', class: 'fa-solid fa-certificate', category: 'business'},
+            {name: 'Chart Simple', class: 'fa-solid fa-chart-simple', category: 'business'},
+            {name: 'Chart Bar', class: 'fa-solid fa-chart-bar', category: 'business'},
+            {name: 'Chart Pie', class: 'fa-solid fa-chart-pie', category: 'business'},
+            {name: 'Chart Area', class: 'fa-solid fa-chart-area', category: 'business'},
+            {name: 'Trending Up', class: 'fa-solid fa-arrow-trend-up', category: 'business'},
+            {name: 'Trending Down', class: 'fa-solid fa-arrow-trend-down', category: 'business'},
+            {name: 'Arrow Up', class: 'fa-solid fa-arrow-up', category: 'business'},
+            {name: 'Arrow Down', class: 'fa-solid fa-arrow-down', category: 'business'},
+            {name: 'Briefcase', class: 'fa-solid fa-briefcase', category: 'business'},
+            {name: 'Building', class: 'fa-solid fa-building', category: 'business'},
+            {name: 'City', class: 'fa-solid fa-city', category: 'business'},
+            {name: 'Handshake', class: 'fa-solid fa-handshake', category: 'business'},
+            {name: 'Handshake Simple', class: 'fa-solid fa-handshake-simple', category: 'business'},
+            {name: 'User Tie', class: 'fa-solid fa-user-tie', category: 'business'},
+            {name: 'Users', class: 'fa-solid fa-users', category: 'business'},
+            {name: 'People Group', class: 'fa-solid fa-people-group', category: 'business'},
+            {name: 'Network Wired', class: 'fa-solid fa-network-wired', category: 'business'},
+            {name: 'Sitemap', class: 'fa-solid fa-sitemap', category: 'business'},
+            {name: 'Diagram Project', class: 'fa-solid fa-diagram-project', category: 'business'},
+            {name: 'Lightbulb', class: 'fa-solid fa-lightbulb', category: 'business'},
+            {name: 'Brain', class: 'fa-solid fa-brain', category: 'business'},
+            {name: 'Head Side Brain', class: 'fa-solid fa-head-side-brain', category: 'business'},
+            {name: 'Gears', class: 'fa-solid fa-gears', category: 'business'},
+            {name: 'Gear', class: 'fa-solid fa-gear', category: 'business'},
+            {name: 'Wrench', class: 'fa-solid fa-wrench', category: 'business'},
+            {name: 'Screwdriver Wrench', class: 'fa-solid fa-screwdriver-wrench', category: 'business'},
+            {name: 'Hammer', class: 'fa-solid fa-hammer', category: 'business'},
+            {name: 'Clipboard', class: 'fa-solid fa-clipboard', category: 'business'},
+            {name: 'Clipboard Check', class: 'fa-solid fa-clipboard-check', category: 'business'},
+            {name: 'Clipboard List', class: 'fa-solid fa-clipboard-list', category: 'business'},
+            {name: 'File Invoice', class: 'fa-solid fa-file-invoice', category: 'business'},
+            {name: 'File Contract', class: 'fa-solid fa-file-contract', category: 'business'},
+            {name: 'File Signature', class: 'fa-solid fa-file-signature', category: 'business'},
+            {name: 'Scale Balanced', class: 'fa-solid fa-scale-balanced', category: 'business'},
+            {name: 'Gavel', class: 'fa-solid fa-gavel', category: 'business'},
+            {name: 'Landmark', class: 'fa-solid fa-landmark', category: 'business'},
+            {name: 'Bank', class: 'fa-solid fa-building-columns', category: 'business'},
+            {name: 'Money Bill', class: 'fa-solid fa-money-bill', category: 'business'},
+            {name: 'Money Bills', class: 'fa-solid fa-money-bills', category: 'business'},
+            {name: 'Money Check', class: 'fa-solid fa-money-check-dollar', category: 'business'},
+            {name: 'Wallet', class: 'fa-solid fa-wallet', category: 'business'},
+            {name: 'Coins', class: 'fa-solid fa-coins', category: 'business'},
+            {name: 'Sack Dollar', class: 'fa-solid fa-sack-dollar', category: 'business'},
+            // Shopping icons (50+)
+            {name: 'Cart', class: 'fa-solid fa-cart-shopping', category: 'shopping'},
+            {name: 'Bag', class: 'fa-solid fa-bag-shopping', category: 'shopping'},
+            {name: 'Basket', class: 'fa-solid fa-basket-shopping', category: 'shopping'},
+            {name: 'Credit Card', class: 'fa-solid fa-credit-card', category: 'shopping'},
+            {name: 'Boxes', class: 'fa-solid fa-boxes-stacked', category: 'shopping'},
+            {name: 'Box', class: 'fa-solid fa-box', category: 'shopping'},
+            {name: 'Truck', class: 'fa-solid fa-truck-fast', category: 'shopping'},
+            {name: 'Store', class: 'fa-solid fa-store', category: 'shopping'},
+            {name: 'Sale', class: 'fa-solid fa-badge-percent', category: 'shopping'},
+            {name: 'Best Seller', class: 'fa-solid fa-fire', category: 'shopping'},
+            {name: 'Cart Plus', class: 'fa-solid fa-cart-plus', category: 'shopping'},
+            {name: 'Cart Arrow Down', class: 'fa-solid fa-cart-arrow-down', category: 'shopping'},
+            {name: 'Shop', class: 'fa-solid fa-shop', category: 'shopping'},
+            {name: 'Shop Lock', class: 'fa-solid fa-shop-lock', category: 'shopping'},
+            {name: 'Cash Register', class: 'fa-solid fa-cash-register', category: 'shopping'},
+            {name: 'Receipt', class: 'fa-solid fa-receipt', category: 'shopping'},
+            {name: 'Barcode', class: 'fa-solid fa-barcode', category: 'shopping'},
+            {name: 'QR Code', class: 'fa-solid fa-qrcode', category: 'shopping'},
+            {name: 'Scale', class: 'fa-solid fa-scale-unbalanced', category: 'shopping'},
+            {name: 'Box Open', class: 'fa-solid fa-box-open', category: 'shopping'},
+            {name: 'Box Archive', class: 'fa-solid fa-box-archive', category: 'shopping'},
+            {name: 'Dolly', class: 'fa-solid fa-dolly', category: 'shopping'},
+            {name: 'Pallet', class: 'fa-solid fa-pallet', category: 'shopping'},
+            {name: 'Warehouse', class: 'fa-solid fa-warehouse', category: 'shopping'},
+            {name: 'Shipping Fast', class: 'fa-solid fa-shipping-fast', category: 'shopping'},
+            {name: 'Truck Ramp Box', class: 'fa-solid fa-truck-ramp-box', category: 'shopping'},
+            {name: 'Dolly Flatbed', class: 'fa-solid fa-dolly-flatbed', category: 'shopping'},
+            {name: 'Hand Holding Dollar', class: 'fa-solid fa-hand-holding-dollar', category: 'shopping'},
+            {name: 'Hand Holding Heart', class: 'fa-solid fa-hand-holding-heart', category: 'shopping'},
+            {name: 'Money Bill Transfer', class: 'fa-solid fa-money-bill-transfer', category: 'shopping'},
+            {name: 'Money Bill Wave', class: 'fa-solid fa-money-bill-wave', category: 'shopping'},
+            {name: 'Money Bill Trend Up', class: 'fa-solid fa-money-bill-trend-up', category: 'shopping'},
+            {name: 'Piggy Bank', class: 'fa-solid fa-piggy-bank', category: 'shopping'},
+            {name: 'Gift Card', class: 'fa-solid fa-gift-card', category: 'shopping'},
+            {name: 'Ticket', class: 'fa-solid fa-ticket', category: 'shopping'},
+            {name: 'Ticket Simple', class: 'fa-solid fa-ticket-simple', category: 'shopping'},
+            {name: 'Percent Circle', class: 'fa-solid fa-circle-dollar-to-slot', category: 'shopping'},
+            {name: 'Comments Dollar', class: 'fa-solid fa-comments-dollar', category: 'shopping'},
+            {name: 'Euro Sign', class: 'fa-solid fa-euro-sign', category: 'shopping'},
+            {name: 'Pound Sign', class: 'fa-solid fa-pound-sign', category: 'shopping'},
+            {name: 'Yen Sign', class: 'fa-solid fa-yen-sign', category: 'shopping'},
+            {name: 'Rupee Sign', class: 'fa-solid fa-rupee-sign', category: 'shopping'},
+            {name: 'Bitcoin Sign', class: 'fa-solid fa-bitcoin-sign', category: 'shopping'},
+            {name: 'Bags Shopping', class: 'fa-solid fa-bags-shopping', category: 'shopping'},
+            {name: 'Cart Flatbed', class: 'fa-solid fa-cart-flatbed', category: 'shopping'},
+            {name: 'Cart Flatbed Boxes', class: 'fa-solid fa-cart-flatbed-suitcase', category: 'shopping'},
+            {name: 'Shopping Basket', class: 'fa-solid fa-basket-shopping-simple', category: 'shopping'},
+            {name: 'T-Shirt', class: 'fa-solid fa-shirt', category: 'shopping'},
+            // Badge specific icons (80+)
+            {name: 'Badge Check', class: 'fa-solid fa-badge-check', category: 'badges'},
+            {name: 'Stamp', class: 'fa-solid fa-stamp', category: 'badges'},
+            {name: 'Ribbon', class: 'fa-solid fa-ribbon', category: 'badges'},
+            {name: 'Award', class: 'fa-solid fa-award', category: 'badges'},
+            {name: 'Shield', class: 'fa-solid fa-shield', category: 'badges'},
+            {name: 'Check Circle', class: 'fa-solid fa-circle-check', category: 'badges'},
+            {name: 'Star Half', class: 'fa-solid fa-star-half-stroke', category: 'badges'},
+            {name: 'Thumbs Up', class: 'fa-solid fa-thumbs-up', category: 'badges'},
+            {name: 'Clock', class: 'fa-solid fa-clock', category: 'badges'},
+            {name: 'Bell', class: 'fa-solid fa-bell', category: 'badges'},
+            {name: 'Limited', class: 'fa-solid fa-hourglass-half', category: 'badges'},
+            {name: 'Exclusive', class: 'fa-solid fa-lock', category: 'badges'},
+            {name: 'Verified', class: 'fa-solid fa-circle-check', category: 'badges'},
+            {name: 'Premium', class: 'fa-solid fa-crown', category: 'badges'},
+            {name: 'New', class: 'fa-solid fa-circle-plus', category: 'badges'},
+            {name: 'Check', class: 'fa-solid fa-check', category: 'badges'},
+            {name: 'Check Double', class: 'fa-solid fa-check-double', category: 'badges'},
+            {name: 'Circle Exclamation', class: 'fa-solid fa-circle-exclamation', category: 'badges'},
+            {name: 'Circle Info', class: 'fa-solid fa-circle-info', category: 'badges'},
+            {name: 'Circle Question', class: 'fa-solid fa-circle-question', category: 'badges'},
+            {name: 'Triangle Exclamation', class: 'fa-solid fa-triangle-exclamation', category: 'badges'},
+            {name: 'Shield Check', class: 'fa-solid fa-shield-check', category: 'badges'},
+            {name: 'Shield Halved', class: 'fa-solid fa-shield-halved', category: 'badges'},
+            {name: 'Shield Heart', class: 'fa-solid fa-shield-heart', category: 'badges'},
+            {name: 'Seal', class: 'fa-solid fa-seal', category: 'badges'},
+            {name: 'Seal Question', class: 'fa-solid fa-seal-question', category: 'badges'},
+            {name: 'Seal Exclamation', class: 'fa-solid fa-seal-exclamation', category: 'badges'},
+            {name: 'Star Regular', class: 'fa-regular fa-star', category: 'badges'},
+            {name: 'Star Half', class: 'fa-regular fa-star-half', category: 'badges'},
+            {name: 'Bookmark', class: 'fa-regular fa-bookmark', category: 'badges'},
+            {name: 'Heart Regular', class: 'fa-regular fa-heart', category: 'badges'},
+            {name: 'Flag Regular', class: 'fa-regular fa-flag', category: 'badges'},
+            {name: 'Thumbs Up Regular', class: 'fa-regular fa-thumbs-up', category: 'badges'},
+            {name: 'Thumbs Down', class: 'fa-solid fa-thumbs-down', category: 'badges'},
+            {name: 'Hand Peace', class: 'fa-solid fa-hand-peace', category: 'badges'},
+            {name: 'Hand Point Up', class: 'fa-solid fa-hand-point-up', category: 'badges'},
+            {name: 'Hand Point Right', class: 'fa-solid fa-hand-point-right', category: 'badges'},
+            {name: 'Hand Pointer', class: 'fa-solid fa-hand-pointer', category: 'badges'},
+            {name: 'Face Smile', class: 'fa-solid fa-face-smile', category: 'badges'},
+            {name: 'Face Grin', class: 'fa-solid fa-face-grin', category: 'badges'},
+            {name: 'Face Grin Hearts', class: 'fa-solid fa-face-grin-hearts', category: 'badges'},
+            {name: 'Face Laugh', class: 'fa-solid fa-face-laugh', category: 'badges'},
+            {name: 'Face Kiss', class: 'fa-solid fa-face-kiss-wink-heart', category: 'badges'},
+            {name: 'Circle Radiation', class: 'fa-solid fa-circle-radiation', category: 'badges'},
+            {name: 'Skull Crossbones', class: 'fa-solid fa-skull-crossbones', category: 'badges'},
+            {name: 'Radiation', class: 'fa-solid fa-radiation', category: 'badges'},
+            {name: 'Ban', class: 'fa-solid fa-ban', category: 'badges'},
+            {name: 'Circle Minus', class: 'fa-solid fa-circle-minus', category: 'badges'},
+            {name: 'Circle Plus', class: 'fa-solid fa-circle-plus', category: 'badges'},
+            {name: 'Circle Xmark', class: 'fa-solid fa-circle-xmark', category: 'badges'},
+            {name: 'Xmark', class: 'fa-solid fa-xmark', category: 'badges'},
+            {name: 'Plus', class: 'fa-solid fa-plus', category: 'badges'},
+            {name: 'Minus', class: 'fa-solid fa-minus', category: 'badges'},
+            {name: 'Hourglass', class: 'fa-solid fa-hourglass', category: 'badges'},
+            {name: 'Hourglass Start', class: 'fa-solid fa-hourglass-start', category: 'badges'},
+            {name: 'Hourglass End', class: 'fa-solid fa-hourglass-end', category: 'badges'},
+            {name: 'Stopwatch', class: 'fa-solid fa-stopwatch', category: 'badges'},
+            {name: 'Timer', class: 'fa-solid fa-timer', category: 'badges'},
+            {name: 'Clock Rotate Left', class: 'fa-solid fa-clock-rotate-left', category: 'badges'},
+            {name: 'Alarm Clock', class: 'fa-solid fa-alarm-clock', category: 'badges'},
+            {name: 'Bell Ring', class: 'fa-solid fa-bell-on', category: 'badges'},
+            {name: 'Bell Slash', class: 'fa-solid fa-bell-slash', category: 'badges'},
+            {name: 'Bells', class: 'fa-solid fa-bells', category: 'badges'},
+            {name: 'Circle Dot', class: 'fa-solid fa-circle-dot', category: 'badges'},
+            {name: 'Circle Half Stroke', class: 'fa-solid fa-circle-half-stroke', category: 'badges'},
+            {name: 'Location Dot', class: 'fa-solid fa-location-dot', category: 'badges'},
+            {name: 'Location Pin', class: 'fa-solid fa-location-pin', category: 'badges'},
+            {name: 'Location Crosshairs', class: 'fa-solid fa-location-crosshairs', category: 'badges'},
+            {name: 'Eye Slash', class: 'fa-solid fa-eye-slash', category: 'badges'},
+            {name: 'Circle User', class: 'fa-solid fa-circle-user', category: 'badges'},
+            {name: 'User Check', class: 'fa-solid fa-user-check', category: 'badges'},
+            {name: 'User Shield', class: 'fa-solid fa-user-shield', category: 'badges'},
+            {name: 'User Lock', class: 'fa-solid fa-user-lock', category: 'badges'},
+            {name: 'User Plus', class: 'fa-solid fa-user-plus', category: 'badges'},
+            {name: 'User Minus', class: 'fa-solid fa-user-minus', category: 'badges'},
+            {name: 'User Xmark', class: 'fa-solid fa-user-xmark', category: 'badges'},
+            {name: 'User Crown', class: 'fa-solid fa-user-crown', category: 'badges'},
+        ],
+
+        selectBadgeType(type, label, color, icon) {
+            this.rule.badge_type = type;
+            this.rule.badge_color = color;
+            this.rule.badge_icon = icon;
+        },
+
+        getBadgeStyle() {
+            // Reference styleVersion to make this reactive to style changes
+            const _ = this.styleVersion;
+
+            const color = this.rule.badge_color || '#6366f1';
+            let styles = [];
+
+            // Background gradient
+            styles.push('background: linear-gradient(135deg, ' + color + ', color-mix(in srgb, ' + color + ', black 15%))');
+
+            // Width
+            if (this.badgeStyle.width.value && this.badgeStyle.width.unit !== 'auto') {
+                styles.push('width: ' + this.badgeStyle.width.value + this.badgeStyle.width.unit);
+            }
+
+            // Height
+            if (this.badgeStyle.height.value && this.badgeStyle.height.unit !== 'auto') {
+                styles.push('height: ' + this.badgeStyle.height.value + this.badgeStyle.height.unit);
+            }
+
+            // Border Radius
+            if (this.badgeStyle.borderRadius) {
+                styles.push('border-radius: ' + this.badgeStyle.borderRadius + 'px');
+            }
+
+            // Opacity
+            if (this.badgeStyle.opacity && this.badgeStyle.opacity !== '100') {
+                styles.push('opacity: ' + (this.badgeStyle.opacity / 100));
+            }
+
+            // Font Size
+            if (this.badgeStyle.fontSize.value) {
+                styles.push('font-size: ' + this.badgeStyle.fontSize.value + this.badgeStyle.fontSize.unit);
+            }
+
+            // Font Weight
+            if (this.badgeStyle.fontWeight) {
+                styles.push('font-weight: ' + this.badgeStyle.fontWeight);
+            }
+
+            // Padding
+            const pt = this.badgeStyle.padding.top || '6';
+            const pr = this.badgeStyle.padding.right || '12';
+            const pb = this.badgeStyle.padding.bottom || '6';
+            const pl = this.badgeStyle.padding.left || '12';
+            styles.push('padding: ' + pt + 'px ' + pr + 'px ' + pb + 'px ' + pl + 'px');
+
+            // Border
+            if (this.badgeStyle.borderStyle !== 'none' && this.badgeStyle.borderWidth > 0) {
+                styles.push('border: ' + this.badgeStyle.borderWidth + 'px ' + this.badgeStyle.borderStyle + ' ' + this.badgeStyle.borderColor);
+            }
+
+            // Box Shadow
+            const shadowPresets = {
+                'none': 'none',
+                'default': '0 2px 4px rgba(0,0,0,0.1)',
+                'sm': '0 1px 2px rgba(0,0,0,0.05)',
+                'md': '0 4px 6px rgba(0,0,0,0.1)',
+                'lg': '0 10px 15px rgba(0,0,0,0.1)',
+                'xl': '0 20px 25px rgba(0,0,0,0.1)',
+                'inner': 'inset 0 2px 4px rgba(0,0,0,0.06)',
+                'glow': '0 0 20px rgba(255,255,255,0.5)'
+            };
+
+            if (this.badgeStyle.boxShadow === 'custom' && this.badgeStyle.customBoxShadow) {
+                styles.push('box-shadow: ' + this.badgeStyle.customBoxShadow);
+            } else if (shadowPresets[this.badgeStyle.boxShadow]) {
+                styles.push('box-shadow: ' + shadowPresets[this.badgeStyle.boxShadow]);
+            }
+
+            // Z-Index
+            if (this.badgeStyle.zIndex) {
+                styles.push('z-index: ' + this.badgeStyle.zIndex);
+            }
+
+            return styles.join('; ');
+        },
+
+        handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                this.showError('Image file size must not exceed 2MB.');
+                event.target.value = '';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                this.showError('Invalid file type. Allowed: JPG, PNG, GIF, SVG, WebP');
+                event.target.value = '';
+                return;
+            }
+
+            // Store file for upload
+            this.imageFile = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+
+        removeImage() {
+            this.imagePreview = null;
+            this.imageFile = null;
+            this.rule.badge_image = '';
+            const fileInput = document.getElementById('badge_image_upload');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        },
+
+        setImageSize(width, height) {
+            if (width === 'auto') {
+                this.imageSettings.width = { value: '', unit: 'auto' };
+            } else {
+                this.imageSettings.width = { value: width.toString(), unit: 'px' };
+            }
+
+            if (height === 'auto') {
+                this.imageSettings.height = { value: '', unit: 'auto' };
+            } else {
+                this.imageSettings.height = { value: height.toString(), unit: 'px' };
+            }
+        },
+
+        getImageStyle() {
+            let styles = [];
+
+            if (this.imageSettings.width.value && this.imageSettings.width.unit !== 'auto') {
+                styles.push('width: ' + this.imageSettings.width.value + this.imageSettings.width.unit);
+            }
+
+            if (this.imageSettings.height.value && this.imageSettings.height.unit !== 'auto') {
+                styles.push('height: ' + this.imageSettings.height.value + this.imageSettings.height.unit);
+            }
+
+            return styles.join('; ');
+        },
+
+        getFilteredIcons() {
+            if (!this.fontAwesomeIcons || !Array.isArray(this.fontAwesomeIcons)) {
+                console.warn('⚠️ fontAwesomeIcons not available');
+                return [];
+            }
+
+            let icons = this.fontAwesomeIcons;
+
+            // Filter by category
+            if (this.iconCategory !== 'all') {
+                icons = icons.filter(icon => icon && icon.category === this.iconCategory);
+            }
+
+            // Filter by search
+            if (this.iconSearch && this.iconSearch.trim() !== '') {
+                const search = this.iconSearch.toLowerCase();
+                icons = icons.filter(icon =>
+                    icon && icon.name && icon.class &&
+                    (icon.name.toLowerCase().includes(search) ||
+                    icon.class.toLowerCase().includes(search))
+                );
+            }
+
+            // Ensure all items have required properties
+            icons = icons.filter(icon => icon && icon.class);
+
+            // Limit to 100 icons for performance (especially for 'all' category)
+            return icons.slice(0, 100);
+        },
+
+        selectFontAwesomeIcon(iconClass) {
+            this.rule.badge_icon = iconClass;
+            this.iconType = 'fontawesome';
+            this.showFontAwesomePicker = false;
+        },
+
+        getBadgeLabel() {
+            const labels = {
+                'new': 'NEW',
+                'sale': 'SALE',
+                'hot': 'HOT',
+                'limited': 'LIMITED',
+                'bestseller': 'BESTSELLER',
+                'trending': 'TRENDING',
+                'exclusive': 'EXCLUSIVE',
+                'featured': 'FEATURED'
+            };
+            return labels[this.rule.badge_type] || 'SALE';
+        },
+
+        calculateVisibility() {
+            const scores = {
+                'pulse': 85,
+                'bounce': 90,
+                'shake': 95,
+                'glow': 75,
+                'rotate': 80
+            };
+            return (scores[this.rule.animation] || 70) + '%';
+        },
+
+        calculateUrgency() {
+            const urgencyWords = ['limited', 'urgent', 'hurry', 'now', 'today'];
+            const text = (this.rule.badge_text || '').toLowerCase();
+            const hasUrgency = urgencyWords.some(word => text.includes(word));
+            return hasUrgency ? 'High' : 'Medium';
+        },
+
+        generateAiColors() {
+            const colors = ['#6366f1', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899'];
+            this.rule.badge_color = colors[Math.floor(Math.random() * colors.length)];
+        },
+
+        applySuggestion(type) {
+            const suggestions = {
+                'urgent': {
+                    text: 'URGENT',
+                    color: '#6366f1',
+                    icon: '⚡',
+                    animation: 'shake',
+                    type: 'limited'
+                },
+                'exclusive': {
+                    text: 'EXCLUSIVE',
+                    color: '#8b5cf6',
+                    icon: '💎',
+                    animation: 'glow',
+                    type: 'exclusive'
+                },
+                'bestseller': {
+                    text: 'BESTSELLER',
+                    color: '#10b981',
+                    icon: '⭐',
+                    animation: 'pulse',
+                    type: 'bestseller'
+                },
+                'flash': {
+                    text: 'FLASH SALE',
+                    color: '#f59e0b',
+                    icon: '🔥',
+                    animation: 'bounce',
+                    type: 'sale'
+                }
+            };
+
+            if (suggestions[type]) {
+                const suggestion = suggestions[type];
+                this.rule.badge_text = suggestion.text;
+                this.rule.badge_color = suggestion.color;
+                this.rule.badge_icon = suggestion.icon;
+                this.rule.animation = suggestion.animation;
+                this.rule.badge_type = suggestion.type;
+            }
+            this.showAiSuggestions = false;
+        },
+
+        // Schedule helper methods
+        formatDateTime(dateTimeString) {
+            if (!dateTimeString) return '';
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+
+        calculateDuration(from, to) {
+            if (!from || !to) return '';
+            const start = new Date(from);
+            const end = new Date(to);
+            const diff = end - start;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            if (days > 0) {
+                return `${days} day${days !== 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}`;
+            } else {
+                return `${hours} hour${hours !== 1 ? 's' : ''}`;
+            }
+        },
+
+        setSchedulePreset(preset) {
+            const now = new Date();
+            let from, to;
+
+            switch (preset) {
+                case 'today':
+                    from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+                    to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59);
+                    break;
+                case 'tomorrow':
+                    from = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0);
+                    to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59);
+                    break;
+                case 'week':
+                    from = new Date(now);
+                    const nextWeek = new Date(now);
+                    nextWeek.setDate(now.getDate() + 7);
+                    to = nextWeek;
+                    break;
+                case 'weekend':
+                    const daysUntilSaturday = (6 - now.getDay() + 7) % 7;
+                    from = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSaturday, 0, 0);
+                    to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSaturday + 1, 23, 59);
+                    break;
+                case 'month':
+                    from = new Date(now);
+                    const nextMonth = new Date(now);
+                    nextMonth.setMonth(now.getMonth() + 1);
+                    to = nextMonth;
+                    break;
+            }
+
+            // Format for datetime-local input (YYYY-MM-DDTHH:mm)
+            this.schedule.from = this.formatForInput(from);
+            this.schedule.to = this.formatForInput(to);
+            this.schedule.enabled = true;
+        },
+
+        formatForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        },
+
+        goBack() {
+            window.location.href = '<?= $block->escapeJs($block->getBackUrl()) ?>';
+        },
+
+        saveRule() {
+            // Validate required fields
+            if (!this.rule.name || this.rule.name.trim() === '') {
+                this.showError('Rule name is required');
+                return;
+            }
+
+            // Show loading state
+            this.showLoading('Saving badge rule...');
+
+            const formData = new FormData();
+
+            // Add form key (CSRF token)
+            formData.append('form_key', '<?= $block->escapeJs($block->getFormKey()) ?>');
+
+            // Add ajax flag
+            formData.append('ajax', '1');
+
+            // Add image file if selected
+            if (this.imageFile) {
+                formData.append('badge_image', this.imageFile);
+            }
+
+            // Add all rule data
+            Object.keys(this.rule).forEach(key => {
+                if (this.rule[key] !== null && this.rule[key] !== undefined) {
+                    formData.append(key, this.rule[key]);
+                }
+            });
+
+            // Add smart conditions as JSON
+            formData.append('smart_conditions', JSON.stringify(this.smartConditions));
+
+            // Add badge style settings as JSON
+            formData.append('badge_style', JSON.stringify(this.badgeStyle));
+
+            // Add image settings as JSON
+            formData.append('image_settings', JSON.stringify(this.imageSettings));
+
+            // Add schedule data
+            if (this.schedule.enabled) {
+                if (this.schedule.from) {
+                    // Convert datetime-local to MySQL format
+                    formData.append('schedule_from', this.schedule.from.replace('T', ' ') + ':00');
+                }
+                if (this.schedule.to) {
+                    formData.append('schedule_to', this.schedule.to.replace('T', ' ') + ':00');
+                }
+            } else {
+                // Clear schedule dates if disabled
+                formData.append('schedule_from', '');
+                formData.append('schedule_to', '');
+            }
+
+            fetch('<?= $block->escapeJs($block->getSaveUrl()) ?>', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.hideLoading();
+
+                if (data.success) {
+                    this.showSuccess(data.message || 'Badge rule saved successfully!');
+
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            this.goBack();
+                        }
+                    }, 1000);
+                } else {
+                    this.showError(data.message || 'Failed to save badge rule');
+                }
+            })
+            .catch(error => {
+                this.hideLoading();
+                console.error('Error saving badge rule:', error);
+                this.showError('An error occurred while saving the badge rule: ' + error.message);
+            });
+        },
+
+        saveAndEdit() {
+            // Validate required fields
+            if (!this.rule.name || this.rule.name.trim() === '') {
+                this.showError('Rule name is required');
+                return;
+            }
+
+            // Show loading state
+            this.showLoading('Saving badge rule...');
+
+            const formData = new FormData();
+
+            // Add form key (CSRF token)
+            formData.append('form_key', '<?= $block->escapeJs($block->getFormKey()) ?>');
+
+            // Add ajax flag
+            formData.append('ajax', '1');
+
+            // Add image file if selected
+            if (this.imageFile) {
+                formData.append('badge_image', this.imageFile);
+            }
+
+            // Add all rule data
+            Object.keys(this.rule).forEach(key => {
+                if (this.rule[key] !== null && this.rule[key] !== undefined) {
+                    formData.append(key, this.rule[key]);
+                }
+            });
+
+            // Add smart conditions as JSON
+            formData.append('smart_conditions', JSON.stringify(this.smartConditions));
+
+            // Add badge style settings as JSON
+            formData.append('badge_style', JSON.stringify(this.badgeStyle));
+
+            // Add image settings as JSON
+            formData.append('image_settings', JSON.stringify(this.imageSettings));
+
+            // Add schedule data
+            if (this.schedule.enabled) {
+                if (this.schedule.from) {
+                    // Convert datetime-local to MySQL format
+                    formData.append('schedule_from', this.schedule.from.replace('T', ' ') + ':00');
+                }
+                if (this.schedule.to) {
+                    formData.append('schedule_to', this.schedule.to.replace('T', ' ') + ':00');
+                }
+            } else {
+                // Clear schedule dates if disabled
+                formData.append('schedule_from', '');
+                formData.append('schedule_to', '');
+            }
+
+            fetch('<?= $block->escapeJs($block->getSaveUrl()) ?>', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.hideLoading();
+
+                if (data.success) {
+                    this.showSuccess(data.message || 'Badge rule saved successfully!');
+
+                    // If this is a new rule (no rule_id yet), redirect to edit page with the new ID
+                    if (data.rule_id && !this.rule.rule_id) {
+                        // Update current rule_id
+                        this.rule.rule_id = data.rule_id;
+
+                        // Redirect to edit page with the new rule ID
+                        setTimeout(() => {
+                            const editUrl = '<?= $block->escapeJs($block->getEditUrl()) ?>?rule_id=' + data.rule_id;
+                            window.location.href = editUrl;
+                        }, 1000);
+                    } else if (data.rule_id && this.rule.rule_id) {
+                        // Already editing an existing rule - just update the rule_id in memory
+                        // No need to redirect, stay on same page
+                        this.rule.rule_id = data.rule_id;
+
+                        // Update URL without page reload (for browser history)
+                        const editUrl = '<?= $block->escapeJs($block->getEditUrl()) ?>?rule_id=' + data.rule_id;
+                        window.history.replaceState({}, '', editUrl);
+
+                        // Success message will auto-hide
+                    }
+                } else {
+                    this.showError(data.message || 'Failed to save badge rule');
+                }
+            })
+            .catch(error => {
+                this.hideLoading();
+                console.error('Error saving badge rule:', error);
+                this.showError('An error occurred while saving the badge rule: ' + error.message);
+            });
+        },
+
+        showLoading(message) {
+            // Create loading overlay if it doesn't exist
+            if (!document.getElementById('badge-builder-loading')) {
+                const loadingHtml =
+                    '<div id="badge-builder-loading" class="builder-loading-overlay">' +
+                        '<div class="loading-spinner">' +
+                            '<div class="spinner"></div>' +
+                            '<p id="loading-message">' + message + '</p>' +
+                        '</div>' +
+                    '</div>';
+                document.body.insertAdjacentHTML('beforeend', loadingHtml);
+            } else {
+                document.getElementById('loading-message').textContent = message;
+                document.getElementById('badge-builder-loading').style.display = 'flex';
+            }
+        },
+
+        hideLoading() {
+            const loading = document.getElementById('badge-builder-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        },
+
+        showSuccess(message) {
+            this.showNotification(message, 'success');
+        },
+
+        showError(message) {
+            this.showNotification(message, 'error');
+        },
+
+        showNotification(message, type) {
+            // Create notification container if it doesn't exist
+            if (!document.getElementById('badge-builder-notifications')) {
+                const notificationContainer = document.createElement('div');
+                notificationContainer.id = 'badge-builder-notifications';
+                notificationContainer.className = 'builder-notifications';
+                document.body.appendChild(notificationContainer);
+            }
+
+            const container = document.getElementById('badge-builder-notifications');
+            const notification = document.createElement('div');
+            notification.className = 'builder-notification ' + type;
+            notification.innerHTML =
+                '<span class="notification-icon">' + (type === 'success' ? '✓' : '✕') + '</span>' +
+                '<span class="notification-message">' + message + '</span>' +
+                '<button class="notification-close" onclick="this.parentElement.remove()">×</button>';
+
+            container.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        },
+
+        // Style preset methods
+        applyStylePreset(preset) {
+            const presets = {
+                'minimal': {
+                    borderRadius: '4',
+                    padding: { top: '4', right: '8', bottom: '4', left: '8' },
+                    fontSize: { value: '12', unit: 'px' },
+                    fontWeight: '600',
+                    borderWidth: '0',
+                    borderStyle: 'none',
+                    boxShadow: 'none',
+                    opacity: '100'
+                },
+                'bold': {
+                    borderRadius: '8',
+                    padding: { top: '10', right: '20', bottom: '10', left: '20' },
+                    fontSize: { value: '16', unit: 'px' },
+                    fontWeight: '900',
+                    borderWidth: '0',
+                    borderStyle: 'none',
+                    boxShadow: 'lg',
+                    opacity: '100'
+                },
+                'rounded': {
+                    borderRadius: '20',
+                    padding: { top: '8', right: '16', bottom: '8', left: '16' },
+                    fontSize: { value: '14', unit: 'px' },
+                    fontWeight: '700',
+                    borderWidth: '0',
+                    borderStyle: 'none',
+                    boxShadow: 'md',
+                    opacity: '100'
+                },
+                'pill': {
+                    borderRadius: '50',
+                    padding: { top: '8', right: '18', bottom: '8', left: '18' },
+                    fontSize: { value: '13', unit: 'px' },
+                    fontWeight: '600',
+                    borderWidth: '0',
+                    borderStyle: 'none',
+                    boxShadow: 'default',
+                    opacity: '100'
+                },
+                'outlined': {
+                    borderRadius: '8',
+                    padding: { top: '6', right: '12', bottom: '6', left: '12' },
+                    fontSize: { value: '14', unit: 'px' },
+                    fontWeight: '700',
+                    borderWidth: '2',
+                    borderStyle: 'solid',
+                    borderColor: this.rule.badge_color || '#6366f1',
+                    boxShadow: 'none',
+                    opacity: '100'
+                },
+                'shadow': {
+                    borderRadius: '8',
+                    padding: { top: '8', right: '16', bottom: '8', left: '16' },
+                    fontSize: { value: '14', unit: 'px' },
+                    fontWeight: '700',
+                    borderWidth: '0',
+                    borderStyle: 'none',
+                    boxShadow: 'xl',
+                    opacity: '100'
+                }
+            };
+
+            if (presets[preset]) {
+                Object.assign(this.badgeStyle, presets[preset]);
+                this.showSuccess('Style preset "' + preset + '" applied!');
+            }
+        },
+
+        resetStyles() {
+            this.badgeStyle = {
+                width: { value: '', unit: 'auto' },
+                height: { value: '', unit: 'auto' },
+                borderRadius: '8',
+                opacity: '100',
+                fontSize: { value: '14', unit: 'px' },
+                fontWeight: '700',
+                padding: { top: '6', right: '12', bottom: '6', left: '12' },
+                borderWidth: '0',
+                borderStyle: 'none',
+                borderColor: '#000000',
+                boxShadow: 'default',
+                customBoxShadow: '',
+                zIndex: '10'
+            };
+            this.showSuccess('Styles reset to defaults!');
+        },
+
+        // Product Chooser Methods
+        openProductChooser() {
+            this.showProductChooser = true;
+            this.tempSelectedProducts = [...this.chosenProducts];
+            this.productSearchTerm = '';
+            this.searchedProducts = [];
+            this.productSearchPage = 1;
+            this.productSearchTotal = 0;
+            this.productSearchHasMore = false;
+            this.productSearchLoading = false;
+        },
+
+        closeProductChooser() {
+            this.showProductChooser = false;
+            this.productSearchTerm = '';
+            this.searchedProducts = [];
+            this.productSearchPage = 1;
+            this.productSearchTotal = 0;
+            this.productSearchHasMore = false;
+            this.productSearchLoading = false;
+        },
+
+        confirmProducts() {
+            this.chosenProducts = [...this.tempSelectedProducts];
+            // Update rule.product_ids for backend
+            this.rule.product_ids = this.chosenProducts.map(p => p.id).join(',');
+            this.showProductChooser = false;
+        },
+
+        searchProducts() {
+            const term = this.productSearchTerm.trim();
+            if (term.length < 2) {
+                this.searchedProducts = [];
+                this.productSearchTotal = 0;
+                this.productSearchHasMore = false;
+                this.productSearchPage = 1;
+                return;
+            }
+
+            // Reset pagination when new search
+            this.productSearchPage = 1;
+            this.productSearchLoading = true;
+
+            // Make AJAX call to backend
+            fetch('<?= $block->escapeJs($block->getUrl('smartbadge/product/search')) ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    'form_key': '<?= $block->escapeJs($block->getFormKey()) ?>',
+                    'query': term,
+                    'page': this.productSearchPage,
+                    'limit': this.productSearchLimit
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.searchedProducts = data.products;
+                    this.productSearchTotal = data.total;
+                    this.productSearchHasMore = data.has_more;
+                } else {
+                    this.showError('Failed to search products: ' + (data.message || 'Unknown error'));
+                    this.searchedProducts = [];
+                    this.productSearchTotal = 0;
+                    this.productSearchHasMore = false;
+                }
+            })
+            .catch(error => {
+                console.error('Product search error:', error);
+                this.showError('Failed to search products. Please try again.');
+                this.searchedProducts = [];
+                this.productSearchTotal = 0;
+                this.productSearchHasMore = false;
+            })
+            .finally(() => {
+                this.productSearchLoading = false;
+            });
+        },
+
+        loadMoreProducts() {
+            const term = this.productSearchTerm.trim();
+            if (term.length < 2 || !this.productSearchHasMore || this.productSearchLoading) {
+                return;
+            }
+
+            this.productSearchPage++;
+            this.productSearchLoading = true;
+
+            fetch('<?= $block->escapeJs($block->getUrl('smartbadge/product/search')) ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    'form_key': '<?= $block->escapeJs($block->getFormKey()) ?>',
+                    'query': term,
+                    'page': this.productSearchPage,
+                    'limit': this.productSearchLimit
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Append new products to existing list
+                    this.searchedProducts = [...this.searchedProducts, ...data.products];
+                    this.productSearchTotal = data.total;
+                    this.productSearchHasMore = data.has_more;
+                } else {
+                    this.showError('Failed to load more products: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Load more products error:', error);
+                this.showError('Failed to load more products. Please try again.');
+            })
+            .finally(() => {
+                this.productSearchLoading = false;
+            });
+        },
+
+        toggleProduct(product) {
+            const index = this.tempSelectedProducts.findIndex(p => p.id === product.id);
+            if (index > -1) {
+                this.tempSelectedProducts.splice(index, 1);
+            } else {
+                this.tempSelectedProducts.push(product);
+            }
+        },
+
+        isProductSelected(productId) {
+            return this.tempSelectedProducts.some(p => p.id === productId);
+        },
+
+        removeProduct(productId) {
+            this.chosenProducts = this.chosenProducts.filter(p => p.id !== productId);
+            this.rule.product_ids = this.chosenProducts.map(p => p.id).join(',');
+        },
+
+        // Category Chooser Methods
+        openCategoryChooser() {
+            this.showCategoryChooser = true;
+            this.tempSelectedCategories = [...this.chosenCategories];
+            this.categorySearchTerm = '';
+
+            // Load category tree if not already loaded
+            if (this.categoryTree.length === 0) {
+                this.loadCategoryTree();
+            }
+        },
+
+        async loadCategoryTree() {
+            this.categoryTreeLoading = true;
+            try {
+                const formKey = document.querySelector('input[name="form_key"]')?.value;
+
+                // Use URLSearchParams for proper form-encoded POST data
+                const formData = new URLSearchParams();
+                formData.append('form_key', formKey);
+
+                const response = await fetch('<?= $block->escapeJs($block->getUrl('smartbadge/category/tree')) ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                console.log('Category tree response:', data);
+
+                if (data.success && data.categories) {
+                    this.categoryTree = data.categories;
+                    console.log('Category tree loaded:', this.categoryTree.length, 'root categories');
+                } else {
+                    const errorMsg = data.message || 'Unknown error occurred';
+                    console.error('Failed to load categories:', errorMsg);
+                    alert('Failed to load category tree: ' + errorMsg);
+                }
+            } catch (error) {
+                console.error('Error loading category tree:', error);
+                alert('Error loading categories: ' + error.message);
+            } finally {
+                this.categoryTreeLoading = false;
+            }
+        },
+
+        closeCategoryChooser() {
+            this.showCategoryChooser = false;
+            this.categorySearchTerm = '';
+        },
+
+        confirmCategories() {
+            this.chosenCategories = [...this.tempSelectedCategories];
+            // Update rule.category_ids for backend
+            this.rule.category_ids = this.chosenCategories.map(c => c.id).join(',');
+            this.showCategoryChooser = false;
+        },
+
+        toggleCategoryExpand(categoryId) {
+            this.categoryExpanded[categoryId] = !this.categoryExpanded[categoryId];
+        },
+
+        expandAllCategories() {
+            const expandAll = (categories) => {
+                categories.forEach(cat => {
+                    this.categoryExpanded[cat.id] = true;
+                    if (cat.children && cat.children.length > 0) {
+                        expandAll(cat.children);
+                    }
+                });
+            };
+            expandAll(this.categoryTree);
+        },
+
+        collapseAllCategories() {
+            this.categoryExpanded = {};
+        },
+
+        getCategoryPath(category, tree, currentPath = []) {
+            for (let cat of tree) {
+                if (cat.id === category.id) {
+                    return [...currentPath, cat.name].join(' > ');
+                }
+                if (cat.children && cat.children.length > 0) {
+                    const path = this.getCategoryPath(category, cat.children, [...currentPath, cat.name]);
+                    if (path) return path;
+                }
+            }
+            return null;
+        },
+
+        matchesSearch(category) {
+            if (!this.categorySearchTerm) return true;
+            const term = this.categorySearchTerm.toLowerCase();
+            return category.name.toLowerCase().includes(term);
+        },
+
+        categoryOrChildrenMatch(category) {
+            if (this.matchesSearch(category)) return true;
+            if (category.children && category.children.length > 0) {
+                return category.children.some(child => this.categoryOrChildrenMatch(child));
+            }
+            return false;
+        },
+
+        toggleCategorySelection(id, name, path) {
+            const index = this.tempSelectedCategories.findIndex(c => c.id === id);
+            if (index > -1) {
+                this.tempSelectedCategories.splice(index, 1);
+            } else {
+                this.tempSelectedCategories.push({ id, name, path });
+            }
+        },
+
+        isCategorySelected(categoryId) {
+            return this.tempSelectedCategories.some(c => c.id === categoryId);
+        },
+
+        removeCategory(categoryId) {
+            this.chosenCategories = this.chosenCategories.filter(c => c.id !== categoryId);
+            this.rule.category_ids = this.chosenCategories.map(c => c.id).join(',');
+        },
+
+        // Load existing products when editing a rule
+        async loadExistingProducts(productIds) {
+            if (!productIds || productIds.trim() === '') {
+                console.log('No product IDs to load');
+                return;
+            }
+
+            console.log('Loading existing products:', productIds);
+
+            try {
+                const response = await fetch('<?= $block->escapeJs($block->getUrl('smartbadge/product/getbyids')) ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams({
+                        'form_key': '<?= $block->escapeJs($block->getFormKey()) ?>',
+                        'ids': productIds
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.products) {
+                    this.chosenProducts = data.products;
+                    console.log('Loaded products:', this.chosenProducts);
+                } else {
+                    console.error('Failed to load products:', data.message || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error loading existing products:', error);
+            }
+        },
+
+        // Load existing categories when editing a rule
+        async loadExistingCategories(categoryIds) {
+            if (!categoryIds || categoryIds.trim() === '') {
+                console.log('No category IDs to load');
+                return;
+            }
+
+            console.log('Loading existing categories:', categoryIds);
+
+            try {
+                const response = await fetch('<?= $block->escapeJs($block->getUrl('smartbadge/category/getbyids')) ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams({
+                        'form_key': '<?= $block->escapeJs($block->getFormKey()) ?>',
+                        'ids': categoryIds
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch categories');
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.categories) {
+                    this.chosenCategories = data.categories;
+                    console.log('Loaded categories:', this.chosenCategories);
+                } else {
+                    console.error('Failed to load categories:', data.message || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error loading existing categories:', error);
+            }
+        }
+    };
+
+    // Merge existing data for smart_conditions, badge_style, image_settings, and schedule
+    if (existingRule) {
+        // Merge smart_conditions if exists
+        if (existingRule.smart_conditions) {
+            componentData.smartConditions = { ...componentData.smartConditions, ...existingRule.smart_conditions };
+        }
+
+        // Merge badge_style if exists
+        if (existingRule.badge_style) {
+            componentData.badgeStyle = { ...componentData.badgeStyle, ...existingRule.badge_style };
+        }
+
+        // Merge image_settings if exists
+        if (existingRule.image_settings) {
+            componentData.imageSettings = { ...componentData.imageSettings, ...existingRule.image_settings };
+        }
+
+        // Merge schedule if exists
+        if (existingRule.schedule_from || existingRule.schedule_to) {
+            componentData.schedule = {
+                enabled: !!(existingRule.schedule_from || existingRule.schedule_to),
+                from: existingRule.schedule_from || '',
+                to: existingRule.schedule_to || ''
+            };
+        }
+
+        // Load existing products and categories asynchronously
+        // This will be called during component initialization via x-init
+        if (existingRule.product_ids) {
+            console.log('Will load existing products:', existingRule.product_ids);
+            // Store the IDs for loading after component mount
+            componentData._pendingProductIds = existingRule.product_ids;
+        }
+
+        if (existingRule.category_ids) {
+            console.log('Will load existing categories:', existingRule.category_ids);
+            // Store the IDs for loading after component mount
+            componentData._pendingCategoryIds = existingRule.category_ids;
+        }
+    }
+
+    console.log('✅ badgeBuilder returning component data');
+    console.log('✅ Has openProductChooser?', typeof componentData.openProductChooser);
+    console.log('✅ Has openCategoryChooser?', typeof componentData.openCategoryChooser);
+    return componentData;
+
+    } catch (error) {
+        console.error('❌ Error in badgeBuilder initialization:', error);
+        return {
+            error: true,
+            errorMessage: error.message,
+            showProductChooser: false,
+            showCategoryChooser: false
+        };
+    }
+};
+
+// Add error handling wrapper
+// Debug Alpine initialization
+window.addEventListener('alpine:init', () => {
+    console.log('🟢 Alpine initializing...');
+});
+
+document.addEventListener('alpine:initialized', () => {
+    console.log('🟢 Alpine fully initialized');
+});
+
+// Catch Alpine errors
+window.addEventListener('error', (e) => {
+    if (e.message && e.message.includes('Alpine')) {
+        console.error('❌ ALPINE ERROR:', e.message, e);
+    }
+});
+
+document.addEventListener('alpine:init', () => {
+    console.log('Alpine.js initialized');
+});
+</script>

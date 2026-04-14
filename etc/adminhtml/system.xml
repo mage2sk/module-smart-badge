@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="panth" translate="label" sortOrder="300">
+            <label>🚀 Panth Extensions</label>
+        </tab>
+        <section id="smart_badge" translate="label" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Smart Product Badges</label>
+            <tab>panth</tab>
+            <resource>Panth_SmartBadge::config</resource>
+
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Smart Badges</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Automatically show badges on products (NEW, SALE, LOW STOCK, HOT)</comment>
+                    <backend_model>Panth\SmartBadge\Model\Config\Backend\Enabled</backend_model>
+                </field>
+                <field id="max_badges" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximum Badges Per Product</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-10</validate>
+                    <comment>Maximum number of badges to display on a single product (1-10). Default: 3</comment>
+                </field>
+                <field id="badge_combination_mode" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Badge Combination Mode</label>
+                    <source_model>Panth\SmartBadge\Model\Config\Source\CombinationMode</source_model>
+                    <comment><![CDATA[
+                        <strong>Priority Mode:</strong> Show only highest priority badge (Manual > Rules > Auto)<br/>
+                        <strong>Collect All Mode:</strong> Combine badges from multiple sources up to max limit
+                    ]]></comment>
+                </field>
+                <field id="show_multiple_rule_badges" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Multiple Rule Badges</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Allow multiple rule-based badges on same product (if product matches multiple rules)</comment>
+                    <depends>
+                        <field id="badge_combination_mode">collect_all</field>
+                    </depends>
+                </field>
+                <field id="auto_badges_with_manual" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Auto Badges With Manual/Rules</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show auto-detection badges (NEW, SALE) alongside manual or rule-based badges</comment>
+                    <depends>
+                        <field id="badge_combination_mode">collect_all</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="display" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Display Settings</label>
+                <comment><![CDATA[Control how badges are laid out when multiple badges appear on the same product.]]></comment>
+                <field id="badge_layout" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Multiple Badge Layout</label>
+                    <source_model>Panth\SmartBadge\Model\Config\Source\BadgeLayout</source_model>
+                    <comment>Choose how multiple badges are arranged on a product image (vertical stack, horizontal row, grid, or compact overlap).</comment>
+                </field>
+                <field id="badge_spacing" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Badge Spacing</label>
+                    <validate>validate-alphanum</validate>
+                    <comment>Tailwind CSS gap class controlling space between badges (e.g., gap-1, gap-2, gap-3, gap-4). Default: gap-2.</comment>
+                </field>
+            </group>
+            <group id="design_note" translate="label comment" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Badge Colors</label>
+                <comment><![CDATA[
+                    Badge colors are managed centrally in your theme configuration file.<br/><br/>
+                    <strong>File:</strong> <code>app/design/frontend/Panth/Infotech/web/tailwind/theme-config.json</code><br/>
+                    <strong>Section:</strong> <code>badges</code> (sale, new, hot, limited, exclusive, bestseller, trending, featured)<br/><br/>
+                    After changing colors, run <code>node generate-theme-css.js</code> to regenerate CSS variables.
+                    Individual badge rules can override these defaults with custom colors in the Badge Rule Builder.
+                ]]></comment>
+            </group>
+        </section>
+    </system>
+</config>

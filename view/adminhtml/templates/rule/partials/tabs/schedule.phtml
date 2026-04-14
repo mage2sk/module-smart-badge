@@ -1,0 +1,79 @@
+                <div x-show="activeTab === 'schedule'" class="tab-pane">
+                    <div class="schedule-builder">
+                        <h4>⏰ Schedule Badge Display</h4>
+                        <p>Set when this badge should be displayed</p>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" x-model="schedule.enabled">
+                                Enable Scheduling
+                            </label>
+                        </div>
+
+                        <div x-show="schedule.enabled" class="schedule-fields">
+                            <div class="form-group">
+                                <label>Start Date & Time</label>
+                                <input type="datetime-local"
+                                       x-model="schedule.from"
+                                       class="form-control"
+                                       placeholder="Leave empty for immediate start">
+                                <small class="hint">Leave empty to start immediately</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>End Date & Time</label>
+                                <input type="datetime-local"
+                                       x-model="schedule.to"
+                                       class="form-control"
+                                       placeholder="Leave empty for no end date">
+                                <small class="hint">Leave empty for no expiration</small>
+                            </div>
+
+                            <!-- Visual Timeline Preview -->
+                            <div class="schedule-preview" x-show="schedule.from || schedule.to">
+                                <h5>Timeline Preview</h5>
+                                <div class="timeline">
+                                    <div class="timeline-track">
+                                        <div class="timeline-marker start" :class="{'active': schedule.from}">
+                                            <span class="marker-icon">🟢</span>
+                                            <span class="marker-label" x-text="schedule.from ? formatDateTime(schedule.from) : 'Start'"></span>
+                                        </div>
+                                        <div class="timeline-bar" :class="{'active': schedule.from && schedule.to}"></div>
+                                        <div class="timeline-marker end" :class="{'active': schedule.to}">
+                                            <span class="marker-icon">🔴</span>
+                                            <span class="marker-label" x-text="schedule.to ? formatDateTime(schedule.to) : 'No End'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Duration Calculator -->
+                                <div class="duration-info" x-show="schedule.from && schedule.to">
+                                    <strong>Duration:</strong>
+                                    <span x-text="calculateDuration(schedule.from, schedule.to)"></span>
+                                </div>
+                            </div>
+
+                            <!-- Quick Presets -->
+                            <div class="schedule-presets">
+                                <h5>Quick Presets</h5>
+                                <div class="preset-buttons">
+                                    <button type="button" @click="setSchedulePreset('today')" class="btn-preset">
+                                        📅 Today Only
+                                    </button>
+                                    <button type="button" @click="setSchedulePreset('tomorrow')" class="btn-preset">
+                                        📅 Tomorrow Only
+                                    </button>
+                                    <button type="button" @click="setSchedulePreset('week')" class="btn-preset">
+                                        📅 This Week
+                                    </button>
+                                    <button type="button" @click="setSchedulePreset('weekend')" class="btn-preset">
+                                        🎉 This Weekend
+                                    </button>
+                                    <button type="button" @click="setSchedulePreset('month')" class="btn-preset">
+                                        📅 This Month
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

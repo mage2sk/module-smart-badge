@@ -1,0 +1,273 @@
+<fieldset class="admin__fieldset fieldset-advanced-styling" data-fieldset="styling">
+    <legend class="admin__legend legend">
+        <span><?= $escaper->escapeHtml(__('Advanced Styling')) ?></span>
+    </legend>
+    <br>
+
+    <!-- Hidden field for JSON data -->
+    <input type="hidden" name="badge_style" :value="JSON.stringify(badgeStyle)" />
+
+    <p class="note"><?= $escaper->escapeHtml(__('Fine-tune every visual aspect of your badge. Changes reflect in real-time preview.')) ?></p>
+
+    <!-- Quick Presets -->
+    <div class="admin__field field-style-presets">
+        <label class="admin__field-label">
+            <span><?= $escaper->escapeHtml(__('Quick Style Presets')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <div class="style-presets-grid">
+                <button type="button" @click="applyStylePreset('minimal')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Minimal')) ?></span>
+                </button>
+                <button type="button" @click="applyStylePreset('bold')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Bold')) ?></span>
+                </button>
+                <button type="button" @click="applyStylePreset('rounded')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Rounded')) ?></span>
+                </button>
+                <button type="button" @click="applyStylePreset('pill')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Pill')) ?></span>
+                </button>
+                <button type="button" @click="applyStylePreset('outlined')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Outlined')) ?></span>
+                </button>
+                <button type="button" @click="applyStylePreset('shadow')" class="action-default style-preset-btn">
+                    <span><?= $escaper->escapeHtml(__('Shadow')) ?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="style-section">
+        <h4><?= $escaper->escapeHtml(__('Dimensions')) ?></h4>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Width')) ?></label>
+            <div class="admin__field-control dimension-control">
+                <input type="number" x-model="badgeStyle.width.value" placeholder="Auto" class="admin__control-text" min="0" />
+                <select x-model="badgeStyle.width.unit" class="admin__control-select">
+                    <option value="px">px</option>
+                    <option value="%">%</option>
+                    <option value="em">em</option>
+                    <option value="auto">auto</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Height')) ?></label>
+            <div class="admin__field-control dimension-control">
+                <input type="number" x-model="badgeStyle.height.value" placeholder="Auto" class="admin__control-text" min="0" />
+                <select x-model="badgeStyle.height.unit" class="admin__control-select">
+                    <option value="px">px</option>
+                    <option value="%">%</option>
+                    <option value="em">em</option>
+                    <option value="auto">auto</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Border & Shape -->
+    <div class="style-section">
+        <h4><?= $escaper->escapeHtml(__('Border & Shape')) ?></h4>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Border Radius:')) ?> <span x-text="badgeStyle.borderRadius"></span>px</label>
+            <div class="admin__field-control">
+                <input type="range" x-model="badgeStyle.borderRadius" min="0" max="50" class="admin__control-range" />
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Border Width (px)')) ?></label>
+            <div class="admin__field-control">
+                <input type="number" x-model="badgeStyle.borderWidth" placeholder="0" class="admin__control-text" min="0" max="20" />
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Border Style')) ?></label>
+            <div class="admin__field-control">
+                <select x-model="badgeStyle.borderStyle" class="admin__control-select">
+                    <option value="none"><?= $escaper->escapeHtml(__('None')) ?></option>
+                    <option value="solid"><?= $escaper->escapeHtml(__('Solid')) ?></option>
+                    <option value="dashed"><?= $escaper->escapeHtml(__('Dashed')) ?></option>
+                    <option value="dotted"><?= $escaper->escapeHtml(__('Dotted')) ?></option>
+                    <option value="double"><?= $escaper->escapeHtml(__('Double')) ?></option>
+                    <option value="groove"><?= $escaper->escapeHtml(__('Groove')) ?></option>
+                    <option value="ridge"><?= $escaper->escapeHtml(__('Ridge')) ?></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin__field" x-show="badgeStyle.borderStyle !== 'none'">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Border Color')) ?></label>
+            <div class="admin__field-control">
+                <input type="color" x-model="badgeStyle.borderColor" class="admin__control-color" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Typography -->
+    <div class="style-section">
+        <h4><?= $escaper->escapeHtml(__('Typography')) ?></h4>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Font Size')) ?></label>
+            <div class="admin__field-control dimension-control">
+                <input type="number" x-model="badgeStyle.fontSize.value" placeholder="14" class="admin__control-text" min="8" max="72" />
+                <select x-model="badgeStyle.fontSize.unit" class="admin__control-select">
+                    <option value="px">px</option>
+                    <option value="em">em</option>
+                    <option value="rem">rem</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Font Weight')) ?></label>
+            <div class="admin__field-control">
+                <select x-model="badgeStyle.fontWeight" class="admin__control-select">
+                    <option value="100">100 - Thin</option>
+                    <option value="200">200 - Extra Light</option>
+                    <option value="300">300 - Light</option>
+                    <option value="400">400 - Normal</option>
+                    <option value="500">500 - Medium</option>
+                    <option value="600">600 - Semi Bold</option>
+                    <option value="700">700 - Bold</option>
+                    <option value="800">800 - Extra Bold</option>
+                    <option value="900">900 - Black</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Padding -->
+    <div class="style-section">
+        <h4><?= $escaper->escapeHtml(__('Padding')) ?></h4>
+
+        <div class="padding-controls">
+            <div class="admin__field">
+                <label class="admin__field-label"><?= $escaper->escapeHtml(__('Top (px)')) ?></label>
+                <div class="admin__field-control">
+                    <input type="number" x-model="badgeStyle.padding.top" placeholder="6" class="admin__control-text" min="0" max="100" />
+                </div>
+            </div>
+            <div class="admin__field">
+                <label class="admin__field-label"><?= $escaper->escapeHtml(__('Right (px)')) ?></label>
+                <div class="admin__field-control">
+                    <input type="number" x-model="badgeStyle.padding.right" placeholder="12" class="admin__control-text" min="0" max="100" />
+                </div>
+            </div>
+            <div class="admin__field">
+                <label class="admin__field-label"><?= $escaper->escapeHtml(__('Bottom (px)')) ?></label>
+                <div class="admin__field-control">
+                    <input type="number" x-model="badgeStyle.padding.bottom" placeholder="6" class="admin__control-text" min="0" max="100" />
+                </div>
+            </div>
+            <div class="admin__field">
+                <label class="admin__field-label"><?= $escaper->escapeHtml(__('Left (px)')) ?></label>
+                <div class="admin__field-control">
+                    <input type="number" x-model="badgeStyle.padding.left" placeholder="12" class="admin__control-text" min="0" max="100" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Effects -->
+    <div class="style-section">
+        <h4><?= $escaper->escapeHtml(__('Effects')) ?></h4>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Opacity:')) ?> <span x-text="badgeStyle.opacity"></span>%</label>
+            <div class="admin__field-control">
+                <input type="range" x-model="badgeStyle.opacity" min="0" max="100" class="admin__control-range" />
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Box Shadow')) ?></label>
+            <div class="admin__field-control">
+                <select x-model="badgeStyle.boxShadow" class="admin__control-select">
+                    <option value="none"><?= $escaper->escapeHtml(__('None')) ?></option>
+                    <option value="default"><?= $escaper->escapeHtml(__('Default')) ?></option>
+                    <option value="sm"><?= $escaper->escapeHtml(__('Small')) ?></option>
+                    <option value="md"><?= $escaper->escapeHtml(__('Medium')) ?></option>
+                    <option value="lg"><?= $escaper->escapeHtml(__('Large')) ?></option>
+                    <option value="xl"><?= $escaper->escapeHtml(__('Extra Large')) ?></option>
+                    <option value="inner"><?= $escaper->escapeHtml(__('Inner')) ?></option>
+                    <option value="glow"><?= $escaper->escapeHtml(__('Glow')) ?></option>
+                    <option value="custom"><?= $escaper->escapeHtml(__('Custom')) ?></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin__field" x-show="badgeStyle.boxShadow === 'custom'">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Custom Box Shadow')) ?></label>
+            <div class="admin__field-control">
+                <input type="text" x-model="badgeStyle.customBoxShadow" placeholder="e.g., 0 4px 6px rgba(0,0,0,0.1)" class="admin__control-text" />
+                <p class="note"><span><?= $escaper->escapeHtml(__('CSS box-shadow syntax')) ?></span></p>
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"><?= $escaper->escapeHtml(__('Z-Index (Layer Order)')) ?></label>
+            <div class="admin__field-control">
+                <input type="number" x-model="badgeStyle.zIndex" placeholder="10" class="admin__control-text" min="0" max="9999" />
+                <p class="note"><span><?= $escaper->escapeHtml(__('Higher values appear on top')) ?></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Button -->
+    <div class="admin__field">
+        <div class="admin__field-control">
+            <button type="button" @click="resetStyles()" class="action-default">
+                <span><?= $escaper->escapeHtml(__('Reset to Defaults')) ?></span>
+            </button>
+        </div>
+    </div>
+</fieldset>
+
+<style>
+.style-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e3e3e3;
+}
+.style-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+.dimension-control {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.dimension-control input[type="number"] {
+    width: 100px;
+    flex-shrink: 0;
+}
+.dimension-control select {
+    width: 80px;
+    flex-shrink: 0;
+}
+.style-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+.style-preset-btn {
+    padding: 8px;
+    text-align: center;
+}
+.padding-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+</style>

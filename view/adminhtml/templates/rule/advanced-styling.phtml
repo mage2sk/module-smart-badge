@@ -1,0 +1,145 @@
+<?php /** Advanced Styling — interactive UI that generates JSON */ ?>
+<div id="sb-adv-style">
+    <p class="note" style="margin-bottom:15px;"><?= $escaper->escapeHtml(__('Fine-tune the visual appearance of your badge. The CSS is generated automatically.')) ?></p>
+    <input type="hidden" name="badge_style" id="sb-style-json" data-form-part="smartbadge_rule_form"/>
+
+    <table class="admin__table-secondary" style="width:100%;">
+        <tr>
+            <th style="width:180px;"><?= $escaper->escapeHtml(__('Border Radius (px)')) ?></th>
+            <td>
+                <input type="number" class="admin__control-text sb-style-val" data-prop="borderRadius" min="0" max="100" style="width:80px;" placeholder="4"/>
+                <span class="note" style="margin-left:8px;"><?= $escaper->escapeHtml(__('0 = square, 50 = pill shape')) ?></span>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Font Size (px)')) ?></th>
+            <td>
+                <input type="number" class="admin__control-text sb-style-val" data-prop="fontSize" min="8" max="24" style="width:80px;" placeholder="12"/>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Font Weight')) ?></th>
+            <td>
+                <select class="admin__control-select sb-style-val" data-prop="fontWeight" style="width:180px;">
+                    <option value="400"><?= $escaper->escapeHtml(__('Normal (400)')) ?></option>
+                    <option value="500"><?= $escaper->escapeHtml(__('Medium (500)')) ?></option>
+                    <option value="600" selected><?= $escaper->escapeHtml(__('Semi Bold (600)')) ?></option>
+                    <option value="700"><?= $escaper->escapeHtml(__('Bold (700)')) ?></option>
+                    <option value="800"><?= $escaper->escapeHtml(__('Extra Bold (800)')) ?></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Padding')) ?></th>
+            <td>
+                <label style="font-size:11px; color:#999;">Top</label>
+                <input type="number" class="admin__control-text sb-style-pad" data-side="top" min="0" max="20" style="width:50px;" placeholder="4"/>
+                <label style="font-size:11px; color:#999; margin-left:8px;">Right</label>
+                <input type="number" class="admin__control-text sb-style-pad" data-side="right" min="0" max="20" style="width:50px;" placeholder="8"/>
+                <label style="font-size:11px; color:#999; margin-left:8px;">Bottom</label>
+                <input type="number" class="admin__control-text sb-style-pad" data-side="bottom" min="0" max="20" style="width:50px;" placeholder="4"/>
+                <label style="font-size:11px; color:#999; margin-left:8px;">Left</label>
+                <input type="number" class="admin__control-text sb-style-pad" data-side="left" min="0" max="20" style="width:50px;" placeholder="8"/>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Opacity (%)')) ?></th>
+            <td>
+                <input type="number" class="admin__control-text sb-style-val" data-prop="opacity" min="10" max="100" style="width:80px;" placeholder="100"/>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Box Shadow')) ?></th>
+            <td>
+                <select class="admin__control-select sb-style-val" data-prop="boxShadow" style="width:220px;">
+                    <option value="none"><?= $escaper->escapeHtml(__('None')) ?></option>
+                    <option value="sm"><?= $escaper->escapeHtml(__('Small')) ?></option>
+                    <option value="md"><?= $escaper->escapeHtml(__('Medium')) ?></option>
+                    <option value="lg"><?= $escaper->escapeHtml(__('Large')) ?></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Border Width (px)')) ?></th>
+            <td>
+                <input type="number" class="admin__control-text sb-style-val" data-prop="borderWidth" min="0" max="5" style="width:80px;" placeholder="0"/>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Border Style')) ?></th>
+            <td>
+                <select class="admin__control-select sb-style-val" data-prop="borderStyle" style="width:150px;">
+                    <option value="none"><?= $escaper->escapeHtml(__('None')) ?></option>
+                    <option value="solid"><?= $escaper->escapeHtml(__('Solid')) ?></option>
+                    <option value="dashed"><?= $escaper->escapeHtml(__('Dashed')) ?></option>
+                    <option value="dotted"><?= $escaper->escapeHtml(__('Dotted')) ?></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><?= $escaper->escapeHtml(__('Border Color')) ?></th>
+            <td>
+                <input type="color" class="sb-style-val" data-prop="borderColor" style="width:40px; height:30px; padding:1px; border:1px solid #d6d6d6; border-radius:3px;"/>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+require(['jquery', 'domReady!'], function($) {
+    var styleData = {};
+
+    function loadExisting() {
+        var existing = $('[name="badge_style"]').not('#sb-style-json').val();
+        if (existing && typeof existing === 'string') {
+            try { styleData = JSON.parse(existing); } catch(e) { styleData = {}; }
+        }
+        // Populate from data
+        if (styleData.borderRadius !== undefined) $('[data-prop="borderRadius"]').val(styleData.borderRadius);
+        if (styleData.fontSize) {
+            var fs = typeof styleData.fontSize === 'object' ? styleData.fontSize.value : styleData.fontSize;
+            $('[data-prop="fontSize"]').val(fs);
+        }
+        if (styleData.fontWeight) $('[data-prop="fontWeight"]').val(styleData.fontWeight);
+        if (styleData.opacity) $('[data-prop="opacity"]').val(styleData.opacity);
+        if (styleData.boxShadow) $('[data-prop="boxShadow"]').val(styleData.boxShadow);
+        if (styleData.borderWidth) $('[data-prop="borderWidth"]').val(styleData.borderWidth);
+        if (styleData.borderStyle) $('[data-prop="borderStyle"]').val(styleData.borderStyle);
+        if (styleData.borderColor) $('[data-prop="borderColor"]').val(styleData.borderColor);
+        if (styleData.padding) {
+            $('[data-side="top"]').val(styleData.padding.top || '');
+            $('[data-side="right"]').val(styleData.padding.right || '');
+            $('[data-side="bottom"]').val(styleData.padding.bottom || '');
+            $('[data-side="left"]').val(styleData.padding.left || '');
+        }
+        updateJson();
+    }
+
+    function updateJson() {
+        var result = {};
+        $('.sb-style-val').each(function() {
+            var prop = $(this).data('prop');
+            var val = $(this).val();
+            if (val !== '' && val !== undefined) {
+                if (prop === 'fontSize') {
+                    result[prop] = { value: val, unit: 'px' };
+                } else {
+                    result[prop] = val;
+                }
+            }
+        });
+        // Padding
+        var pad = {};
+        $('.sb-style-pad').each(function() {
+            var side = $(this).data('side');
+            var val = $(this).val();
+            if (val !== '') pad[side] = val;
+        });
+        if (Object.keys(pad).length > 0) result.padding = pad;
+        $('#sb-style-json').val(JSON.stringify(result));
+    }
+
+    $(document).on('change input', '.sb-style-val, .sb-style-pad', function() { updateJson(); });
+    setTimeout(loadExisting, 500);
+});
+</script>

@@ -1,0 +1,40 @@
+<!-- Category Grid View Preview -->
+<div x-show="previewMode === 'category'" class="category-preview-mockup">
+    <h4 class="category-title">Category: Sample Products</h4>
+    <div class="category-grid">
+        <template x-for="i in 6" :key="i">
+            <div class="category-product-card">
+                <div class="category-product-image">
+                    <div class="badge-live-preview category-badge"
+                         :style="getBadgeStyle()"
+                         :class="[rule.animation, 'badge-position-' + (rule.use_same_position ? (rule.position_all || 'top-left') : (previewMode === 'product' ? (rule.position_product || 'top-left') : (rule.position_category || 'top-left')))]">
+                        <!-- Show image if uploaded -->
+                        <template x-if="imagePreview">
+                            <img :src="imagePreview" alt="Badge" class="badge-image-preview" :style="getImageStyle()">
+                        </template>
+                        <!-- Show icon if no image -->
+                        <template x-if="!imagePreview">
+                            <span>
+                                <template x-if="iconType === 'fontawesome' && rule.badge_icon.startsWith('fa-')">
+                                    <i :class="rule.badge_icon"></i>
+                                </template>
+                                <template x-if="iconType === 'emoji' || !rule.badge_icon.startsWith('fa-')">
+                                    <span x-text="rule.badge_icon || '🔥'"></span>
+                                </template>
+                            </span>
+                        </template>
+                        <!-- Show text only if imageOnly is false -->
+                        <span x-show="!imageSettings.imageOnly" x-text="rule.badge_text || getBadgeLabel()"></span>
+                    </div>
+                    <div class="category-image-placeholder">
+                        <span class="icon">🖼️</span>
+                    </div>
+                </div>
+                <div class="category-product-info">
+                    <h5 x-text="'Product ' + i"></h5>
+                    <div class="category-price">$<span x-text="(29 + (i * 5)) + '.99'"></span></div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<?php
+/** @var $block \Panth\SmartBadge\Block\Badge */
+/** @var \Magento\Framework\Escaper $escaper */
+if (!$block->isEnabled()) {
+    return;
+}
+$product = $block->getCurrentProduct();
+if (!$product) {
+    return;
+}
+$badges = $block->getBadges($product);
+if (empty($badges)) {
+    return;
+}
+?>
+<div class="smart-badges-container">
+    <?php foreach ($badges as $i => $badge): ?>
+        <?php
+        $bgColor = '';
+        if (!empty($badge['customColor'])) {
+            $bgColor = '--badge-color: ' . $escaper->escapeHtmlAttr($badge['customColor']) . ';';
+        } elseif (!empty($badge['cssVar'])) {
+            $bgColor = '--badge-color: var(' . $escaper->escapeHtmlAttr($badge['cssVar']) . ');';
+        }
+        ?>
+        <div class="smart-badge badge-<?= $escaper->escapeHtmlAttr($badge['type']) ?> <?= $escaper->escapeHtmlAttr($badge['class']) ?>"
+             style="<?= /* @noEscape */ $bgColor ?> --i: <?= (int)$i ?>;">
+            <span class="badge-icon"><?= $escaper->escapeHtml($badge['icon'] ?? '') ?></span>
+            <span class="badge-text"><?= $escaper->escapeHtml($badge['label']) ?></span>
+        </div>
+    <?php endforeach; ?>
+</div>
+<style>
+:root{--badge-sale:var(--badge-sale,#DC2626);--badge-new:var(--badge-new,#16A34A);--badge-hot:var(--badge-hot,#F97316);--badge-limited:var(--badge-limited,#7C3AED);--badge-exclusive:var(--badge-exclusive,#6D28D9);--badge-bestseller:var(--badge-bestseller,#7C3AED);--badge-trending:var(--badge-trending,#0891B2);--badge-featured:var(--badge-featured,#0D9488)}
+.smart-badges-container{position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none;display:flex;flex-direction:column;gap:0.5rem;padding:0.75rem}
+.smart-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.375rem 0.75rem;background:var(--badge-color,var(--color-primary,#0D9488));color:white;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-radius:0.375rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);width:fit-content;animation:badgeIn 0.6s cubic-bezier(0.34,1.56,0.64,1);animation-delay:calc(var(--i,0) * 0.1s);animation-fill-mode:both}
+.badge-new{background:var(--badge-new,#16A34A);animation:badgeIn 0.6s,pulse 2s infinite;animation-delay:calc(var(--i,0) * 0.1s),0.6s}
+.badge-sale{background:var(--badge-sale,#DC2626);animation:badgeIn 0.6s,glow 2s infinite;animation-delay:calc(var(--i,0) * 0.1s),0.6s}
+.badge-stock{background:var(--badge-limited,#7C3AED);animation:badgeIn 0.6s,shake 3s infinite;animation-delay:calc(var(--i,0) * 0.1s),1s}
+.badge-hot{background:var(--badge-hot,#F97316);animation:badgeIn 0.6s,bounce 2s infinite;animation-delay:calc(var(--i,0) * 0.1s),0.6s}
+@keyframes badgeIn{from{opacity:0;transform:translateX(-20px) scale(0.8)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes glow{0%,100%{box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 0 0 0 rgba(220,38,38,0)}50%{box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 0 20px 5px rgba(220,38,38,0.3)}}
+@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-2px)}20%,40%,60%,80%{transform:translateX(2px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (max-width:640px){.smart-badge{font-size:0.625rem;padding:0.25rem 0.5rem}.badge-icon{font-size:0.875rem}.smart-badges-container{gap:0.375rem;padding:0.5rem}}
+</style>
