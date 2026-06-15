@@ -10,6 +10,7 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\MediaStorage\Model\File\UploaderFactory;
 use Magento\Store\Model\StoreManagerInterface;
+use Panth\Core\Security\UploadExtensionPolicy;
 
 class Upload extends Action
 {
@@ -19,19 +20,22 @@ class Upload extends Action
     private Filesystem $filesystem;
     private UploaderFactory $uploaderFactory;
     private StoreManagerInterface $storeManager;
+    private UploadExtensionPolicy $uploadExtensionPolicy;
 
     public function __construct(
         Context $context,
         JsonFactory $jsonFactory,
         Filesystem $filesystem,
         UploaderFactory $uploaderFactory,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        UploadExtensionPolicy $uploadExtensionPolicy
     ) {
         parent::__construct($context);
         $this->jsonFactory = $jsonFactory;
         $this->filesystem = $filesystem;
         $this->uploaderFactory = $uploaderFactory;
         $this->storeManager = $storeManager;
+        $this->uploadExtensionPolicy = $uploadExtensionPolicy;
     }
 
     public function execute()
@@ -44,6 +48,12 @@ class Upload extends Action
 
             if (!$mediaDir->isDirectory('smartbadge')) {
                 $mediaDir->create('smartbadge');
+            }
+
+            // Hard executable deny-list — defense-in-depth on top of the
+            // explicit image allowlist below.
+            if (isset($_FILES['badge_image']['name']) && is_string($_FILES['badge_image']['name'])) {
+                $this->uploadExtensionPolicy->assertSafeExtension($_FILES['badge_image']['name']);
             }
 
             $uploader = $this->uploaderFactory->create(['fileId' => 'badge_image']);
