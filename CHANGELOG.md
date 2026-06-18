@@ -4,6 +4,15 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.6] -- README rewrite
+
+### Changed
+- README.md rewritten to match updated documentation template: corrected
+  canonical URL to live product page, added Quick Answer section, added
+  gold-template section order, rewrote Configuration table from real
+  system.xml fields only, removed unverified claims (cart/mini-cart badges,
+  customer group targeting, hover effects, recurring weekly schedules).
+
 ## [1.0.5] -- Upload extension deny-list (defense-in-depth)
 
 ### Added

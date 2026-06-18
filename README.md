@@ -1,33 +1,49 @@
 <!-- SEO Meta -->
 <!--
-  Title: Panth Smart Badge - Magento 2 Product Badges & Labels Extension | Panth Infotech
-  Description: Smart Badge for Magento 2 - rule-based product badges and labels for sale, new arrival, best-seller, low stock, and custom promotions. Visual badge builder with colors, FontAwesome icons, animations, scheduling, and category/product targeting. Hyva and Luma compatible. Built by Top Rated Plus Magento developer Kishan Savaliya.
-  Keywords: magento 2 product badges, sale badge, new arrival badge, product labels, smart badges, urgency badges, magento 2 label extension, best seller badge, low stock badge, hyva product badges
+  Title: Magento 2 Smart Product Badges and Labels Extension | Hyva + Luma | Panth Infotech
+  Description: Panth Smart Badge adds automated, rule-based product badges and labels to Magento 2. Assign Sale, New, Hot, Best Seller, Low Stock, Free Shipping, Limited Edition, and Trending badges automatically using a smart conditions engine. Visual badge builder with colors, FontAwesome icons, animations, and scheduling. Works on Magento 2.4.4 to 2.4.8 and PHP 8.1 to 8.4. Built by Top Rated Plus Magento developer Kishan Savaliya.
+  Keywords: magento 2 product badges, magento 2 product labels, sale badge magento 2, new arrival badge, best seller badge, low stock badge, smart badge magento 2, rule-based badges, hyva product badges, luma product labels, magento 2 badge extension, animated product badges, scheduled product badges, fontawesome magento badges
   Author: Kishan Savaliya (Panth Infotech)
-  Canonical: https://github.com/mage2sk/module-smart-badge
+  Canonical: https://kishansavaliya.com/magento-2-smart-badge.html
 -->
 
-# Panth Smart Product Badges & Labels for Magento 2
+# Magento 2 Smart Product Badges and Labels Extension: Auto-Assign Sale, New, Hot and Custom Badges (Hyva + Luma)
 
 [![Magento 2.4.4 - 2.4.8](https://img.shields.io/badge/Magento-2.4.4%20--%202.4.8-orange?logo=magento&logoColor=white)](https://magento.com)
 [![PHP 8.1 - 8.4](https://img.shields.io/badge/PHP-8.1%20--%208.4-blue?logo=php&logoColor=white)](https://php.net)
+[![Hyva + Luma](https://img.shields.io/badge/Themes-Hyva%20%2B%20Luma-14b8a6)](https://www.hyva.io)
+[![Live Demo & Details](https://img.shields.io/badge/Live%20Demo%20%26%20Details-magento--2--smart--badge-0D9488?style=flat)](https://kishansavaliya.com/magento-2-smart-badge.html)
 [![Packagist](https://img.shields.io/badge/Packagist-mage2kishan%2Fmodule--smart--badge-orange?logo=packagist&logoColor=white)](https://packagist.org/packages/mage2kishan/module-smart-badge)
 [![Upwork Top Rated Plus](https://img.shields.io/badge/Upwork-Top%20Rated%20Plus-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
-[![Panth Infotech Agency](https://img.shields.io/badge/Agency-Panth%20Infotech-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/agencies/1881421506131960778/)
 [![Website](https://img.shields.io/badge/Website-kishansavaliya.com-0D9488)](https://kishansavaliya.com)
-[![Get a Quote](https://img.shields.io/badge/Get%20a%20Quote-Free%20Estimate-DC2626)](https://kishansavaliya.com/get-quote)
 
-> **Turn every product into a conversion opportunity** with automated, rule-based badges and labels. Smart Badge for Magento 2 lets you promote sale items, new arrivals, best-sellers, low-stock products, and custom campaigns — without touching a single product manually.
+> **Automatically show product badges on your Magento 2 store without touching each product manually.** Panth Smart Badge assigns Sale, New, Hot, Best Seller, Low Stock, Free Shipping, Limited Edition, and Trending badges based on live product data. Design them with a visual builder, set a schedule, and let the rules do the work.
 
-**Panth Smart Badge** is a powerful Magento 2 product badge extension that assigns visual labels to products automatically based on flexible rules — sale status, new arrivals, best-sellers, low stock, custom attributes, categories, and more. Design eye-catching badges with a visual builder featuring custom colors, FontAwesome icons, animations, and gradients. Schedule badges to appear during promotions, target specific categories or individual products, and control positioning per page type (product listing, product detail, home, cart). Fully compatible with **Hyva** and **Luma** themes, MEQP compliant, and built for Magento 2.4.4 - 2.4.8 on PHP 8.1 - 8.4.
-
-Whether you're running a flash sale, launching a new collection, highlighting bestsellers, or creating urgency around low-stock inventory, Smart Badge gives you the tools to drive conversions with zero manual product tagging.
+**Product page:** [kishansavaliya.com/magento-2-smart-badge.html](https://kishansavaliya.com/magento-2-smart-badge.html)
 
 ---
 
-## 🚀 Need Custom Magento 2 Development?
+## Quick Answer
 
-> **Get a free quote for your project in 24 hours** — custom modules, Hyva themes, performance optimization, M1→M2 migrations, and Adobe Commerce Cloud.
+**What is Panth Smart Badge?** It is a Magento 2 product badge and label extension that automatically assigns visual badges to products based on rules you configure, so shoppers can quickly spot sale items, new arrivals, hot deals, and low-stock products.
+
+**What does it add to my store?**
+
+- **8 preset badge types** covering the most common merchandising scenarios, each fully customizable.
+- A **visual badge builder** with color pickers, FontAwesome icons, CSS animations, and a live preview.
+- A **smart conditions engine** that triggers badges based on price, stock, discount, product age, ratings, and more.
+- **Scheduling** so badges appear and disappear automatically on a start and end datetime you set.
+- **Per-page-type positioning** so a badge can sit top-left on category pages and top-right on product detail pages.
+
+**Which themes are supported?** Both **Hyva** (Alpine.js, no jQuery) and **Luma**. Theme detection is automatic via `Panth_Core`.
+
+**What does it need?** Magento 2.4.4 to 2.4.8, PHP 8.1 to 8.4, and the free `mage2kishan/module-core` package.
+
+---
+
+## Need Custom Magento 2 Development?
+
+> **Get a free quote for your project in 24 hours** for custom modules, Hyva themes, performance work, M1 to M2 migrations, and Adobe Commerce Cloud.
 
 <p align="center">
   <a href="https://kishansavaliya.com/get-quote">
@@ -39,7 +55,7 @@ Whether you're running a flash sale, launching a new collection, highlighting be
 <tr>
 <td width="50%" align="center">
 
-### 🏆 Kishan Savaliya
+### Kishan Savaliya
 **Top Rated Plus on Upwork**
 
 [![Hire on Upwork](https://img.shields.io/badge/Hire%20on%20Upwork-Top%20Rated%20Plus-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
@@ -50,7 +66,7 @@ Adobe Certified • Hyva Specialist
 </td>
 <td width="50%" align="center">
 
-### 🏢 Panth Infotech Agency
+### Panth Infotech Agency
 **Magento Development Team**
 
 [![Visit Agency](https://img.shields.io/badge/Visit%20Agency-Panth%20Infotech-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/agencies/1881421506131960778/)
@@ -68,17 +84,13 @@ Performance • SEO • Adobe Commerce Cloud
 
 ## Table of Contents
 
+- [Who Is It For](#who-is-it-for)
 - [The 8 Built-In Badge Types](#the-8-built-in-badge-types)
 - [Key Features](#key-features)
 - [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [How Badge Rules Work](#how-badge-rules-work)
-- [Badge Positioning & Page Targeting](#badge-positioning--page-targeting)
-- [FontAwesome Icons & Animations](#fontawesome-icons--animations)
-- [Scheduling Badges](#scheduling-badges)
-- [Hyva & Luma Theme Support](#hyva--luma-theme-support)
-- [Performance](#performance)
 - [FAQ](#faq)
 - [Support](#support)
 - [About Panth Infotech](#about-panth-infotech)
@@ -86,64 +98,78 @@ Performance • SEO • Adobe Commerce Cloud
 
 ---
 
+## Who Is It For
+
+- **Stores running promotions** where you want a Sale or Hot Deal badge to appear automatically when a product has a special price, without editing each product one by one.
+- **Fashion and lifestyle stores** that launch new collections often and want a New badge to show up for a set number of days after the product is created.
+- **Merchants focused on urgency** who want a Low Stock badge to appear when inventory drops below a threshold you choose.
+- **Hyva storefronts** that need a badge solution built with Alpine.js and Tailwind, without pulling in jQuery or RequireJS.
+- **Stores with seasonal campaigns** where badges need to go live and expire on a schedule without manual work each time.
+
+---
+
 ## The 8 Built-In Badge Types
 
-Smart Badge ships with **8 pre-configured badge types** that cover the most common merchandising scenarios. Each is fully customizable and can be enabled, disabled, restyled, or scheduled independently.
+Smart Badge ships with **8 preset badge types** that cover the most common merchandising scenarios. Each can be styled, scheduled, and positioned independently.
 
-| # | Badge Type | Trigger Rule | Typical Use Case |
+| # | Badge Type | Trigger | Typical Use |
 |---|---|---|---|
-| 1 | **Sale** | Product has a special price active | Flash sales, clearance, seasonal discounts |
-| 2 | **New Arrival** | Product created within N days (configurable) | Promote fresh inventory and collections |
-| 3 | **Best Seller** | Top N products by order quantity or revenue | Social proof, highlight popular items |
-| 4 | **Low Stock** | Stock qty below configurable threshold | Urgency, scarcity-driven conversions |
-| 5 | **Out of Stock** | Product is out of stock | Transparent inventory communication |
-| 6 | **Hot Deal** | % discount exceeds configurable threshold | Highlight high-value discounts |
-| 7 | **Free Shipping** | Product qualifies for free shipping | Reduce cart abandonment |
-| 8 | **Custom / Featured** | Rule-based on any attribute, category, or SKU list | Campaigns, brand spotlights, exclusives |
+| 1 | **Sale** | Product has an active special price | Flash sales, clearance, seasonal discounts |
+| 2 | **New** | Product created within N days (configurable) | Fresh inventory, new collections |
+| 3 | **Hot** | Discount percentage exceeds a threshold | High-value deals |
+| 4 | **Best Seller** | Top N products by sales count | Social proof, popular items |
+| 5 | **Low Stock** | Stock qty falls below a threshold | Urgency, scarcity |
+| 6 | **Free Shipping** | Product qualifies for free shipping | Reduce cart abandonment |
+| 7 | **Limited Edition** | Rule-based on attribute, category, or SKU list | Exclusive or limited products |
+| 8 | **Trending** | Rule-based (e.g. wishlist count, sales velocity) | Highlight trending items |
 
 ---
 
 ## Key Features
 
 ### Rule-Based Automatic Assignment
-- **No manual tagging** — badges are applied automatically based on live product data
-- **Multi-condition rules** — combine price, stock, category, attribute, and date filters
-- **Priority control** — when multiple badges match, choose which ones display (and in what order)
-- **Product/category targeting** — include or exclude specific SKUs, categories, or attribute sets
-- **Customer group targeting** — show different badges to retail vs. wholesale customers
+- **No manual tagging** -- badges are applied automatically based on live product data.
+- **Smart conditions engine** -- combine price range, stock level, discount percentage, product age, stock status, customer rating, sales count, wishlist count, product attribute, and date range conditions.
+- **AND logic** -- all enabled conditions must match before a badge is shown.
+- **Priority control** -- when multiple badges match a product, priority determines which ones display.
+- **Product and category targeting** -- assign badges to specific SKUs, product IDs, or category trees.
 
 ### Visual Badge Builder
-- **Color picker** — custom background, border, and text colors with gradient support
-- **Shape library** — rectangle, rounded, pill, ribbon, corner, circle, diamond, and banner shapes
-- **Size presets** — small, medium, large, or custom pixel dimensions
-- **FontAwesome 6 icons** — hundreds of icons including fire, bolt, clock, star, heart, tag, gift
-- **Live preview** — see your badge rendered in real-time in the admin builder
-- **CSS-free** — no stylesheet editing required for standard designs
+- **Color picker** for background and text colors, with custom CSS class support.
+- **FontAwesome 6 icons** -- hundreds of icons including fire, bolt, star, tag, gift, and more. Search and pick from the admin builder.
+- **Emoji icons** -- quick-pick emoji grid as an alternative to FontAwesome.
+- **Custom badge image** -- upload your own PNG, JPG, SVG, or WebP (up to 2 MB) as a badge.
+- **Style presets** -- Minimal, Bold, Rounded, Pill, Outlined, and Shadow shapes out of the box.
+- **Full CSS control** -- border radius, border width and color, font size, font weight, padding, opacity, box shadow, z-index, and dimensions with unit selection (px, %, em, auto).
+- **Live preview** -- see your badge rendered in real time in the admin builder, in both product view and category view modes.
 
-### Animations & Effects
-- **Pulse, shake, bounce, glow, flip, fade** — pre-built CSS animations
-- **Hover effects** — scale, rotate, color-shift on mouseover
-- **Shine/shimmer** — animated gradient sweep for premium feel
-- **Respects `prefers-reduced-motion`** — accessible by default
+### Animations
+- **Pulse, bounce, fade, shake, glow, and slide** animations built in.
+- **Continuous animation** on badge display.
+- All animations use CSS only, no JavaScript required.
 
-### Scheduling & Campaigns
-- **Start/end dates** — badges appear and disappear automatically on schedule
-- **Timezone-aware** — respects store timezone configuration
-- **Recurring schedules** — daily/weekly windows (e.g., "Weekend Sale" every Fri-Sun)
-- **Store-view and website scoping** — different badges per region/language
+### Scheduling
+- **Start and end datetime** for each badge rule -- it activates and expires automatically.
+- **Automatic enable and disable** based on the schedule, via Magento cron.
+- **Timezone-aware** -- all times respect the store's configured timezone.
 
 ### Page-Specific Positioning
-- **Category/listing pages** — top-left, top-right, bottom-left, bottom-right, center overlay
-- **Product detail page** — on main image, above title, beside SKU, next to price
-- **Home page / widgets** — show in featured product sliders and PageBuilder blocks
-- **Cart & mini-cart** — optional badges in cart line items
-- **Search results** — badges visible in autocomplete and results grids
+- **Category and listing pages** -- top-left, top-right, bottom-left, or bottom-right.
+- **Product detail pages** -- independent position setting.
+- **Product sliders and widgets** -- badges shown in featured product blocks.
+- **Use same position everywhere** option, or set a different position per page type.
 
 ### Admin Experience
-- **Grid management** — filter, sort, bulk-enable, duplicate, and export badge rules
-- **MEQP compliant** — passes Adobe's Magento Extension Quality Program
-- **Multi-store support** — scope every badge to website / store view
-- **Translation ready** — all admin labels use Magento's `__()` translation function
+- **Manage Badges grid** under Admin > Panth Infotech > Smart Badges with sorting, filtering, pagination, inline edit, mass delete, and mass status change.
+- **Priority-based ordering** (0 to 100) controls which badges display when more match than the configured maximum.
+- **Badge combination mode** -- Priority Mode shows only the highest-priority badge; Collect All Mode combines badges from multiple sources up to the maximum limit.
+- **MEQP compliant** -- passes Adobe's Magento Extension Quality Program code standards.
+- **Translation ready** -- all admin labels use Magento's `__()` function.
+
+### Hyva + Luma Ready
+- **Native Hyva templates** built with Alpine.js and Tailwind CSS, no jQuery or RequireJS.
+- **Native Luma templates** for classic storefronts.
+- **Automatic theme detection** via `Panth\Core\Helper\Theme`.
 
 ---
 
@@ -153,13 +179,11 @@ Smart Badge ships with **8 pre-configured badge types** that cover the most comm
 |---|---|
 | Magento Open Source | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
 | Adobe Commerce | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
-| Adobe Commerce Cloud | 2.4.4 — 2.4.8 |
+| Adobe Commerce Cloud | 2.4.4 to 2.4.8 |
 | PHP | 8.1.x, 8.2.x, 8.3.x, 8.4.x |
-| MySQL | 8.0+ |
-| MariaDB | 10.4+ |
-| Hyva Theme | 1.0+ (native support) |
+| Hyva Theme | 1.0+ (native Alpine.js support) |
 | Luma Theme | Native support |
-| Required Dependency | [Panth_Core](https://packagist.org/packages/mage2kishan/module-core) (free) |
+| Required Dependency | `mage2kishan/module-core` (free) |
 
 ---
 
@@ -178,187 +202,100 @@ bin/magento cache:flush
 
 ### Manual Installation via ZIP
 
-1. Download the latest release ZIP from [Packagist](https://packagist.org/packages/mage2kishan/module-smart-badge) or the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com)
-2. Extract to `app/code/Panth/SmartBadge/` in your Magento installation
-3. Also install the free [Panth_Core](https://packagist.org/packages/mage2kishan/module-core) base module
-4. Run the same commands as above starting from `bin/magento module:enable`
+1. Download the latest release from [Packagist](https://packagist.org/packages/mage2kishan/module-smart-badge) or from the [product page](https://kishansavaliya.com/magento-2-smart-badge.html).
+2. Extract it to `app/code/Panth/SmartBadge/` in your Magento install.
+3. Make sure `Panth_Core` is installed too (required dependency).
+4. Run the commands above starting from `bin/magento module:enable`.
 
 ### Verify Installation
 
 ```bash
 bin/magento module:status Panth_SmartBadge
-# Expected output: Module is enabled
+# Expected: Module is enabled
 ```
 
-After installation, navigate to:
+After install, open:
 ```
-Admin → Panth Infotech → Smart Badge → Manage Badges
+Admin > Panth Infotech > Smart Badges > Manage Badges
 ```
 
 ---
 
 ## Configuration
 
-Navigate to `Stores → Configuration → Panth Extensions → Smart Badge` to configure global settings:
+Go to **Stores > Configuration > Panth Extensions > Smart Product Badges**.
 
-| Setting | Default | Description |
-|---|---|---|
-| Enable Smart Badge | Yes | Master toggle for the module |
-| New Arrival Threshold (Days) | 30 | Products created within N days receive the "New" badge |
-| Low Stock Threshold (Qty) | 5 | Stock qty below this value triggers the "Low Stock" badge |
-| Best Seller Top N | 20 | Top N products by order qty receive "Best Seller" |
-| Hot Deal Discount Threshold | 30 | Discounts above N% receive the "Hot Deal" badge |
-| Maximum Badges per Product | 3 | Cap on simultaneous badges per product |
-| Enable Animations | Yes | Globally enable/disable CSS animations |
-| Load FontAwesome | Auto | Auto / Always / Never — skip if your theme already loads FA |
-| Enable on Category Pages | Yes | Show badges on product listings |
-| Enable on Product Pages | Yes | Show badges on PDP |
-| Enable on Cart | No | Show badges in cart line items |
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Enable Smart Badges | General | Yes | Master toggle. Turns all badge display on or off. |
+| Maximum Badges Per Product | General | 3 | How many badges can show on a single product at once (1-10). |
+| Badge Combination Mode | General | -- | Priority Mode shows only the highest-priority badge. Collect All Mode combines badges up to the maximum limit. |
+| Show Multiple Rule Badges | General | Yes | Allow more than one rule-based badge on the same product (only active in Collect All mode). |
+| Show Auto Badges With Manual/Rules | General | Yes | Show auto-detection badges (New, Sale) alongside manual or rule-based badges (only active in Collect All mode). |
+| Multiple Badge Layout | Display | -- | How multiple badges are arranged on a product image: vertical stack, horizontal row, grid, or compact overlap. |
+| Badge Spacing | Display | gap-2 | Tailwind CSS gap class controlling space between badges (e.g., gap-1, gap-2, gap-3). |
+
+Badge colors are managed in the theme configuration file (`app/design/frontend/Panth/Infotech/web/tailwind/theme-config.json`). Individual badge rules can override these defaults with custom colors in the badge rule builder.
 
 ---
 
 ## How Badge Rules Work
 
-Each badge in the admin grid is a **rule** — a combination of conditions that must be true for the badge to appear on a product.
+Each badge in the admin grid is a **rule** that combines a badge design, conditions, a schedule, and positioning settings.
 
 ### Rule Components
 
-1. **Trigger type** — one of the 8 built-in types (Sale, New, Best Seller, etc.) or Custom
-2. **Conditions** — optional additional filters (category, attribute set, SKU list, price range, customer group)
-3. **Schedule** — optional start/end dates or recurring window
-4. **Design** — visual styling (color, shape, icon, animation, position)
-5. **Priority** — integer controlling display order when multiple badges match
+1. **Badge type** -- one of the 8 preset types (Sale, New, Hot, Best Seller, Low Stock, Free Shipping, Limited Edition, Trending), which sets the default trigger.
+2. **Smart conditions** -- optional additional filters such as price range, stock level, discount percentage, product age, customer rating, sales count, or any product attribute.
+3. **Product and category targeting** -- restrict the badge to specific product IDs, category IDs, or leave it open for store-wide matching.
+4. **Schedule** -- optional start and end datetime. Leave blank for an always-active badge.
+5. **Design** -- badge text, color, icon (FontAwesome, emoji, or uploaded image), animation, and CSS style settings.
+6. **Priority** -- integer (0 to 100) that controls display order when multiple badges match the same product.
+7. **Positioning** -- choose the same position for all page types, or set a different position for category pages, product detail pages, and product sliders.
 
-### Example: "Winter Clearance" Rule
+### How the Assignment Works
 
-- **Trigger**: Sale (special price active)
-- **Conditions**: Category = "Winter Collection" AND Discount >= 40%
-- **Schedule**: 2026-01-01 00:00 — 2026-02-28 23:59
-- **Design**: Red pill shape, white text, snowflake icon, pulse animation
-- **Position**: Top-left on category page, beside price on PDP
-- **Priority**: 10 (highest)
-
----
-
-## Badge Positioning & Page Targeting
-
-Smart Badge gives you independent control over **where** each badge appears across your storefront:
-
-| Page Type | Available Positions |
-|---|---|
-| Category / Listing | Top-Left, Top-Right, Bottom-Left, Bottom-Right, Center Overlay |
-| Product Detail (PDP) | On Main Image (9-point grid), Above Title, Beside SKU, Next to Price, Above Add to Cart |
-| Home / Widgets | Inside Product Slider / Featured Grid blocks |
-| Cart / Mini-Cart | Beside line item name (optional) |
-| Search Autocomplete | Inline with product thumbnail |
-
-Each badge rule can specify a **different position per page type** — e.g., a "Sale" badge might be top-right on listings but next-to-price on the PDP.
-
----
-
-## FontAwesome Icons & Animations
-
-Smart Badge bundles **FontAwesome 6 Free** support with optional auto-loading. Choose from hundreds of icons including:
-
-- **Urgency/Scarcity**: fire, bolt, clock, hourglass-half, exclamation
-- **Value**: tag, percent, dollar-sign, gift, coins
-- **Popularity**: star, heart, crown, thumbs-up, trophy
-- **Freshness**: leaf, seedling, sparkles, certificate
-- **Shipping**: truck, shipping-fast, box
-
-### Built-In Animations
-
-| Animation | Effect | Best For |
-|---|---|---|
-| Pulse | Gentle rhythmic scale | Urgency badges (Low Stock, Hot Deal) |
-| Shake | Horizontal jitter | Flash sales, limited-time |
-| Bounce | Vertical hop | New arrivals |
-| Glow | Soft outer light | Premium / Featured |
-| Shine | Diagonal gradient sweep | Best Seller, Premium |
-| Flip | 3D rotation | Reveal effect |
-| Fade | Opacity oscillation | Subtle, non-distracting |
-
-All animations honor the `prefers-reduced-motion` media query for accessibility.
-
----
-
-## Scheduling Badges
-
-Every badge rule supports time-based activation:
-
-- **One-time window** — set a specific start and end datetime (e.g., Black Friday 2026)
-- **Recurring schedule** — weekly windows (e.g., "Weekend Sale" every Fri 18:00 → Sun 23:59)
-- **Evergreen** — no schedule; badge is always active when trigger conditions are met
-- **Timezone-aware** — all times respect the store's configured timezone
-
-The scheduler runs via Magento's cron, so ensure `bin/magento cron:run` is scheduled in your system crontab.
-
----
-
-## Hyva & Luma Theme Support
-
-Smart Badge is one of the few Magento 2 badge extensions with **first-class Hyva support**:
-
-- **Hyva** — native Alpine.js components, Tailwind CSS classes, no jQuery, fully compatible with Hyva's checkout and PageBuilder
-- **Luma** — traditional RequireJS + Knockout components for classic storefronts
-- **Theme detection** — automatic via `Panth\Core\Helper\Theme` (no manual configuration)
-- **Zero conflicts** — badge markup is isolated and does not interfere with your theme's existing CSS
-
----
-
-## Performance
-
-- **Indexed rules** — badge-to-product assignments cached and indexed for O(1) lookups
-- **Block caching** — badge HTML is cached per product + store view + customer group
-- **Lazy icon loading** — FontAwesome loaded only on pages where badges render
-- **Zero frontend JS overhead** — pure CSS animations; no JavaScript required for display
-- **MEQP compliant** — passes Adobe's code quality standards
-
-Typical performance impact: **< 5ms added to category page render** on a store with 10,000 products and 15 active badge rules.
+The module checks each active rule against every product. A product receives a badge when its data matches all enabled conditions on the rule. Matched badges are sorted by priority, and only up to the configured maximum are shown per product.
 
 ---
 
 ## FAQ
 
-### Does Smart Badge slow down my category pages?
+### Does Smart Badge work on Hyva themes?
 
-No. Badge lookups are indexed and cached per product + store view + customer group, and badge rendering is pure CSS. Typical overhead is under 5ms on listing pages.
+Yes. Panth Smart Badge ships native Alpine.js and Tailwind templates for Hyva, with no jQuery or RequireJS. Theme detection is automatic via `Panth_Core`.
 
-### Can I create my own custom badges?
+### Will it slow down my category pages?
 
-Yes. Use the **Custom / Featured** badge type and define rules based on any product attribute, category, SKU list, or price condition.
+No. Badge assignments are stored in the `panth_smart_badge` and `panth_smart_badge_rule` tables and looked up efficiently. Badge rendering uses pure CSS animations with no extra JavaScript on the frontend.
+
+### Can I upload a custom badge image instead of using text?
+
+Yes. Each badge rule supports uploading a PNG, JPG, SVG, or WebP image (up to 2 MB) as the badge graphic instead of text and icon.
+
+### Can I show more than one badge on the same product?
+
+Yes. Set Badge Combination Mode to Collect All and configure the Maximum Badges Per Product value. Priority determines which badges display when more match than the limit.
+
+### My theme already loads FontAwesome. Will Smart Badge load it again?
+
+Smart Badge uses FontAwesome icons in the badge rule builder and renders selected icon classes in the badge markup. If your theme already loads FontAwesome, the icons will display without any double load.
+
+### Can I schedule a badge for a specific sale window?
+
+Yes. Each rule has a start datetime and end datetime. The module uses Magento cron to activate and expire badges automatically. Make sure `bin/magento cron:run` is scheduled on your server.
 
 ### Does it work with configurable and bundle products?
 
-Yes. Badges apply at the parent-product level on listing pages and follow your theme's configurable/bundle display logic on the PDP.
+Yes. Badges apply at the parent product level on listing pages and follow the standard display logic on product detail pages.
 
-### Will badges appear in product sliders and PageBuilder?
+### Does Smart Badge support multi-store setups?
 
-Yes. Smart Badge integrates with Magento's native product list blocks, PageBuilder product widgets, and popular slider extensions including Panth Product Slider.
+Yes. The `smart_badge` configuration section supports default, website, and store view scopes, so you can enable or configure badges differently per store.
 
-### Can I schedule a badge for a specific campaign?
+### Does Panth Smart Badge need Panth Core?
 
-Yes. Each rule supports a start/end datetime or a recurring weekly window, all timezone-aware.
-
-### Does it work with Hyva themes?
-
-Yes. Smart Badge ships native Hyva support — Alpine.js + Tailwind, no jQuery — detected automatically via Panth Core's theme helper.
-
-### Is the source code available?
-
-Yes. The full source is on GitHub at [github.com/mage2sk/module-smart-badge](https://github.com/mage2sk/module-smart-badge).
-
-### Does Smart Badge support multi-store and multi-language?
-
-Yes. Every badge rule is scopable to website / store view, and all text fields are translatable via Magento's `__()` function.
-
-### What if my theme already loads FontAwesome?
-
-Set **Load FontAwesome** to **Never** in configuration to skip loading it a second time.
-
-### Can I limit how many badges show per product?
-
-Yes. The **Maximum Badges per Product** config (default 3) caps simultaneous badges. Rule priority determines which ones display when more match than allowed.
+Yes. `mage2kishan/module-core` is a free, required dependency. Composer installs it automatically.
 
 ---
 
@@ -366,6 +303,7 @@ Yes. The **Maximum Badges per Product** config (default 3) caps simultaneous bad
 
 | Channel | Contact |
 |---|---|
+| Product Page | [kishansavaliya.com/magento-2-smart-badge.html](https://kishansavaliya.com/magento-2-smart-badge.html) |
 | Email | kishansavaliyakb@gmail.com |
 | Website | [kishansavaliya.com](https://kishansavaliya.com) |
 | WhatsApp | +91 84012 70422 |
@@ -375,9 +313,9 @@ Yes. The **Maximum Badges per Product** config (default 3) caps simultaneous bad
 
 Response time: 1-2 business days.
 
-### 💼 Need Custom Magento Development?
+### Need Custom Magento Development?
 
-Looking for **custom Magento module development**, **Hyva theme customization**, **store migrations**, or **performance optimization**? Get a free quote in 24 hours:
+Looking for **custom Magento module development**, **Hyva theme work**, **store migrations**, or **performance tuning**? Get a free quote in 24 hours:
 
 <p align="center">
   <a href="https://kishansavaliya.com/get-quote">
@@ -394,8 +332,8 @@ Looking for **custom Magento module development**, **Hyva theme customization**,
     <img src="https://img.shields.io/badge/Visit-Panth%20Infotech%20Agency-14a800?style=for-the-badge&logo=upwork&logoColor=white" alt="Visit Agency" />
   </a>
   &nbsp;&nbsp;
-  <a href="https://kishansavaliya.com">
-    <img src="https://img.shields.io/badge/Visit%20Website-kishansavaliya.com-0D9488?style=for-the-badge" alt="Visit Website" />
+  <a href="https://kishansavaliya.com/magento-2-smart-badge.html">
+    <img src="https://img.shields.io/badge/View%20Product%20Page-magento--2--smart--badge-0D9488?style=for-the-badge" alt="View Product Page" />
   </a>
 </p>
 
@@ -403,35 +341,37 @@ Looking for **custom Magento module development**, **Hyva theme customization**,
 
 ## About Panth Infotech
 
-Built and maintained by **Kishan Savaliya** — [kishansavaliya.com](https://kishansavaliya.com) — a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
+Built and maintained by **Kishan Savaliya** ([kishansavaliya.com](https://kishansavaliya.com)), a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
 
-**Panth Infotech** is a Magento 2 development agency specializing in high-quality, security-focused extensions and themes for both Hyva and Luma storefronts. Our extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management — over 34 modules built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
+**Panth Infotech** is a Magento 2 development agency that builds high quality, security focused extensions and themes for both Hyva and Luma storefronts. The extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management, with each module built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
 
-Browse the full extension catalog on the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com) or [Packagist](https://packagist.org/packages/mage2kishan/).
+Browse the full extension catalog on our [Magento extensions page](https://kishansavaliya.com/magento-extensions.html) or on [Packagist](https://packagist.org/packages/mage2kishan/).
 
 ---
 
 ## Quick Links
 
-- 🌐 **Website:** [kishansavaliya.com](https://kishansavaliya.com)
-- 💬 **Get a Quote:** [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote)
-- 👨‍💻 **Upwork Profile (Top Rated Plus):** [upwork.com/freelancers/~016dd1767321100e21](https://www.upwork.com/freelancers/~016dd1767321100e21)
-- 🏢 **Upwork Agency:** [upwork.com/agencies/1881421506131960778](https://www.upwork.com/agencies/1881421506131960778/)
-- 📦 **Packagist:** [packagist.org/packages/mage2kishan/module-smart-badge](https://packagist.org/packages/mage2kishan/module-smart-badge)
-- 🐙 **GitHub:** [github.com/mage2sk/module-smart-badge](https://github.com/mage2sk/module-smart-badge)
-- 🛒 **Adobe Marketplace:** [commercemarketplace.adobe.com](https://commercemarketplace.adobe.com)
-- 📧 **Email:** kishansavaliyakb@gmail.com
-- 📱 **WhatsApp:** +91 84012 70422
+| Resource | Link |
+|---|---|
+| **Product Page** | [magento-2-smart-badge.html](https://kishansavaliya.com/magento-2-smart-badge.html) |
+| **Packagist** | [mage2kishan/module-smart-badge](https://packagist.org/packages/mage2kishan/module-smart-badge) |
+| **GitHub** | [mage2sk/module-smart-badge](https://github.com/mage2sk/module-smart-badge) |
+| **Website** | [kishansavaliya.com](https://kishansavaliya.com) |
+| **Free Quote** | [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote) |
+| **Upwork (Top Rated Plus)** | [Hire Kishan Savaliya](https://www.upwork.com/freelancers/~016dd1767321100e21) |
+| **Upwork Agency** | [Panth Infotech](https://www.upwork.com/agencies/1881421506131960778/) |
+| **Email** | kishansavaliyakb@gmail.com |
+| **WhatsApp** | +91 84012 70422 |
 
 ---
 
 <p align="center">
-  <strong>Ready to boost conversions with smart product badges?</strong><br/>
-  <a href="https://kishansavaliya.com/get-quote">
-    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Get%20Started%20%E2%86%92-Free%20Quote%20in%2024h-DC2626?style=for-the-badge" alt="Get Started" />
+  <strong>Ready to highlight your best products automatically?</strong><br/>
+  <a href="https://kishansavaliya.com/magento-2-smart-badge.html">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20See%20Smart%20Badge%20%E2%86%92-Product%20Page%20%26%20Details-DC2626?style=for-the-badge" alt="See Smart Badge" />
   </a>
 </p>
 
 ---
 
-**SEO Keywords:** magento 2 product badges, sale badge, new arrival badge, product labels, smart badges, urgency badges, magento 2 label extension, best seller badge magento 2, low stock badge, out of stock badge magento, hot deal badge, free shipping badge, hyva product badges, luma product labels, magento 2 product label extension, rule-based badges magento, scheduled product badges, fontawesome magento badges, animated product labels, category badge magento 2, product detail page badge, magento 2 merchandising, conversion rate optimization magento, urgency marketing magento, scarcity badges, magento 2.4.8 badges, php 8.4 magento module, panth smart badge, panth infotech, mage2kishan, mage2sk, kishan savaliya magento, top rated plus magento freelancer, hire magento developer upwork, custom magento development, magento 2 hyva development
+**SEO Keywords:** magento 2 product badges, magento 2 product labels, sale badge magento 2, new arrival badge magento 2, best seller badge, low stock badge magento, hot deal badge, free shipping badge magento, smart badge magento 2, rule-based product badges, automated badges magento, magento 2 badge extension, magento 2 label extension, product badge plugin magento, hyva product badges, hyva badge extension, luma product labels, animated product badges, scheduled product badges, fontawesome magento badges, emoji product badges, magento 2 badge builder, custom badge magento 2, magento 2 urgency badges, scarcity badges magento, badge conditions magento, magento 2 trending badge, limited edition badge, magento 2 product label plugin, magento 2.4.8 badges, php 8.4 magento module, mage2kishan smart badge, panth smart badge, panth infotech, kishan savaliya magento, top rated plus magento freelancer, hire magento developer upwork, custom magento module development
