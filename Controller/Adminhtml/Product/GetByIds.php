@@ -10,10 +10,6 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Get products by comma-separated IDs
- * Used for loading existing selected products when editing a badge rule
- */
 class GetByIds extends Action
 {
     const ADMIN_RESOURCE = 'Panth_SmartBadge::rule_save';
@@ -44,7 +40,6 @@ class GetByIds extends Action
         try {
             $ids = $this->getRequest()->getParam('ids', '');
 
-            // Handle empty IDs
             if (empty($ids)) {
                 return $result->setData([
                     'success' => true,
@@ -52,7 +47,6 @@ class GetByIds extends Action
                 ]);
             }
 
-            // Convert comma-separated string to array of integers
             $idArray = array_map('intval', array_filter(explode(',', $ids)));
 
             if (empty($idArray)) {
@@ -62,19 +56,14 @@ class GetByIds extends Action
                 ]);
             }
 
-            // Create product collection
             $collection = $this->productCollectionFactory->create();
 
-            // Add basic attributes
             $collection->addAttributeToSelect(['name', 'sku', 'price', 'type_id', 'status']);
 
-            // Filter by IDs
             $collection->addFieldToFilter('entity_id', ['in' => $idArray]);
 
-            // Add store filter
             $collection->addStoreFilter($this->storeManager->getStore()->getId());
 
-            // Prepare products array
             $products = [];
             foreach ($collection as $product) {
                 $products[] = [
@@ -89,7 +78,6 @@ class GetByIds extends Action
                 'success' => true,
                 'products' => $products
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Product GetByIds error: ' . $e->getMessage());
             return $result->setData([

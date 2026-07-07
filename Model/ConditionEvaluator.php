@@ -36,22 +36,17 @@ class ConditionEvaluator
         $this->timezone = $timezone;
     }
 
-    /**
-     * Check if rule is within scheduled date range
-     */
     public function isScheduleActive($rule): bool
     {
         $scheduleFrom = $rule->getData('schedule_from');
         $scheduleTo = $rule->getData('schedule_to');
 
-        // If no schedule, always active
         if (!$scheduleFrom && !$scheduleTo) {
             return true;
         }
 
         $now = $this->timezone->date();
 
-        // Check start date
         if ($scheduleFrom) {
             $startDate = $this->timezone->date($scheduleFrom);
             if ($now < $startDate) {
@@ -59,7 +54,6 @@ class ConditionEvaluator
             }
         }
 
-        // Check end date
         if ($scheduleTo) {
             $endDate = $this->timezone->date($scheduleTo);
             if ($now > $endDate) {
@@ -70,13 +64,10 @@ class ConditionEvaluator
         return true;
     }
 
-    /**
-     * Evaluate all smart conditions for a product
-     */
     public function evaluateConditions($product, $smartConditions): bool
     {
         if (!$smartConditions) {
-            return true; // No conditions = always match
+            return true;
         }
 
         $conditions = is_string($smartConditions) ? json_decode($smartConditions, true) : $smartConditions;
@@ -85,24 +76,20 @@ class ConditionEvaluator
             return true;
         }
 
-        // Evaluate each enabled condition
         foreach ($conditions as $conditionType => $condition) {
             if (!isset($condition['enabled']) || !$condition['enabled']) {
-                continue; // Skip disabled conditions
+                continue;
             }
 
             $result = $this->evaluateCondition($product, $conditionType, $condition);
             if (!$result) {
-                return false; // All conditions must pass
+                return false;
             }
         }
 
         return true;
     }
 
-    /**
-     * Evaluate a single condition
-     */
     private function evaluateCondition($product, string $type, array $condition): bool
     {
         switch ($type) {
@@ -142,9 +129,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate price range condition
-     */
     private function evaluatePriceCondition($product, array $condition): bool
     {
         $price = (float)$product->getFinalPrice();
@@ -160,9 +144,6 @@ class ConditionEvaluator
         return true;
     }
 
-    /**
-     * Evaluate stock level condition
-     */
     private function evaluateStockCondition($product, array $condition): bool
     {
         try {
@@ -186,9 +167,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate discount percentage condition
-     */
     private function evaluateDiscountCondition($product, array $condition): bool
     {
         $regularPrice = (float)$product->getPrice();
@@ -214,9 +192,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate product age condition
-     */
     private function evaluateAgeCondition($product, array $condition): bool
     {
         $createdAt = strtotime($product->getCreatedAt());
@@ -234,9 +209,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate stock status condition (in_stock/out_of_stock)
-     */
     private function evaluateStockStatusCondition($product, array $condition): bool
     {
         try {
@@ -256,9 +228,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate customer rating condition
-     */
     private function evaluateRatingCondition($product, array $condition): bool
     {
         try {
@@ -275,7 +244,7 @@ class ConditionEvaluator
 
             foreach ($reviewCollection as $review) {
                 foreach ($review->getRatingVotes() as $vote) {
-                    $ratingSum += $vote->getPercent() / 20; // Convert 0-100 to 0-5
+                    $ratingSum += $vote->getPercent() / 20;
                     $count++;
                 }
             }
@@ -299,9 +268,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate sales count condition
-     */
     private function evaluateSalesCountCondition($product, array $condition): bool
     {
         try {
@@ -331,9 +297,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate wishlist count condition
-     */
     private function evaluateWishlistCountCondition($product, array $condition): bool
     {
         try {
@@ -359,9 +322,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate product attribute condition
-     */
     private function evaluateAttributeCondition($product, array $condition): bool
     {
         $attributeCode = $condition['code'] ?? '';
@@ -389,9 +349,6 @@ class ConditionEvaluator
         }
     }
 
-    /**
-     * Evaluate date range condition
-     */
     private function evaluateDateRangeCondition(array $condition): bool
     {
         $now = $this->timezone->date();

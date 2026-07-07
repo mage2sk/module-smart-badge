@@ -72,11 +72,6 @@ class Edit extends Template
         return $this->formKey->getFormKey();
     }
 
-    /**
-     * Get existing rule data for edit mode
-     *
-     * @return array|null
-     */
     public function getRuleData(): ?array
     {
         $ruleId = $this->getRuleId();
@@ -91,7 +86,6 @@ class Edit extends Template
             return null;
         }
 
-        // Decode JSON fields
         $smartConditions = null;
         if ($rule->getData('smart_conditions')) {
             $decoded = json_decode($rule->getData('smart_conditions'), true);
@@ -116,11 +110,9 @@ class Edit extends Template
             }
         }
 
-        // Parse schedule dates
         $scheduleFrom = $rule->getData('schedule_from');
         $scheduleTo = $rule->getData('schedule_to');
 
-        // Convert MySQL datetime to HTML datetime-local format (YYYY-MM-DDTHH:MM)
         if ($scheduleFrom) {
             $scheduleFrom = str_replace(' ', 'T', substr($scheduleFrom, 0, 16));
         }
@@ -128,7 +120,6 @@ class Edit extends Template
             $scheduleTo = str_replace(' ', 'T', substr($scheduleTo, 0, 16));
         }
 
-        // Get full badge image URL if exists
         $badgeImageUrl = '';
         if ($rule->getData('badge_image')) {
             $badgeImageUrl = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA)
@@ -154,7 +145,7 @@ class Edit extends Template
             'image_settings' => $imageSettings,
             'schedule_from' => $scheduleFrom ?: '',
             'schedule_to' => $scheduleTo ?: '',
-            // Display Settings
+
             'display_on' => $rule->getData('display_on') ?: 'all',
             'position_category' => $rule->getData('position_category') ?: 'top-left',
             'position_product' => $rule->getData('position_product') ?: 'top-left',
@@ -214,17 +205,12 @@ class Edit extends Template
         ];
     }
 
-    /**
-     * Get category tree as hierarchical array
-     *
-     * @return array
-     */
     public function getCategoryTree()
     {
         $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToSelect(['name', 'is_active', 'level', 'path'])
             ->addAttributeToFilter('is_active', 1)
-            ->addFieldToFilter('level', ['gt' => 0]) // Exclude root catalog
+            ->addFieldToFilter('level', ['gt' => 0])
             ->setOrder('path', 'ASC');
 
         $categoriesById = [];
@@ -242,12 +228,10 @@ class Edit extends Template
             $categoriesById[$category->getId()] = $categoryData;
         }
 
-        // Build tree structure
         foreach ($categoriesById as $id => $category) {
             if (isset($categoriesById[$category['parent_id']])) {
                 $categoriesById[$category['parent_id']]['children'][] = &$categoriesById[$id];
             } else {
-                // Top level category (Default Category)
                 $tree[] = &$categoriesById[$id];
             }
         }
@@ -255,21 +239,11 @@ class Edit extends Template
         return $tree;
     }
 
-    /**
-     * Get category tree as JSON for JavaScript
-     *
-     * @return string
-     */
     public function getCategoryTreeJson()
     {
         return json_encode($this->getCategoryTree(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     }
 
-    /**
-     * Get existing rule data as properly encoded JSON for JavaScript
-     *
-     * @return string
-     */
     public function getRuleDataJson(): string
     {
         $ruleData = $this->getRuleData();
@@ -277,16 +251,9 @@ class Edit extends Template
             return 'null';
         }
 
-        // Must use JSON_UNESCAPED_SLASHES and NO escaping for HTML
-        // The JSON will be inserted directly into JavaScript, not HTML attribute
         return json_encode($ruleData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * Get all available product attributes
-     *
-     * @return array
-     */
     public function getProductAttributes()
     {
         $collection = $this->attributeCollectionFactory->create();
@@ -298,7 +265,6 @@ class Edit extends Template
             $label = $attribute->getFrontendLabel();
             $code = $attribute->getAttributeCode();
 
-            // Skip attributes without labels and system attributes
             if (!$label || in_array($code, ['entity_id', 'attribute_set_id', 'type_id'])) {
                 continue;
             }
@@ -309,7 +275,6 @@ class Edit extends Template
             ];
         }
 
-        // Sort by label
         usort($attributes, function($a, $b) {
             return strcmp($a['label'], $b['label']);
         });

@@ -7,11 +7,6 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class CombinationMode implements OptionSourceInterface
 {
-    /**
-     * Get options for badge combination mode
-     *
-     * @return array
-     */
     public function toOptionArray(): array
     {
         return [

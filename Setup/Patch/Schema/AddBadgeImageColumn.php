@@ -7,9 +7,6 @@ use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
 
-/**
- * Add badge_image column to panth_smart_badge_rule table
- */
 class AddBadgeImageColumn implements SchemaPatchInterface
 {
     private $moduleDataSetup;
@@ -27,7 +24,6 @@ class AddBadgeImageColumn implements SchemaPatchInterface
         $connection = $this->moduleDataSetup->getConnection();
         $tableName = $this->moduleDataSetup->getTable('panth_smart_badge_rule');
 
-        // Check if column doesn't exist before adding
         if (!$connection->tableColumnExists($tableName, 'badge_image')) {
             $connection->addColumn(
                 $tableName,

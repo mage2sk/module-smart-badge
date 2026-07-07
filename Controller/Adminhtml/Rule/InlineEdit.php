@@ -14,33 +14,14 @@ class InlineEdit extends Action
 {
     const ADMIN_RESOURCE = 'Panth_SmartBadge::rule_save';
 
-    /**
-     * @var JsonFactory
-     */
     protected $jsonFactory;
 
-    /**
-     * @var RuleFactory
-     */
     protected $ruleFactory;
 
-    /**
-     * @var RuleResource
-     */
     protected $ruleResource;
 
-    /**
-     * @var LoggerInterface
-     */
     protected $logger;
 
-    /**
-     * @param Context $context
-     * @param JsonFactory $jsonFactory
-     * @param RuleFactory $ruleFactory
-     * @param RuleResource $ruleResource
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         Context $context,
         JsonFactory $jsonFactory,
@@ -55,11 +36,6 @@ class InlineEdit extends Action
         $this->logger = $logger;
     }
 
-    /**
-     * Execute inline edit
-     *
-     * @return \Magento\Framework\Controller\Result\Json
-     */
     public function execute()
     {
         $resultJson = $this->jsonFactory->create();
@@ -87,7 +63,6 @@ class InlineEdit extends Action
 
                 $ruleData = $postItems[$ruleId];
 
-                // Validate and sanitize data
                 if (isset($ruleData['is_active'])) {
                     $ruleData['is_active'] = (int)$ruleData['is_active'];
                 }
@@ -108,7 +83,6 @@ class InlineEdit extends Action
                 }
 
                 if (isset($ruleData['badge_color']) && !empty($ruleData['badge_color'])) {
-                    // Validate hex color format
                     if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $ruleData['badge_color'])) {
                         $messages[] = __('Invalid color format for rule ID "%1". Use hex format (e.g., #FF0000).', $ruleId);
                         $error = true;
@@ -118,7 +92,6 @@ class InlineEdit extends Action
 
                 $rule->setData(array_merge($rule->getData(), $ruleData));
                 $this->ruleResource->save($rule);
-
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $messages[] = __('[Rule ID: %1] %2', $ruleId, $e->getMessage());
                 $error = true;

@@ -54,16 +54,12 @@ class Search extends Action
                 ]);
             }
 
-            // Create product collection
             $collection = $this->productCollectionFactory->create();
 
-            // Add basic attributes
             $collection->addAttributeToSelect(['name', 'sku', 'price', 'type_id', 'status']);
 
-            // Add store filter
             $collection->addStoreFilter($this->storeManager->getStore()->getId());
 
-            // Add visibility filter (exclude not visible individually)
             $collection->addAttributeToFilter('visibility', [
                 'in' => [
                     Visibility::VISIBILITY_IN_CATALOG,
@@ -72,21 +68,17 @@ class Search extends Action
                 ]
             ]);
 
-            // Search filter - search in ID, SKU, or Name
             $collection->addAttributeToFilter([
                 ['attribute' => 'entity_id', 'eq' => $query],
                 ['attribute' => 'sku', 'like' => '%' . $query . '%'],
                 ['attribute' => 'name', 'like' => '%' . $query . '%']
             ]);
 
-            // Get total count before pagination
             $totalCount = $collection->getSize();
 
-            // Apply pagination
             $collection->setPageSize($limit);
             $collection->setCurPage($page);
 
-            // Prepare products array
             $products = [];
             foreach ($collection as $product) {
                 $products[] = [
@@ -97,7 +89,6 @@ class Search extends Action
                 ];
             }
 
-            // Calculate if there are more results
             $hasMore = ($page * $limit) < $totalCount;
 
             return $result->setData([
@@ -108,7 +99,6 @@ class Search extends Action
                 'limit' => $limit,
                 'has_more' => $hasMore
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Product search error: ' . $e->getMessage());
             return $result->setData([

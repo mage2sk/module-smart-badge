@@ -29,13 +29,6 @@ class BadgeService
         $this->storeManager = $storeManager;
     }
 
-    /**
-     * Get all matching rule-based badges for a product
-     * Returns array of all matching rule badges sorted by priority (highest first)
-     *
-     * @param ProductInterface $product
-     * @return array
-     */
     public function getRuleBadgesForProduct($product): array
     {
         if (!$product || !$product->getId()) {
@@ -44,7 +37,6 @@ class BadgeService
 
         $badges = [];
 
-        // Get active rules ordered by priority (highest first)
         $ruleCollection = $this->ruleCollectionFactory->create();
         $ruleCollection->addFieldToFilter('is_active', 1)
             ->setOrder('priority', 'DESC');
@@ -53,17 +45,14 @@ class BadgeService
         $productCategoryIds = $product->getCategoryIds() ?: [];
 
         foreach ($ruleCollection as $rule) {
-            // Check if schedule is active
             if (!$this->conditionEvaluator->isScheduleActive($rule)) {
                 continue;
             }
 
-            // Check if product matches rule
             if (!$this->doesRuleMatchProduct($rule, $productId, $productCategoryIds)) {
                 continue;
             }
 
-            // Check smart conditions
             $smartConditions = $rule->getData('smart_conditions');
             if (!$this->conditionEvaluator->evaluateConditions($product, $smartConditions)) {
                 continue;
@@ -75,48 +64,28 @@ class BadgeService
         return $badges;
     }
 
-    /**
-     * Get badge from rules for a product
-     * Returns the highest priority rule badge that matches the product
-     *
-     * @deprecated Use getRuleBadgesForProduct() instead for multiple badge support
-     * @param ProductInterface $product
-     * @return array|null
-     */
     public function getRuleBadgeForProduct($product): ?array
     {
         $badges = $this->getRuleBadgesForProduct($product);
         return !empty($badges) ? $badges[0] : null;
     }
 
-    /**
-     * Check if rule matches the product
-     *
-     * @param Rule $rule
-     * @param int $productId
-     * @param array $productCategoryIds
-     * @return bool
-     */
     private function doesRuleMatchProduct($rule, int $productId, array $productCategoryIds): bool
     {
         $ruleProductIds = $rule->getProductIds();
         $ruleCategoryIds = $rule->getCategoryIds();
 
-        // If rule has specific product IDs, product must be in the list
         if (!empty($ruleProductIds)) {
             return in_array($productId, $ruleProductIds);
         }
 
-        // If rule has specific category IDs, product must be in one of those categories
         if (!empty($ruleCategoryIds)) {
             if (!empty($productCategoryIds)) {
-                // Direct category match
                 $intersection = array_intersect($ruleCategoryIds, array_map('intval', $productCategoryIds));
                 if (!empty($intersection)) {
                     return true;
                 }
 
-                // Check parent categories (child categories inherit parent rule badges)
                 foreach ($productCategoryIds as $productCategoryId) {
                     $parentIds = $this->getAllParentCategoryIds((int)$productCategoryId);
                     $parentIntersection = array_intersect($ruleCategoryIds, $parentIds);
@@ -128,20 +97,11 @@ class BadgeService
             return false;
         }
 
-        // No product_ids and no category_ids = rule applies to ALL products
-        // (smart conditions will further filter)
         return true;
     }
 
-    /**
-     * Get all parent category IDs for a given category
-     *
-     * @param int $categoryId
-     * @return array
-     */
     private function getAllParentCategoryIds(int $categoryId): array
     {
-        // Check cache first
         if (isset($this->categoryParentCache[$categoryId])) {
             return $this->categoryParentCache[$categoryId];
         }
@@ -152,7 +112,6 @@ class BadgeService
             $category = $this->categoryRepository->get($categoryId);
             $pathIds = explode('/', $category->getPath());
 
-            // Remove the category itself and root category (ID 1)
             $parentIds = array_filter(
                 array_map('intval', $pathIds),
                 function ($id) use ($categoryId) {
@@ -162,22 +121,14 @@ class BadgeService
 
             $parentIds = array_values($parentIds);
         } catch (\Exception $e) {
-            // If category can't be loaded, return empty array
             $parentIds = [];
         }
 
-        // Cache the result
         $this->categoryParentCache[$categoryId] = $parentIds;
 
         return $parentIds;
     }
 
-    /**
-     * Format rule badge data for display
-     *
-     * @param Rule $rule
-     * @return array
-     */
     private function formatRuleBadge($rule): array
     {
         $badgeData = [
@@ -187,16 +138,13 @@ class BadgeService
             'priority' => (int)$rule->getPriority()
         ];
 
-        // Get custom icon from rule (can be emoji or FontAwesome class)
         $customIcon = $rule->getData('badge_icon');
         if ($customIcon) {
             $badgeData['icon'] = $customIcon;
         } else {
-            // Fallback to icon based on type
             $badgeData['icon'] = $this->getIconForType($rule->getData('badge_type'));
         }
 
-        // Check for badge image — build full media URL
         $badgeImage = $rule->getData('badge_image');
         if ($badgeImage) {
             try {
@@ -207,25 +155,20 @@ class BadgeService
             }
         }
 
-        // Handle custom colors
         $bgColor = $rule->getData('badge_color');
         if ($bgColor && $this->isValidHexColor($bgColor)) {
             $badgeData['customColor'] = $bgColor;
         } else {
-            // Use CSS variable for standard types
             $badgeData['cssVar'] = $this->getCssVarForType($rule->getData('badge_type'));
         }
 
-        // Add animation if set
         $animation = $rule->getData('animation');
         if ($animation) {
             $badgeData['animation'] = $animation;
         }
 
-        // Add display location settings
         $badgeData['display_on'] = $rule->getData('display_on') ?: 'all';
 
-        // Add position settings
         $useSamePosition = (bool)$rule->getData('use_same_position');
         $badgeData['use_same_position'] = $useSamePosition;
 
@@ -237,10 +180,8 @@ class BadgeService
             $badgeData['position_slider'] = $rule->getData('position_slider') ?: 'top-left';
         }
 
-        // Add Advanced CSS customization (badge_style JSON)
         $badgeStyle = $rule->getData('badge_style');
         if ($badgeStyle) {
-            // Decode if it's a JSON string
             if (is_string($badgeStyle)) {
                 $badgeStyle = json_decode($badgeStyle, true);
             }
@@ -249,7 +190,6 @@ class BadgeService
             }
         }
 
-        // Add image settings
         $imageSettings = $rule->getData('image_settings');
         if ($imageSettings) {
             if (is_string($imageSettings)) {
@@ -263,12 +203,6 @@ class BadgeService
         return $badgeData;
     }
 
-    /**
-     * Get icon for badge type
-     *
-     * @param string|null $type
-     * @return string
-     */
     private function getIconForType(?string $type): string
     {
         $iconMap = [
@@ -285,12 +219,6 @@ class BadgeService
         return $iconMap[$type] ?? '🏷️';
     }
 
-    /**
-     * Get CSS variable for badge type
-     *
-     * @param string|null $type
-     * @return string
-     */
     private function getCssVarForType(?string $type): string
     {
         $cssVarMap = [
@@ -307,12 +235,6 @@ class BadgeService
         return $cssVarMap[$type] ?? '--badge-new';
     }
 
-    /**
-     * Validate hex color
-     *
-     * @param string $color
-     * @return bool
-     */
     private function isValidHexColor($color): bool
     {
         return (bool)preg_match('/^#[a-f0-9]{6}$/i', $color);

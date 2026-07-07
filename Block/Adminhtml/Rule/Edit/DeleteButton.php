@@ -7,11 +7,6 @@ use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 
 class DeleteButton extends GenericButton implements ButtonProviderInterface
 {
-    /**
-     * Get button data
-     *
-     * @return array
-     */
     public function getButtonData()
     {
         $data = [];
@@ -28,11 +23,6 @@ class DeleteButton extends GenericButton implements ButtonProviderInterface
         return $data;
     }
 
-    /**
-     * URL to send delete requests to
-     *
-     * @return string
-     */
     public function getDeleteUrl()
     {
         return $this->getUrl('*/*/delete', ['rule_id' => $this->getRuleId()]);

@@ -7,11 +7,6 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class Animation implements OptionSourceInterface
 {
-    /**
-     * Get options
-     *
-     * @return array
-     */
     public function toOptionArray()
     {
         return [

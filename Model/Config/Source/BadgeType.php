@@ -7,11 +7,6 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class BadgeType implements OptionSourceInterface
 {
-    /**
-     * Get options
-     *
-     * @return array
-     */
     public function toOptionArray()
     {
         return [

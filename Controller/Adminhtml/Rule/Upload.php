@@ -50,8 +50,6 @@ class Upload extends Action
                 $mediaDir->create('smartbadge');
             }
 
-            // Hard executable deny-list — defense-in-depth on top of the
-            // explicit image allowlist below.
             if (isset($_FILES['badge_image']['name']) && is_string($_FILES['badge_image']['name'])) {
                 $this->uploadExtensionPolicy->assertSafeExtension($_FILES['badge_image']['name']);
             }

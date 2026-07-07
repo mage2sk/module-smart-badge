@@ -10,10 +10,6 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Get categories by comma-separated IDs
- * Used for loading existing selected categories when editing a badge rule
- */
 class GetByIds extends Action
 {
     const ADMIN_RESOURCE = 'Panth_SmartBadge::rule_save';
@@ -44,7 +40,6 @@ class GetByIds extends Action
         try {
             $ids = $this->getRequest()->getParam('ids', '');
 
-            // Handle empty IDs
             if (empty($ids)) {
                 return $result->setData([
                     'success' => true,
@@ -52,7 +47,6 @@ class GetByIds extends Action
                 ]);
             }
 
-            // Convert comma-separated string to array of integers
             $idArray = array_map('intval', array_filter(explode(',', $ids)));
 
             if (empty($idArray)) {
@@ -62,19 +56,14 @@ class GetByIds extends Action
                 ]);
             }
 
-            // Create category collection
             $collection = $this->categoryCollectionFactory->create();
 
-            // Add necessary attributes
             $collection->addAttributeToSelect(['name', 'level', 'path', 'is_active']);
 
-            // Filter by IDs
             $collection->addFieldToFilter('entity_id', ['in' => $idArray]);
 
-            // Only active categories
             $collection->addAttributeToFilter('is_active', 1);
 
-            // Prepare categories array
             $categories = [];
             foreach ($collection as $category) {
                 $categories[] = [
@@ -89,7 +78,6 @@ class GetByIds extends Action
                 'success' => true,
                 'categories' => $categories
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Category GetByIds error: ' . $e->getMessage());
             return $result->setData([

@@ -57,7 +57,6 @@ class CategoryTree extends Action
             ];
         }
 
-        // Build tree
         $tree = [];
         foreach ($categoriesById as $id => &$cat) {
             if (isset($categoriesById[$cat['parent_id']])) {

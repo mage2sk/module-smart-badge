@@ -24,7 +24,6 @@ class AddCustomBadgeAttributes implements DataPatchInterface
     {
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        // Custom Badge Text attribute
         $eavSetup->addAttribute(Product::ENTITY, 'badge_custom_text', [
             'type' => 'varchar',
             'label' => 'Custom Badge Text',
@@ -39,7 +38,6 @@ class AddCustomBadgeAttributes implements DataPatchInterface
             'used_in_product_listing' => true,
         ]);
 
-        // Custom Badge Color attribute
         $eavSetup->addAttribute(Product::ENTITY, 'badge_custom_color', [
             'type' => 'varchar',
             'label' => 'Custom Badge Color',

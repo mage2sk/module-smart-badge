@@ -15,33 +15,14 @@ class MassDelete extends Action
 {
     const ADMIN_RESOURCE = 'Panth_SmartBadge::rule_delete';
 
-    /**
-     * @var Filter
-     */
     protected $filter;
 
-    /**
-     * @var CollectionFactory
-     */
     protected $collectionFactory;
 
-    /**
-     * @var RuleResource
-     */
     protected $ruleResource;
 
-    /**
-     * @var LoggerInterface
-     */
     protected $logger;
 
-    /**
-     * @param Context $context
-     * @param Filter $filter
-     * @param CollectionFactory $collectionFactory
-     * @param RuleResource $ruleResource
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         Context $context,
         Filter $filter,
@@ -56,11 +37,6 @@ class MassDelete extends Action
         $this->logger = $logger;
     }
 
-    /**
-     * Execute mass delete action
-     *
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
     public function execute()
     {
         try {
@@ -98,7 +74,6 @@ class MassDelete extends Action
                     __('No badge rules were deleted.')
                 );
             }
-
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
             $this->logger->critical($e);
@@ -109,7 +84,6 @@ class MassDelete extends Action
             $this->logger->critical($e);
         }
 
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         return $resultRedirect->setPath('*/*/');
     }

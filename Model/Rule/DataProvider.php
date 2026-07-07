@@ -36,18 +36,12 @@ class DataProvider extends AbstractDataProvider
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
-    /**
-     * Get data
-     *
-     * @return array
-     */
     public function getData()
     {
         if (isset($this->loadedData)) {
             return $this->loadedData;
         }
 
-        // Filter by rule_id if editing an existing rule
         $ruleId = $this->request->getParam('rule_id');
         if ($ruleId) {
             $this->collection->addFieldToFilter('rule_id', $ruleId);
@@ -57,13 +51,10 @@ class DataProvider extends AbstractDataProvider
         foreach ($items as $rule) {
             $ruleData = $rule->getData();
 
-            // Decode JSON fields
             $ruleData = $this->decodeJsonFields($ruleData);
 
-            // Format dates for form
             $ruleData = $this->formatDates($ruleData);
 
-            // Format badge image
             if (isset($ruleData['badge_image']) && $ruleData['badge_image']) {
                 $ruleData['badge_image'] = $this->formatBadgeImage($ruleData['badge_image']);
             }
@@ -71,7 +62,6 @@ class DataProvider extends AbstractDataProvider
             $this->loadedData[$rule->getId()] = $ruleData;
         }
 
-        // Check if there's data from previous form submission (in case of validation errors)
         $data = $this->dataPersistor->get('smartbadge_rule');
         if (!empty($data)) {
             $rule = $this->collection->getNewEmptyItem();
@@ -83,15 +73,8 @@ class DataProvider extends AbstractDataProvider
         return $this->loadedData ?? [];
     }
 
-    /**
-     * Decode JSON fields from database
-     *
-     * @param array $data
-     * @return array
-     */
     protected function decodeJsonFields(array $data): array
     {
-        // These fields stay as decoded arrays for the Alpine.js builder
         $arrayFields = ['image_settings'];
 
         foreach ($arrayFields as $field) {
@@ -105,17 +88,14 @@ class DataProvider extends AbstractDataProvider
             }
         }
 
-        // These fields stay as JSON strings for the UI Component textarea
         $jsonStringFields = ['smart_conditions', 'badge_style'];
         foreach ($jsonStringFields as $field) {
             if (isset($data[$field]) && is_string($data[$field])) {
-                // Pretty-print JSON for readability in textarea
                 $decoded = json_decode($data[$field], true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                     $data[$field] = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 }
             } elseif (isset($data[$field]) && is_array($data[$field])) {
-                // Already decoded array — convert back to pretty JSON string
                 $data[$field] = json_encode($data[$field], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             }
         }
@@ -123,20 +103,12 @@ class DataProvider extends AbstractDataProvider
         return $data;
     }
 
-    /**
-     * Format dates for the form
-     *
-     * @param array $data
-     * @return array
-     */
     protected function formatDates(array $data): array
     {
         $dateFields = ['schedule_from', 'schedule_to'];
 
         foreach ($dateFields as $field) {
             if (isset($data[$field]) && $data[$field]) {
-                // Convert MySQL datetime to format expected by UI component
-                // Magento UI date component expects: YYYY-MM-DD HH:MM:SS
                 $data[$field] = $data[$field];
             }
         }
@@ -144,12 +116,6 @@ class DataProvider extends AbstractDataProvider
         return $data;
     }
 
-    /**
-     * Format badge image for image uploader component
-     *
-     * @param string $imageName
-     * @return array
-     */
     protected function formatBadgeImage(string $imageName): array
     {
         $imageUrl = $this->storeManager->getStore()
@@ -165,12 +131,6 @@ class DataProvider extends AbstractDataProvider
         ];
     }
 
-    /**
-     * Get image file size
-     *
-     * @param string $imageName
-     * @return int
-     */
     protected function getImageSize(string $imageName): int
     {
         try {
@@ -181,18 +141,11 @@ class DataProvider extends AbstractDataProvider
                 return filesize($mediaPath);
             }
         } catch (\Exception $e) {
-            // Return 0 if file doesn't exist or error occurs
         }
 
         return 0;
     }
 
-    /**
-     * Get image MIME type
-     *
-     * @param string $imageName
-     * @return string
-     */
     protected function getImageMimeType(string $imageName): string
     {
         $extension = pathinfo($imageName, PATHINFO_EXTENSION);

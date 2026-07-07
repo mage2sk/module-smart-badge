@@ -15,33 +15,14 @@ class MassStatus extends Action
 {
     const ADMIN_RESOURCE = 'Panth_SmartBadge::rule_save';
 
-    /**
-     * @var Filter
-     */
     protected $filter;
 
-    /**
-     * @var CollectionFactory
-     */
     protected $collectionFactory;
 
-    /**
-     * @var RuleResource
-     */
     protected $ruleResource;
 
-    /**
-     * @var LoggerInterface
-     */
     protected $logger;
 
-    /**
-     * @param Context $context
-     * @param Filter $filter
-     * @param CollectionFactory $collectionFactory
-     * @param RuleResource $ruleResource
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         Context $context,
         Filter $filter,
@@ -56,17 +37,11 @@ class MassStatus extends Action
         $this->logger = $logger;
     }
 
-    /**
-     * Execute mass status change action
-     *
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
     public function execute()
     {
         try {
             $status = (int)$this->getRequest()->getParam('status');
 
-            // Validate status parameter
             if (!in_array($status, [0, 1], true)) {
                 $this->messageManager->addErrorMessage(
                     __('Invalid status value. Status must be 0 (disabled) or 1 (enabled).')
@@ -111,7 +86,6 @@ class MassStatus extends Action
                     __('No badge rules were updated.')
                 );
             }
-
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
             $this->logger->critical($e);
@@ -122,7 +96,6 @@ class MassStatus extends Action
             $this->logger->critical($e);
         }
 
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         return $resultRedirect->setPath('*/*/');
     }
