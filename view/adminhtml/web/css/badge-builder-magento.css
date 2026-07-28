@@ -1,5 +1,5 @@
 /**
- * SmartBadge Builder — Custom component styles only.
+ * SmartBadge Builder - Custom component styles only.
  * Form layout uses Magento's admin__* classes (no overrides).
  * This file ONLY styles the custom interactive elements:
  * badge-type picker, color picker, icon picker, preview panel, modals.
@@ -447,7 +447,7 @@ input[type="color"].admin__control-text,
 .input-with-unit select { max-width: 70px; }
 
 /* ============================================================
-   Display Settings — Position Grid
+   Display Settings - Position Grid
    ============================================================ */
 .position-grid {
     display: grid;
