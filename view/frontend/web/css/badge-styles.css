@@ -1,0 +1,37 @@
+/**
+ * Smart Badge Styles
+ *
+ * Colors are driven by CSS variables from theme-config.json via generate-theme-css.js.
+ */
+
+.smart-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+}
+
+.smart-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--badge-color, var(--color-primary, #0D9488));
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    width: fit-content;
+    animation: badgeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-delay: calc(var(--i, 0) * 0.1s);
+    animation-fill-mode: both;
+}
