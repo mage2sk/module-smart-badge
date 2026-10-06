@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Product view badge rendering is handled by product-badges.phtml JavaScript
+ * for better Hyvä theme compatibility and unified badge display across all pages
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Badges rendered via JavaScript injector for consistency -->
+    </body>
+</page>

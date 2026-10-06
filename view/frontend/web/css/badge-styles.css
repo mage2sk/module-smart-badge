@@ -1,0 +1,28 @@
+.smart-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.smart-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    max-width: 100%;
+    height: var(--sb-badge-height, 22px);
+    padding: 0 var(--sb-badge-padding-x, 8px);
+    border-radius: var(--sb-badge-radius, 4px);
+    background: var(--sb-badge-custom-bg, #0F766E);
+    box-shadow: none;
+    color: var(--sb-badge-text, #FFFFFF);
+    font-size: var(--sb-badge-font-size, 12px);
+    font-weight: var(--sb-badge-font-weight, 600);
+    line-height: var(--sb-badge-height, 22px);
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+}

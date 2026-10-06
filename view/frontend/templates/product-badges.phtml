@@ -1,0 +1,966 @@
+<?php
+/**
+ * Smart Badge Injector - Adds badges to all product images
+ * Works with Hyva theme product listings, sliders, and grids
+ *
+ * @var $block \Panth\SmartBadge\Block\Badge
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->isEnabled()) {
+    return;
+}
+
+// Get configuration values from backend
+$badgeLayout = $block->getBadgeLayout();
+$badgeSpacing = $block->getBadgeSpacing();
+$currentProductId = $block->getCurrentProductId();
+?>
+<?php if ($currentProductId > 0): ?>
+<div class="smart-badge-context" data-product-id="<?= (int) $currentProductId ?>" hidden></div>
+<?php endif; ?>
+<script>
+(function() {
+    'use strict';
+
+    // Configuration from backend
+    const badgeConfig = {
+        layout: '<?= $escaper->escapeJs($badgeLayout) ?>',
+        spacing: '<?= $escaper->escapeJs($badgeSpacing) ?>',
+        maxBadges: <?= (int)$block->getMaxBadges() ?>
+    };
+
+    const toneColors = {
+        sale: 'var(--sb-badge-sale-bg, #B91C1C)',
+        new: 'var(--sb-badge-new-bg, #0F766E)',
+        stock: 'var(--sb-badge-stock-bg, #B45309)',
+        custom: 'var(--sb-badge-custom-bg, #0F766E)'
+    };
+
+    function getTone(badge) {
+        if (badge.tone && toneColors[badge.tone]) {
+            return badge.tone;
+        }
+        const type = String(badge.type || '').toLowerCase();
+        if (type === 'sale') return 'sale';
+        if (type === 'new') return 'new';
+        if (type === 'stock' || type === 'limited') return 'stock';
+        return 'custom';
+    }
+
+    const badgeBatchUrl = '<?= $escaper->escapeUrl($block->getUrl('smartbadge/badge/batch')) ?>';
+    const badgeBatchSize = 60;
+    const badgeCache = new Map();
+    let pendingIds = [];
+    let pendingResolvers = new Map();
+    let flushScheduled = false;
+
+    function fetchBadgeData(productId) {
+        const id = parseInt(productId, 10);
+        if (!id || id < 1) {
+            return Promise.resolve(null);
+        }
+        const key = String(id);
+        if (badgeCache.has(key)) {
+            return badgeCache.get(key);
+        }
+
+        const promise = new Promise((resolve) => {
+            pendingResolvers.set(key, resolve);
+        });
+        badgeCache.set(key, promise);
+        pendingIds.push(key);
+
+        if (!flushScheduled) {
+            flushScheduled = true;
+            setTimeout(flushBadgeRequests, 0);
+        }
+
+        return promise;
+    }
+
+    async function flushBadgeRequests() {
+        flushScheduled = false;
+        const ids = pendingIds;
+        const resolvers = pendingResolvers;
+        pendingIds = [];
+        pendingResolvers = new Map();
+
+        for (let i = 0; i < ids.length; i += badgeBatchSize) {
+            const chunk = ids.slice(i, i + badgeBatchSize);
+            let products = {};
+
+            try {
+                const response = await fetch(badgeBatchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ product_ids: chunk.map(Number) })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    products = (data && data.products) || {};
+                }
+            } catch (error) {
+                products = {};
+            }
+
+            chunk.forEach((key) => {
+                const resolve = resolvers.get(key);
+                if (resolve) {
+                    resolve({ badges: Array.isArray(products[key]) ? products[key] : [] });
+                }
+            });
+        }
+    }
+
+    // Detect current page type
+    function detectPageType() {
+        // Check for product detail page
+        if (document.querySelector('.product-info-main') ||
+            document.querySelector('.catalog-product-view') ||
+            document.body.classList.contains('catalog-product-view')) {
+            return 'product';
+        }
+
+        // Check for category page
+        if (document.querySelector('.category-products') ||
+            document.querySelector('.products.wrapper') ||
+            document.body.classList.contains('catalog-category-view')) {
+            return 'category';
+        }
+
+        // Default to category for product listings
+        return 'category';
+    }
+
+    // Check if badge should be displayed on current page type
+    function shouldDisplayBadge(badge, pageType, isSlider = false) {
+        const displayOn = badge.display_on || 'all';
+
+        // Handle slider context
+        if (isSlider) {
+            if (displayOn === 'all' || displayOn === 'sliders' || displayOn === 'slider' ||
+                displayOn === 'category_sliders' || displayOn === 'product_sliders') {
+                return true;
+            }
+            return false;
+        }
+
+        // Handle non-slider contexts
+        if (displayOn === 'all') return true;
+        if (displayOn === pageType) return true;
+        if (displayOn === 'category_product' && (pageType === 'category' || pageType === 'product')) return true;
+        if (displayOn === 'category_sliders' && pageType === 'category') return true;
+        if (displayOn === 'product_sliders' && pageType === 'product') return true;
+
+        return false;
+    }
+
+    // Get position for badge based on page type
+    function getBadgePosition(badge, pageType, isSlider = false) {
+        if (badge.use_same_position) {
+            return badge.position || 'top-left';
+        }
+
+        if (isSlider) {
+            return badge.position_slider || 'top-left';
+        }
+
+        if (pageType === 'product') {
+            return badge.position_product || 'top-left';
+        }
+
+        return badge.position_category || 'top-left';
+    }
+
+    // Create badge HTML
+    function createBadgeHTML(badges, pageType, isSlider = false) {
+        if (!badges || badges.length === 0) return '';
+
+        // Filter badges based on display_on setting
+        const maxBadges = badgeConfig.maxBadges > 0 ? badgeConfig.maxBadges : 1;
+        const filteredBadges = badges
+            .filter(badge => shouldDisplayBadge(badge, pageType, isSlider))
+            .slice(0, maxBadges);
+
+        if (filteredBadges.length === 0) return '';
+
+        const container = document.createElement('div');
+        container.className = 'smart-badges-container';
+
+        // Group badges by position for stacking
+        const positionGroups = {};
+        filteredBadges.forEach(badge => {
+            const position = getBadgePosition(badge, pageType, isSlider);
+            if (!positionGroups[position]) {
+                positionGroups[position] = [];
+            }
+            positionGroups[position].push(badge);
+        });
+
+        // Create badges with proper stacking/layout based on config
+        let globalIndex = 0;
+        Object.entries(positionGroups).forEach(([position, badgesInPosition]) => {
+            // Always use a flex wrapper for proper stacking at each position
+            const wrapper = document.createElement('div');
+            wrapper.className = `badge-group badge-group-${position} badge-layout-${badgeConfig.layout} ${badgeConfig.spacing}`;
+            wrapper.style.position = 'absolute';
+            wrapper.style.zIndex = '20';
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.display = 'flex';
+            wrapper.style.gap = badgeConfig.spacing === 'gap-1' ? '0.25rem' : badgeConfig.spacing === 'gap-3' ? '0.75rem' : badgeConfig.spacing === 'gap-4' ? '1rem' : '0.5rem';
+
+            // Set flex direction based on layout
+            if (badgeConfig.layout === 'horizontal') {
+                wrapper.style.flexDirection = 'row';
+            } else if (badgeConfig.layout === 'grid') {
+                wrapper.style.display = 'grid';
+                wrapper.style.gridTemplateColumns = 'repeat(2, auto)';
+            } else {
+                wrapper.style.flexDirection = 'column';
+            }
+
+            // Set position
+            if (position.includes('top')) wrapper.style.top = '8px';
+            if (position.includes('bottom')) wrapper.style.bottom = '8px';
+            if (position.includes('left')) wrapper.style.left = '8px';
+            if (position.includes('right')) wrapper.style.right = '8px';
+            if (position === 'top-center' || position === 'bottom-center') {
+                wrapper.style.left = '50%';
+                wrapper.style.transform = 'translateX(-50%)';
+            } else if (position === 'center-left' || position === 'center-right') {
+                wrapper.style.top = '50%';
+                wrapper.style.transform = 'translateY(-50%)';
+            }
+
+            // Align items based on position
+            if (position.includes('right')) wrapper.style.alignItems = 'flex-end';
+            else wrapper.style.alignItems = 'flex-start';
+
+            badgesInPosition.forEach((badge, stackIndex) => {
+                const badgeEl = createBadgeElement(badge, globalIndex, position, stackIndex, false);
+                badgeEl.style.position = 'relative';
+                badgeEl.style.top = 'auto';
+                badgeEl.style.left = 'auto';
+                badgeEl.style.right = 'auto';
+                badgeEl.style.bottom = 'auto';
+                badgeEl.style.pointerEvents = 'none';
+                wrapper.appendChild(badgeEl);
+                globalIndex++;
+            });
+
+            container.appendChild(wrapper);
+        });
+
+        return container.outerHTML;
+    }
+
+    // Create individual badge element
+    function createBadgeElement(badge, globalIndex, position, stackIndex, applyOffset) {
+        const badgeEl = document.createElement('div');
+        const animation = badge.animation || '';
+
+        const tone = getTone(badge);
+        badgeEl.className = `smart-badge sb-tone-${tone} badge-${badge.type} ${badge.class || ''} ${animation} badge-position-${position}`;
+        if (badge.image) {
+            badgeEl.classList.add(badge.imageOnly ? 'sb-image-only' : 'sb-has-image');
+        }
+
+        // Calculate stacking offset based on position (only for vertical layout)
+        let offsetStyle = '';
+        if (applyOffset && stackIndex > 0 && badgeConfig.layout === 'vertical') {
+            const offset = stackIndex * 45; // 45px offset per badge
+            if (position.includes('top')) {
+                offsetStyle = `transform: translateY(${offset}px);`;
+            } else if (position.includes('bottom')) {
+                offsetStyle = `transform: translateY(-${offset}px);`;
+            }
+        }
+
+        // Validate CSS color: hex, rgb(), rgba(), hsl(), hsla(), or named colors only
+        function isValidCssColor(val) {
+            if (!val) return false;
+            return /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.,\s%]+\)|hsla?\(\s*[\d.,\s%deg]+\)|var\(--[\w-]+\)|[a-z]{3,20})$/i.test(val.trim());
+        }
+
+        // Apply custom color directly to background if customColor is set, otherwise use gradient
+        let backgroundStyle = '';
+        if (badge.image && badge.imageOnly) {
+            backgroundStyle = 'background: transparent;';
+        } else if (badge.customColor && isValidCssColor(badge.customColor)) {
+            backgroundStyle = `background: ${badge.customColor} !important;`;
+        } else {
+            backgroundStyle = `background: ${toneColors[tone]};`;
+        }
+
+        // Apply Advanced CSS customization from badge_style
+        let advancedStyles = '';
+        if (badge.badge_style) {
+            const style = badge.badge_style;
+
+            // Dimensions
+            if (style.width && style.width.value) {
+                advancedStyles += `width: ${style.width.value}${style.width.unit};`;
+            }
+            if (style.height && style.height.value) {
+                advancedStyles += `height: ${style.height.value}${style.height.unit};`;
+            }
+
+            // Border & Shape
+            if (style.borderRadius) {
+                advancedStyles += `border-radius: ${style.borderRadius}px !important;`;
+            }
+            if (style.borderWidth && parseInt(style.borderWidth) > 0) {
+                advancedStyles += `border-width: ${style.borderWidth}px;`;
+            }
+            if (style.borderStyle && style.borderStyle !== 'none') {
+                advancedStyles += `border-style: ${style.borderStyle};`;
+            }
+            if (style.borderColor && isValidCssColor(style.borderColor) && style.borderStyle && style.borderStyle !== 'none') {
+                advancedStyles += `border-color: ${style.borderColor};`;
+            }
+
+            // Typography
+            if (style.fontSize && style.fontSize.value) {
+                advancedStyles += `font-size: ${style.fontSize.value}${style.fontSize.unit} !important;`;
+            }
+            if (style.fontWeight) {
+                advancedStyles += `font-weight: ${style.fontWeight};`;
+            }
+
+            // Padding
+            if (style.padding) {
+                if (style.padding.top) advancedStyles += `padding-top: ${style.padding.top}px !important;`;
+                if (style.padding.right) advancedStyles += `padding-right: ${style.padding.right}px !important;`;
+                if (style.padding.bottom) advancedStyles += `padding-bottom: ${style.padding.bottom}px !important;`;
+                if (style.padding.left) advancedStyles += `padding-left: ${style.padding.left}px !important;`;
+            }
+
+            // Effects
+            if (style.opacity) {
+                advancedStyles += `opacity: ${parseInt(style.opacity) / 100};`;
+            }
+            const shadowPresets = {
+                'none': 'none',
+                'default': '0 2px 4px rgba(0,0,0,0.1)',
+                'sm': '0 1px 2px rgba(0,0,0,0.05)',
+                'md': '0 4px 6px rgba(0,0,0,0.1)',
+                'lg': '0 10px 15px rgba(0,0,0,0.1)',
+                'xl': '0 20px 25px rgba(0,0,0,0.1)',
+                'inner': 'inset 0 2px 4px rgba(0,0,0,0.06)',
+                'glow': '0 0 20px rgba(255,255,255,0.5)'
+            };
+            if (typeof style.boxShadow === 'string' && shadowPresets[style.boxShadow]) {
+                advancedStyles += `box-shadow: ${shadowPresets[style.boxShadow]} !important;`;
+            } else if (style.boxShadow && style.boxShadow.enabled) {
+                const shadow = style.boxShadow;
+                advancedStyles += `box-shadow: ${shadow.x || 0}px ${shadow.y || 4}px ${shadow.blur || 12}px rgba(0,0,0,${shadow.opacity || 0.15}) !important;`;
+            }
+        }
+
+        badgeEl.style.cssText = `${backgroundStyle} ${advancedStyles} --i: ${globalIndex}; ${offsetStyle}`;
+
+        if (badge.image) {
+            const img = document.createElement('img');
+            img.src = badge.image;
+            img.alt = badge.imageOnly ? badge.label : '';
+            img.className = 'badge-image';
+            badgeEl.appendChild(img);
+
+            if (!badge.imageOnly) {
+                const text = document.createElement('span');
+                text.className = 'badge-text';
+                text.textContent = badge.label;
+                badgeEl.appendChild(text);
+            }
+        } else {
+            const iconValue = typeof badge.icon === 'string' ? badge.icon.trim() : '';
+            if (iconValue && iconValue.startsWith('fa')) {
+                const icon = document.createElement('i');
+                icon.className = iconValue + ' badge-icon';
+                icon.setAttribute('aria-hidden', 'true');
+                badgeEl.appendChild(icon);
+            } else if (iconValue) {
+                const icon = document.createElement('span');
+                icon.className = 'badge-icon';
+                icon.textContent = iconValue;
+                icon.setAttribute('aria-hidden', 'true');
+                badgeEl.appendChild(icon);
+            }
+
+            const text = document.createElement('span');
+            text.className = 'badge-text';
+            text.textContent = badge.label;
+            badgeEl.appendChild(text);
+        }
+
+        return badgeEl;
+    }
+
+    // Handle product detail page (separate from listings)
+    async function handleProductDetailPage() {
+        // Check if we're on a product detail page
+        const productDetailSelectors = [
+            '.product-info-main',           // Luma product detail
+            '.catalog-product-view',        // Page body class
+            '.product.media',               // Product media container
+        ];
+
+        let isProductPage = false;
+        for (const selector of productDetailSelectors) {
+            if (document.querySelector(selector)) {
+                isProductPage = true;
+                break;
+            }
+        }
+
+        if (!isProductPage) return;
+
+        // Find product image container on detail page
+        // Order: Hyva first, then Luma, then generic
+        const imageContainerSelectors = [
+            '#gallery-main',                                // Hyva theme: main gallery container
+            '#gallery',                                     // Hyva theme: gallery wrapper
+            '.product.media',                               // Luma media container
+            '.product-image-container',                     // Generic
+            '.product-img-box',                             // Some themes
+            '[data-gallery-role="gallery-placeholder"]',    // Magento default
+        ];
+
+        let imageContainer = null;
+        for (const selector of imageContainerSelectors) {
+            const el = document.querySelector(selector);
+            if (el) {
+                imageContainer = el;
+                break;
+            }
+        }
+
+        if (!imageContainer) {
+            console.warn('SmartBadge: No image container found on product detail page');
+            return;
+        }
+        if (imageContainer.hasAttribute('data-badge-processed')) return;
+        imageContainer.setAttribute('data-badge-processed', 'true');
+
+        let productId = null;
+        const contextEl = document.querySelector('.smart-badge-context[data-product-id]');
+        if (contextEl) {
+            productId = contextEl.getAttribute('data-product-id');
+        }
+        if (!parseInt(productId, 10)) {
+            const formInput = document.querySelector('#product_addtocart_form input[name="product"]') ||
+                document.querySelector('form[action*="checkout/cart/add"] input[name="product"]');
+            productId = formInput ? formInput.value : null;
+        }
+
+        if (!productId) return;
+
+        // Make sure container is relatively positioned
+        const position = window.getComputedStyle(imageContainer).position;
+        if (position === 'static') {
+            imageContainer.style.position = 'relative';
+        }
+
+        // Fetch and render badges
+        const data = await fetchBadgeData(productId);
+        if (data && data.badges && data.badges.length > 0) {
+            const badgeHTML = createBadgeHTML(data.badges, 'product', false);
+            imageContainer.insertAdjacentHTML('afterbegin', badgeHTML);
+        }
+    }
+
+    let quickViewProductId = null;
+
+    function setQuickViewProduct(value) {
+        const id = parseInt(value, 10);
+        quickViewProductId = id > 0 ? String(id) : null;
+        setTimeout(handleQuickView, 50);
+        setTimeout(handleQuickView, 600);
+    }
+
+    window.addEventListener('open-quick-view', (event) => {
+        setQuickViewProduct(event && event.detail ? event.detail.productId : 0);
+    });
+
+    document.addEventListener('click', (event) => {
+        const trigger = event.target && event.target.closest ? event.target.closest('[data-quickview-id]') : null;
+        if (trigger) {
+            setQuickViewProduct(trigger.getAttribute('data-quickview-id'));
+        }
+    }, true);
+
+    async function handleQuickView() {
+        if (!quickViewProductId) return;
+        const imageContainer = document.querySelector('.qv-modal .qv-img-main');
+        if (!imageContainer) return;
+        const productId = quickViewProductId;
+        if (imageContainer.getAttribute('data-sb-product-id') === productId
+            && imageContainer.querySelector('.smart-badges-container')) return;
+        if (imageContainer.getAttribute('data-sb-loading') === productId) return;
+        imageContainer.setAttribute('data-sb-product-id', productId);
+        imageContainer.setAttribute('data-sb-loading', productId);
+        imageContainer.querySelectorAll('.smart-badges-container').forEach(el => el.remove());
+
+        if (window.getComputedStyle(imageContainer).position === 'static') {
+            imageContainer.style.position = 'relative';
+        }
+
+        const data = await fetchBadgeData(productId);
+        imageContainer.removeAttribute('data-sb-loading');
+        if (imageContainer.getAttribute('data-sb-product-id') !== productId || !imageContainer.isConnected) return;
+        imageContainer.querySelectorAll('.smart-badges-container').forEach(el => el.remove());
+        if (data && data.badges && data.badges.length > 0) {
+            imageContainer.insertAdjacentHTML('afterbegin', createBadgeHTML(data.badges, 'product', false));
+        }
+    }
+
+    // Add badges to product images
+    function addBadgesToProducts() {
+        // Handle product detail page separately
+        handleProductDetailPage();
+        handleQuickView();
+
+        // Detect page type for product listings
+        const pageType = detectPageType();
+
+        // Try multiple selectors for product listings
+        // Priority: Most specific first to avoid selecting nested elements like price-box
+        const selectors = [
+            'form.product-item',                             // Hyva: form with product-item class (primary)
+            '.product.product-item.card.card-interactive',  // Hyva product list items (div variant)
+            'article.card.card-interactive',                 // Hyva product list items (article variant)
+            'li.product-item',                               // Luma: li with product-item class
+            '.product-item:not(.price-box)',                 // Generic product items (exclude price-box!)
+        ];
+
+        let productElements = [];
+        const processedElements = new Set(); // Prevent duplicates
+
+        selectors.forEach(selector => {
+            const found = document.querySelectorAll(selector);
+            if (found.length > 0) {
+                found.forEach(el => {
+                    // Avoid duplicates and exclude price-box elements
+                    if (!processedElements.has(el) && !el.classList.contains('price-box')) {
+                        productElements.push(el);
+                        processedElements.add(el);
+                    }
+                });
+            }
+        });
+
+        productElements.forEach(async (element) => {
+            // Skip if already processed
+            if (element.hasAttribute('data-badge-processed')) return;
+            element.setAttribute('data-badge-processed', 'true');
+
+            // Get product ID from multiple possible sources
+            let productId = element.getAttribute('data-product-id') ||
+                            element.dataset.productId ||
+                            element.querySelector('[data-product-id]')?.getAttribute('data-product-id') ||
+                            element.querySelector('[data-product-id]')?.dataset.productId;
+
+            // Luma fallback: Extract from product URL
+            if (!productId) {
+                const productLink = element.querySelector('a.product-item-link, a.product-item-photo, a[href*="/product/"]');
+                if (productLink) {
+                    const href = productLink.getAttribute('href');
+                    if (href) {
+                        // Extract ID from URL patterns like /product/123/ or /product-name-123.html
+                        const match = href.match(/\/(\d+)(?:\.html)?(?:\/|$)/);
+                        if (match) {
+                            productId = match[1];
+                        }
+                    }
+                }
+            }
+
+            if (!productId) {
+                return;
+            }
+
+            // Find image container - try multiple approaches (Luma + Hyva)
+            // Order: prefer containers with defined dimensions first
+            let imageContainer =
+                element.querySelector('[class*="product-image-container"]') ||    // Luma: span with explicit width/height (best for absolute positioning)
+                element.querySelector('.product.photo.product-item-photo') ||     // Hyva: specific product photo class
+                element.querySelector('a.product.photo.product-item-photo') ||    // Hyva: link with photo classes
+                element.querySelector('figure') ||                                 // Hyva: figure element
+                element.querySelector('a[href*="/product/"] figure') ||           // Hyva: figure in product link
+                element.querySelector('a.product-item-photo') ||                  // Luma: link wrapper (fallback)
+                element.querySelector('.product-item-photo') ||                   // Luma: generic product-item-photo
+                element.querySelector('.product-image-wrapper')?.parentElement || // Wrapper parent
+                element.querySelector('.product-item-info .product-item-photo') ||// Luma nested in product-item-info
+                element.querySelector('a[href*="/product/"]') ||                  // Any product link (fallback)
+                element.querySelector('.product-image-photo')?.parentElement ||   // Container of image
+                element.querySelector('a img')?.parentElement;                    // Fallback: any image parent
+
+            if (!imageContainer) {
+                console.warn('SmartBadge: No image container found for product', element);
+                return;
+            }
+
+            // Check if badge already exists
+            if (imageContainer.querySelector('.smart-badges-container') || element.querySelector('.panth-ps-badges')) {
+                return;
+            }
+
+            // Make sure container is relatively positioned
+            const position = window.getComputedStyle(imageContainer).position;
+            if (position === 'static') {
+                imageContainer.style.position = 'relative';
+            }
+
+            // Fetch and render badges
+            const data = await fetchBadgeData(productId);
+
+            if (data && data.badges && data.badges.length > 0) {
+                // Detect if this is in a slider/carousel
+                const isSlider = element.closest('.slick-slide, .swiper-slide, .owl-item, [data-slider], .product-slider, .carousel') !== null;
+                const badgeHTML = createBadgeHTML(data.badges, pageType, isSlider);
+                imageContainer.insertAdjacentHTML('afterbegin', badgeHTML);
+            }
+        });
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addBadgesToProducts);
+    } else {
+        addBadgesToProducts();
+    }
+
+    // Re-run when content changes (for AJAX-loaded content, sliders, etc.)
+    const observer = new MutationObserver((mutations) => {
+        let shouldUpdate = false;
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length > 0) {
+                shouldUpdate = true;
+            }
+        });
+        if (shouldUpdate) {
+            setTimeout(addBadgesToProducts, 100);
+        }
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // Also listen for common events that might add products
+    window.addEventListener('load', () => {
+        setTimeout(addBadgesToProducts, 500);
+    });
+
+    // Hyva-specific: Listen for product list updates
+    if (window.Alpine) {
+        document.addEventListener('alpine:initialized', () => {
+            setTimeout(addBadgesToProducts, 300);
+        });
+        // Also listen for Alpine updates on data
+        document.addEventListener('alpine:updated', () => {
+            setTimeout(addBadgesToProducts, 100);
+        });
+    }
+})();
+</script>
+
+<style>
+.smart-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.smart-badges-container .smart-badge {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    height: var(--sb-badge-height, 22px);
+    padding: 0 var(--sb-badge-padding-x, 8px);
+    border: 0;
+    border-radius: var(--sb-badge-radius, 4px);
+    background-image: none;
+    box-shadow: none;
+    color: var(--sb-badge-text, #FFFFFF);
+    font-family: inherit;
+    font-size: var(--sb-badge-font-size, 12px);
+    font-weight: var(--sb-badge-font-weight, 600);
+    line-height: var(--sb-badge-height, 22px);
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.smart-badges-container .smart-badge.sb-tone-sale { background-color: var(--sb-badge-sale-bg, #B91C1C); }
+.smart-badges-container .smart-badge.sb-tone-new { background-color: var(--sb-badge-new-bg, #0F766E); }
+.smart-badges-container .smart-badge.sb-tone-stock { background-color: var(--sb-badge-stock-bg, #B45309); }
+.smart-badges-container .smart-badge.sb-tone-custom { background-color: var(--sb-badge-custom-bg, #0F766E); }
+
+.badge-group {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: calc(100% - 16px);
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.badge-group-top-right,
+.badge-group-bottom-right {
+    justify-content: flex-end;
+}
+
+.badge-group-top-left { top: 8px; left: 8px; }
+.badge-group-top-right { top: 8px; right: 8px; }
+.badge-group-bottom-left { bottom: 8px; left: 8px; }
+.badge-group-bottom-right { bottom: 8px; right: 8px; }
+
+.badge-layout-vertical { flex-direction: column; }
+.badge-layout-horizontal { flex-direction: row; }
+.badge-layout-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+.badge-layout-compact .smart-badge { position: relative; margin: -0.25rem; }
+
+.badge-group .smart-badge {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+}
+
+.smart-badges-container .smart-badge .badge-text {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+
+.smart-badge.badge-position-top-left { top: 8px; left: 8px; }
+.smart-badge.badge-position-top-right { top: 8px; right: 8px; }
+.smart-badge.badge-position-bottom-left { bottom: 8px; left: 8px; }
+.smart-badge.badge-position-bottom-right { bottom: 8px; right: 8px; }
+
+.smart-badges-container .smart-badge .badge-image {
+    flex: none;
+    max-width: 16px;
+    max-height: 16px;
+    object-fit: contain;
+}
+
+.smart-badges-container .smart-badge.sb-image-only {
+    height: auto;
+    padding: 0;
+    line-height: 1;
+}
+
+.smart-badges-container .smart-badge.sb-image-only .badge-image {
+    max-width: 48px;
+    max-height: 48px;
+}
+
+.smart-badges-container .smart-badge .badge-icon {
+    flex: none;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.smart-badge.pulse { animation: sb-pulse 1s ease-in-out 3; }
+@keyframes sb-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.smart-badge.bounce { animation: sb-bounce 1s ease-in-out 3; }
+@keyframes sb-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.smart-badge.shake { animation: sb-shake 0.5s ease-in-out 3; }
+@keyframes sb-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.smart-badge.glow { animation: sb-glow 1.5s ease-in-out 3; }
+@keyframes sb-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.5), 0 4px 12px rgba(0,0,0,0.2); }
+    50% { box-shadow: 0 0 20px rgba(239, 68, 68, 1), 0 4px 12px rgba(0,0,0,0.2); }
+}
+
+.smart-badge.rotate { animation: sb-rotate 2s linear 2; }
+@keyframes sb-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.smart-badge.flip { animation: sb-flip 2s ease-in-out 2; }
+@keyframes sb-flip {
+    0%, 100% { transform: rotateY(0); }
+    50% { transform: rotateY(180deg); }
+}
+
+.smart-badge.swing { animation: sb-swing 1s ease-in-out 3; }
+@keyframes sb-swing {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(15deg); }
+    40% { transform: rotate(-10deg); }
+    60% { transform: rotate(5deg); }
+    80% { transform: rotate(-5deg); }
+}
+
+.smart-badge.tada { animation: sb-tada 1.5s ease-in-out 3; }
+@keyframes sb-tada {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    10%, 20% { transform: scale(0.9) rotate(-3deg); }
+    30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+    40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+}
+
+.smart-badge.jello { animation: sb-jello 1.5s ease-in-out 3; }
+@keyframes sb-jello {
+    0%, 100% { transform: skewX(0deg) skewY(0deg); }
+    30% { transform: skewX(12.5deg) skewY(12.5deg); }
+    40% { transform: skewX(-6.25deg) skewY(-6.25deg); }
+    50% { transform: skewX(3.125deg) skewY(3.125deg); }
+    65% { transform: skewX(-1.5625deg) skewY(-1.5625deg); }
+    75% { transform: skewX(0.78125deg) skewY(0.78125deg); }
+}
+
+.smart-badge.heartbeat { animation: sb-heartbeat 1.3s ease-in-out 3; }
+@keyframes sb-heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.2); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.2); }
+    70% { transform: scale(1); }
+}
+
+.smart-badge.fadeIn { animation: sb-fadeIn 1.5s ease-in-out 3; }
+@keyframes sb-fadeIn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.smart-badge.fadeOut { animation: sb-fadeOut 1.5s ease-in-out 3; }
+@keyframes sb-fadeOut {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+.smart-badge.slideInLeft { animation: sb-slideInLeft 1s ease-in-out 3; }
+@keyframes sb-slideInLeft {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-20px); opacity: 0.5; }
+}
+
+.smart-badge.slideInRight { animation: sb-slideInRight 1s ease-in-out 3; }
+@keyframes sb-slideInRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(20px); opacity: 0.5; }
+}
+
+.smart-badge.slideInUp { animation: sb-slideInUp 1s ease-in-out 3; }
+@keyframes sb-slideInUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); opacity: 0.5; }
+}
+
+.smart-badge.slideInDown { animation: sb-slideInDown 1s ease-in-out 3; }
+@keyframes sb-slideInDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(20px); opacity: 0.5; }
+}
+
+.smart-badge.zoomIn { animation: sb-zoomIn 1s ease-in-out 3; }
+@keyframes sb-zoomIn {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.smart-badge.zoomOut { animation: sb-zoomOut 1s ease-in-out 3; }
+@keyframes sb-zoomOut {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.7); }
+}
+
+.smart-badge.flash { animation: sb-flash 1s ease-in-out 3; }
+@keyframes sb-flash {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
+
+.smart-badge.rubberBand { animation: sb-rubberBand 1.5s ease-in-out 3; }
+@keyframes sb-rubberBand {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scaleX(1.25) scaleY(0.75); }
+    40% { transform: scaleX(0.75) scaleY(1.25); }
+    50% { transform: scaleX(1.15) scaleY(0.85); }
+    65% { transform: scaleX(0.95) scaleY(1.05); }
+    75% { transform: scaleX(1.05) scaleY(0.95); }
+}
+
+.smart-badge.wobble { animation: sb-wobble 1s ease-in-out 3; }
+@keyframes sb-wobble {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    15% { transform: translateX(-25%) rotate(-5deg); }
+    30% { transform: translateX(20%) rotate(3deg); }
+    45% { transform: translateX(-15%) rotate(-3deg); }
+    60% { transform: translateX(10%) rotate(2deg); }
+    75% { transform: translateX(-5%) rotate(-1deg); }
+}
+
+.smart-badge.headShake { animation: sb-headShake 1.5s ease-in-out 3; }
+@keyframes sb-headShake {
+    0%, 100% { transform: translateX(0) rotateY(0); }
+    6.5% { transform: translateX(-6px) rotateY(-9deg); }
+    18.5% { transform: translateX(5px) rotateY(7deg); }
+    31.5% { transform: translateX(-3px) rotateY(-5deg); }
+    43.5% { transform: translateX(2px) rotateY(3deg); }
+    50% { transform: translateX(0) rotateY(0); }
+}
+
+.smart-badge.rollIn { animation: sb-rollIn 1.5s ease-in-out 3; }
+@keyframes sb-rollIn {
+    0% { opacity: 0; transform: translateX(-100%) rotate(-120deg); }
+    50% { opacity: 1; transform: translateX(0) rotate(0); }
+    100% { opacity: 0; transform: translateX(-100%) rotate(-120deg); }
+}
+
+.smart-badge.rollOut { animation: sb-rollOut 1.5s ease-in-out 3; }
+@keyframes sb-rollOut {
+    0% { opacity: 1; transform: translateX(0) rotate(0); }
+    50% { opacity: 0; transform: translateX(100%) rotate(120deg); }
+    100% { opacity: 1; transform: translateX(0) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .smart-badge,
+    .smart-badge[class] {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+</style>

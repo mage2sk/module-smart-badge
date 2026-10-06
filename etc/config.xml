@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <smart_badge>
+            <general>
+                <enabled>1</enabled>
+                <max_badges>1</max_badges>
+                <priority_order>sale,new,stock,custom</priority_order>
+                <badge_combination_mode>priority</badge_combination_mode>
+                <show_multiple_rule_badges>0</show_multiple_rule_badges>
+                <auto_badges_with_manual>0</auto_badges_with_manual>
+            </general>
+            <display>
+                <badge_layout>vertical</badge_layout>
+                <badge_spacing>gap-2</badge_spacing>
+                <show_icons>0</show_icons>
+                <use_custom_styling>0</use_custom_styling>
+            </display>
+        </smart_badge>
+    </default>
+</config>

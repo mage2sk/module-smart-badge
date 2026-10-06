@@ -1,0 +1,457 @@
+/**
+ * Smart Badge Admin Styles
+ * Magento-compatible styling for badge admin interface
+ */
+
+/* Badge Preview Container */
+.badge-preview-container {
+    position: fixed;
+    top: 120px;
+    right: 20px;
+    width: 400px;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+
+.badge-preview-header {
+    padding: 15px 20px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e3e3e3;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge-preview-content {
+    padding: 20px;
+}
+
+/* Preview Mode Switcher */
+.preview-mode-switcher {
+    display: flex;
+    gap: 5px;
+}
+
+.preview-mode-switcher button {
+    padding: 4px 12px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.preview-mode-switcher button.active {
+    background: #1979c3;
+    color: #fff;
+    border-color: #1979c3;
+}
+
+/* Product Preview Mockup */
+.product-preview-mockup {
+    margin-bottom: 20px;
+}
+
+.mock-product-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: #f5f5f5;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.mock-image-placeholder {
+    width: 100%;
+    height: 100%;
+}
+
+/* Badge Live Preview */
+.badge-live-preview {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+    z-index: 10;
+}
+
+/* Badge Positions */
+.badge-position-top-left {
+    top: 10px;
+    left: 10px;
+}
+
+.badge-position-top-right {
+    top: 10px;
+    right: 10px;
+}
+
+.badge-position-bottom-left {
+    bottom: 10px;
+    left: 10px;
+}
+
+.badge-position-bottom-right {
+    bottom: 10px;
+    right: 10px;
+}
+
+.badge-position-top-center {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.badge-position-bottom-center {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.badge-position-center-left {
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.badge-position-center-right {
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+/* Badge Image Preview */
+.badge-image-preview {
+    max-width: 40px;
+    max-height: 40px;
+    object-fit: contain;
+}
+
+/* Performance Metrics */
+.performance-metrics {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.performance-metrics h4 {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.metric-card {
+    text-align: center;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+}
+
+.metric-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1979c3;
+    margin-bottom: 3px;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Icon Picker Field */
+.icon-picker-field {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-picker-preview {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: #f5f5f5;
+}
+
+.icon-picker-button {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.icon-picker-button:hover {
+    background: #f5f5f5;
+}
+
+/* Product/Category Chooser Field */
+.chooser-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chooser-selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.chooser-selected-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.chooser-remove-btn {
+    cursor: pointer;
+    color: #e22626;
+    font-weight: bold;
+}
+
+.chooser-add-button {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid #1979c3;
+    background: #1979c3;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+    align-self: flex-start;
+}
+
+.chooser-add-button:hover {
+    background: #16699e;
+    border-color: #16699e;
+}
+
+/* Color Picker Enhancement */
+.color-picker-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.color-picker-preview {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Badge Animations */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    50% { box-shadow: 0 0 20px rgba(0,0,0,0.4); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+@keyframes zoomOut {
+    from { transform: scale(1); }
+    to { transform: scale(0); }
+}
+
+.pulse { animation: pulse 2s infinite; }
+.bounce { animation: bounce 1s infinite; }
+.shake { animation: shake 0.5s infinite; }
+.glow { animation: glow 2s infinite; }
+.rotate { animation: rotate 3s linear infinite; }
+.fadeIn { animation: fadeIn 1s; }
+.fadeOut { animation: fadeOut 1s; }
+.slideInLeft { animation: slideInLeft 0.5s; }
+.slideInRight { animation: slideInRight 0.5s; }
+.zoomIn { animation: zoomIn 0.5s; }
+.zoomOut { animation: zoomOut 0.5s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .badge-preview-container {
+        position: static;
+        width: 100%;
+        margin-top: 20px;
+        max-height: none;
+    }
+}
+
+/* Category Grid Preview */
+.category-preview-mockup {
+    margin-bottom: 20px;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.category-product-card {
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.category-product-image {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-image-placeholder {
+    font-size: 32px;
+    color: #ccc;
+}
+
+.category-product-info {
+    padding: 10px;
+}
+
+.category-product-info h5 {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.category-price {
+    color: #1979c3;
+    font-weight: 700;
+}
+
+/* Tips Panel */
+.tips-panel {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.tips-panel h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    font-size: 13px;
+    color: #666;
+}
+
+.tips-list li:before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: #ccc;
+    font-weight: bold;
+}
+
+.tips-list li.complete {
+    color: #4a9b5f;
+}
+
+.tips-list li.complete:before {
+    content: "✓";
+    color: #4a9b5f;
+}
