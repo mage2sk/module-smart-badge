@@ -197,7 +197,7 @@ The tables `panth_smart_badge` and `panth_smart_badge_rule`, the `smart_badge/*`
 
 ## License
 
-Commercial software license. See [LICENSE.txt](LICENSE.txt) in this repository.
+Free and open source under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
 ## Changelog
 
